@@ -131,3 +131,8 @@ The goal is to explore how AI can:
 - highlight risks and unknowns
 - make governance participation more accessible
 - while staying honest about uncertainty and failure modes
+
+
+## Implementation notes
+
+The project is implemented as a Node.js CLI script and uses the Ambient API (v1 chat completions) for LLM inference. The API key is created on the Ambient website in the "API Keys" section and provided via the `AMBIENT_API_KEY` environment variable.

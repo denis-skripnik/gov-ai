@@ -1,0 +1,64 @@
+{
+  "version": 1,
+  "input": {
+    "url": "https://daodao.zone/dao/juno/proposals/370",
+    "fetched_at": "2026-01-24T10:14:24.736Z",
+    "source_type": "daodao"
+  },
+  "extracted": {
+    "title": "Q2, Q3 and Q4 Budget for Digital Kitchen",
+    "body": "# Q2, Q3 and Q4 Budget for Digital Kitchen\n\n## Summary\n\nThis proposal requests the release of the **Q2, Q3, Q4 budgets** outlined in [Roadmap Proposal 2](https://explorer.chainroot.io/juno/proposals/361), which appointed **Digital Kitchen** and **Kintsugi Tech** as the core teams maintaining and upgrading the Juno Blockchain.  \nAt the current JUNO market price of **$0.08**, we are adjusting the payment amounts accordingly.\n\nAs the workload for Kintsugi Tech in Q2, Q3, Q4 has been/will be minimal, **no funds are being requested for Kintsugi Tech** at this time.\n\n## Q2-3 Worklog\n\n### Digital Kitchen\n\n- Successuflly released Juno v28.0.0, v28.0.1, v28.0.2 upgrading juno core to the latest Cosmos-SDK and CosmWasm versions.\n- Successfully upgraded juno to v29.0.0 featuring Cosmos SDK v50\n- Complete worklog can be found here: https://github.com/vexxvakan/juno-worklog/blob/main/README.md\n\n### Kintsugi\n\n- Tested all the released versions in local devnets and public testnet\n- Created a new testnet for more realistic tests (uni-7)\n- Coordinated testnet validators\n- Coordinated mainnet validators\n- Proposed the new delegations program\n- Delivered new delegations\n- Keep pushing the roadmap forward\n- Instantiated a partnership with ChainRoot to ensure we have an high quality explorer\n\n## Future work (Q4)\n\n## Updated Budget Request\n\nThe original budget outlined in the [Roadmap Proposal 2](https://explorer.chainroot.io/juno/proposals/361) was 20,000 JUNO for each team each quarter. Because of new pricing conditions, we are asking the payment of Q2, Q3, and Q4 budget only for Digital Kitchen at a rate of 0.08$ per token. Additionally we are integrating the juno budget with USDC budget, to minimize market impact as much as possible.\n\n**Original budget (with token at 0.2$):** 60,000 JUNO (for Digital Kitchen only, 3 quarters)  \n**Rebalanced budget (with token at 0.08$):** 75,000 JUNO + 6000 USDC (for Digital Kitchen only)  \n**USD Equivalent:** 12,000 USD\n\nKintsugi tech will continue to provide support without compensation for now.\n\n## Budget Handling\n\nFunds will be sent to **Dimi's wallet** (used in the Q1 proposal) who will handle the payments to Digital Kitchen as agreed. This ensures operational continuity and simplifies accounting.\n\nPayment schedule is the following:\n\n- Immediately 25,000 JUNO + 2000 USDC for Q2 work\n- October 1st 25,000 JUNO + 2000 USDC for Q3 work\n- Jan 1st 2026 25,000 JUNO + 2000 USDC for Q4 work\n\nIn case of high price fluctations, we might adjust the schedule to better fit the 4k USD/mo target of digital kitchen.\n\n## Conclusion\n\n- **Vote YES** to approve the release of Q2, Q3 and Q4 budgets (75,000 JUNO + 6000 USDC total) to fund Digital Kitchen's continued work on Juno core.\n- **Vote NO** if you oppose releasing the proposed funds or want to reassess team structure.",
+    "options": [
+      "YES",
+      "NO"
+    ],
+    "current_results": null,
+    "metadata": {
+      "nextjs": true
+    }
+  },
+  "analysis": {
+    "summary": "This proposal requests the release of 75,000 JUNO + 6000 USDC (total $12,000 USD equivalent) to fund Digital Kitchen's work across Q2, Q3, and Q4 2025. The funds will be paid to a single wallet (Dimi's) for distribution, and Kintsugi Tech will continue work without compensation.",
+    "key_changes": [
+      "Treasury outlay of 75,000 JUNO + 6000 USDC across three quarters",
+      "Centralized payment mechanism through single wallet (Dimi's)",
+      "Budget adjustment from original 60,000 JUNO to 75,000 JUNO due to price changes",
+      "Kintsugi Tech continuing without compensation",
+      "Mixed payment structure using both JUNO and USDC tokens"
+    ],
+    "risks": [
+      "Centralized payment to single wallet creates single point of failure",
+      "Significant treasury outlay without clear execution safeguards",
+      "Team structure changes (removing compensation from Kintsugi) may impact collaboration",
+      "Price fluctuation clause introduces uncertainty about final payment amounts",
+      "No multi-signature or decentralized payment distribution mechanism"
+    ],
+    "unknowns": [
+      "Current voting results are not available",
+      "Execution details and smart contract parameters are unknown",
+      "No information about escrow or timelock mechanisms",
+      "Unclear what happens if work is not completed",
+      "Unknown governance process for adjusting schedule based on price fluctuations"
+    ],
+    "evidence_quotes": [
+      "Funds will be sent to **Dimi's wallet** (used in the Q1 proposal) who will handle the payments to Digital Kitchen as agreed.",
+      "**Rebalanced budget (with token at 0.08$):** 75,000 JUNO + 6000 USDC (for Digital Kitchen only)",
+      "As the workload for Kintsugi Tech in Q2, Q3, Q4 has been/will be minimal, **no funds are being requested for Kintsugi Tech** at this time.",
+      "In case of high price fluctations, we might adjust the schedule to better fit the 4k USD/mo target of digital kitchen."
+    ]
+  },
+  "recommendation": {
+    "suggested_option": "AGAINST",
+    "confidence": "medium",
+    "reasoning": "The proposal conflicts with high decentralization priority due to centralized payment to single wallet, and high treasury risk sensitivity due to significant multi-quarter funding commitment without proper safeguards. The lack of multi-signature controls and flexible price adjustment terms introduce unnecessary risk.",
+    "conflicts_with_user_principles": [
+      "High decentralization priority - centralized single wallet payment",
+      "High treasury risk sensitivity - large multi-quarter commitment without safeguards"
+    ]
+  },
+  "limitations": [
+    "This is not legal or financial advice.",
+    "The tool may have failed to extract all proposal parameters.",
+    "Critical parameters must be checked manually."
+  ]
+}

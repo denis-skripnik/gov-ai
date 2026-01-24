@@ -1,0 +1,33 @@
+{
+  "version": 1,
+  "input": {
+    "url": "",
+    "fetched_at": "",
+    "source_type": "snapshot | tally | aragon | generic"
+  },
+  "extracted": {
+    "title": "",
+    "body": "",
+    "options": [],
+    "current_results": null,
+    "metadata": {}
+  },
+  "analysis": {
+    "summary": "",
+    "key_changes": [],
+    "risks": [],
+    "unknowns": [],
+    "evidence_quotes": []
+  },
+  "recommendation": {
+    "suggested_option": "FOR | AGAINST | ABSTAIN | OPTION_NAME | UNKNOWN",
+    "confidence": "low | medium | high",
+    "reasoning": "",
+    "conflicts_with_user_principles": []
+  },
+  "limitations": [
+    "This is not legal or financial advice.",
+    "The tool may have failed to extract all proposal parameters.",
+    "Critical parameters must be checked manually."
+  ]
+}

@@ -1,0 +1,18 @@
+{
+  "version": 1,
+  "user_profile": {
+    "risk_tolerance": "medium",
+    "time_horizon": "months"
+  },
+  "governance_values": {
+    "decentralization_priority": "high",
+    "transparency_priority": "medium",
+    "upgradeability_skepticism": "low",
+    "treasury_risk_sensitivity": "high"
+  },
+  "preferences": {
+    "needs_strict_spec": true,
+    "requires_timelock_for_upgrades": false,
+    "avoid_admin_key_changes": true
+  }
+}

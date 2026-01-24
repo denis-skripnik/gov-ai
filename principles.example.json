@@ -1,0 +1,23 @@
+{
+  "version": 1,
+  "user_profile": {
+    "risk_tolerance": "low | medium | high",
+    "time_horizon": "days | weeks | months | years"
+  },
+  "governance_values": {
+    "decentralization_priority": "low | medium | high",
+    "transparency_priority": "low | medium | high",
+    "upgradeability_skepticism": "low | medium | high",
+    "treasury_risk_sensitivity": "low | medium | high"
+  },
+  "preferences": {
+    "needs_strict_spec": true,
+    "requires_timelock_for_upgrades": true,
+    "avoid_admin_key_changes": true
+  },
+  "_help": {
+    "risk_tolerance": "How much risk are you comfortable with?",
+    "decentralization_priority": "How important is decentralization to you?",
+    "needs_strict_spec": "Do you require a detailed technical spec before supporting proposals?"
+  }
+}

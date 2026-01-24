@@ -1,0 +1,11 @@
+{
+  "name": "gov-ai",
+  "version": "0.1.0",
+  "type": "module",
+  "bin": {
+    "gov-ai": "./gov-ai.js"
+  },
+  "dependencies": {
+    "dotenv": "^17.2.3"
+  }
+}

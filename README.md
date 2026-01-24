@@ -104,13 +104,13 @@ This repository includes example output reports for testing and demonstration pu
 
 You can find them in the `reports/` folder:
 
-- `report-snapshot-0xd187826a4f0ac86466f1241dc906aa39fd398c1de37b5047aafb6e321d95d39f.json`  
+- [report-snapshot-0xd187826a4f0ac86466f1241dc906aa39fd398c1de37b5047aafb6e321d95d39f.json](reports/report-snapshot-0xd187826a4f0ac86466f1241dc906aa39fd398c1de37b5047aafb6e321d95d39f.json)  
   Example report generated from a Snapshot proposal.
 
-- `report-tally-uniswap-83.json`  
+- [report-tally-uniswap-83.json](reports/report-tally-uniswap-83.json)  
   Example report generated from a Tally proposal (Uniswap governance).
 
-- `report-2026-01-24T10-15-26-521Z.json`  
+- [report-2026-01-24T10-15-26-521Z.json](reports/report-2026-01-24T10-15-26-521Z.json)  
   Example report generated from a DAO DAO proposal (via Next.js fallback extraction).
 
 These files allow reviewers to inspect the tool output format and behavior without running the code.

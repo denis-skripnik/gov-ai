@@ -1,2 +1,6 @@
-reports/
-bench-results/
+.env
+reports/*.json
+prod-reports/*.json
+bench-results/*
+!bench-results/examples/
+!bench-results/examples/**

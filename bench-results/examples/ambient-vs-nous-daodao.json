@@ -1,0 +1,246 @@
+{
+  "bench_version": 2,
+  "created_at": "2026-01-28T18:21:46.892Z",
+  "started_at": "2026-01-28T18:18:29.068Z",
+  "finished_at": "2026-01-28T18:21:46.892Z",
+  "url": "https://daodao.zone/dao/juno/proposals/370",
+  "pricing": {
+    "ambient": {
+      "tier": "standard",
+      "standard": {
+        "input_per_1m": 0.35,
+        "output_per_1m": 1.71
+      },
+      "mini": {
+        "input_per_1m": 0.05,
+        "output_per_1m": 0.5
+      }
+    },
+    "nous": {
+      "input_per_1m": 0.05,
+      "output_per_1m": 0.2
+    }
+  },
+  "constraints": {
+    "runs": 3,
+    "retries": 2,
+    "timeout_ms": 3000000,
+    "system_prompt": "You are a governance analysis assistant. You must output ONLY valid JSON.",
+    "max_tokens": {
+      "ambient": 100000,
+      "nous": 100000
+    },
+    "models": {
+      "ambient": "not_set",
+      "nous": "Hermes-4-70B"
+    }
+  },
+  "extracted_meta": {
+    "source_type": "daodao"
+  },
+  "results": {
+    "ambient": [
+      {
+        "ok": true,
+        "latency_ms": 47462,
+        "usage": {
+          "prompt_tokens": 1365,
+          "total_tokens": 3228,
+          "completion_tokens": 1863,
+          "prompt_tokens_details": null
+        },
+        "cost_estimate": {
+          "prompt_tokens": 1365,
+          "completion_tokens": 1863,
+          "input_usd": 0.00047774999999999993,
+          "output_usd": 0.00318573,
+          "total_usd": 0.0036634799999999998
+        },
+        "attempts": [
+          {
+            "attempt": 1,
+            "ok": true
+          }
+        ],
+        "json_valid": true
+      },
+      {
+        "ok": true,
+        "latency_ms": 40815,
+        "usage": {
+          "prompt_tokens": 1365,
+          "total_tokens": 3097,
+          "completion_tokens": 1732,
+          "prompt_tokens_details": null
+        },
+        "cost_estimate": {
+          "prompt_tokens": 1365,
+          "completion_tokens": 1732,
+          "input_usd": 0.00047774999999999993,
+          "output_usd": 0.00296172,
+          "total_usd": 0.00343947
+        },
+        "attempts": [
+          {
+            "attempt": 1,
+            "ok": true
+          }
+        ],
+        "json_valid": true
+      },
+      {
+        "ok": true,
+        "latency_ms": 56804,
+        "usage": {
+          "prompt_tokens": 1365,
+          "total_tokens": 3695,
+          "completion_tokens": 2330,
+          "prompt_tokens_details": null
+        },
+        "cost_estimate": {
+          "prompt_tokens": 1365,
+          "completion_tokens": 2330,
+          "input_usd": 0.00047774999999999993,
+          "output_usd": 0.0039843,
+          "total_usd": 0.0044620499999999995
+        },
+        "attempts": [
+          {
+            "attempt": 1,
+            "ok": true
+          }
+        ],
+        "json_valid": true
+      }
+    ],
+    "nous": [
+      {
+        "ok": true,
+        "latency_ms": 18415,
+        "usage": {
+          "prompt_tokens": 1370,
+          "total_tokens": 2827,
+          "completion_tokens": 1457,
+          "reasoning_tokens": 0,
+          "prompt_tokens_details": null
+        },
+        "cost_estimate": {
+          "prompt_tokens": 1370,
+          "completion_tokens": 1457,
+          "input_usd": 0.0000685,
+          "output_usd": 0.0002914,
+          "total_usd": 0.00035989999999999997
+        },
+        "attempts": [
+          {
+            "attempt": 1,
+            "ok": true
+          }
+        ],
+        "json_valid": true
+      },
+      {
+        "ok": true,
+        "latency_ms": 17776,
+        "usage": {
+          "prompt_tokens": 1370,
+          "total_tokens": 2843,
+          "completion_tokens": 1473,
+          "reasoning_tokens": 0,
+          "prompt_tokens_details": {
+            "cached_tokens": 1360
+          }
+        },
+        "cost_estimate": {
+          "prompt_tokens": 1370,
+          "completion_tokens": 1473,
+          "input_usd": 0.0000685,
+          "output_usd": 0.0002946,
+          "total_usd": 0.0003631
+        },
+        "attempts": [
+          {
+            "attempt": 1,
+            "ok": true
+          }
+        ],
+        "json_valid": true
+      },
+      {
+        "ok": true,
+        "latency_ms": 16356,
+        "usage": {
+          "prompt_tokens": 1370,
+          "total_tokens": 2815,
+          "completion_tokens": 1445,
+          "reasoning_tokens": 0,
+          "prompt_tokens_details": {
+            "cached_tokens": 1360
+          }
+        },
+        "cost_estimate": {
+          "prompt_tokens": 1370,
+          "completion_tokens": 1445,
+          "input_usd": 0.0000685,
+          "output_usd": 0.00028900000000000003,
+          "total_usd": 0.0003575
+        },
+        "attempts": [
+          {
+            "attempt": 1,
+            "ok": true
+          }
+        ],
+        "json_valid": true
+      }
+    ]
+  },
+  "summary": [
+    {
+      "provider": "ambient",
+      "runs_total": 3,
+      "runs_ok": 3,
+      "runs_fail": 0,
+      "avg_latency_ms_ok": 48360,
+      "total_attempts": 3,
+      "total_retries": 0,
+      "usage_aggregate": {
+        "prompt_tokens": 4095,
+        "completion_tokens": 5925,
+        "total_tokens": 10020,
+        "has_any": true
+      },
+      "cost_aggregate_usd": {
+        "total_usd": 0.011564999999999999,
+        "input_usd": 0.0014332499999999998,
+        "output_usd": 0.01013175,
+        "avg_usd_per_ok_run": 0.0038549999999999995
+      }
+    },
+    {
+      "provider": "nous",
+      "runs_total": 3,
+      "runs_ok": 3,
+      "runs_fail": 0,
+      "avg_latency_ms_ok": 17516,
+      "total_attempts": 3,
+      "total_retries": 0,
+      "usage_aggregate": {
+        "prompt_tokens": 4110,
+        "completion_tokens": 4375,
+        "total_tokens": 8485,
+        "has_any": true
+      },
+      "cost_aggregate_usd": {
+        "total_usd": 0.0010804999999999999,
+        "input_usd": 0.0002055,
+        "output_usd": 0.0008749999999999999,
+        "avg_usd_per_ok_run": 0.0003601666666666666
+      }
+    }
+  ],
+  "notes": [
+    "Same proposal URL, same extracted data, same prompt structure for both providers.",
+    "Cost is estimated from usage.prompt_tokens/completion_tokens when provided by the API. If usage is missing, cost is reported as null."
+  ]
+}

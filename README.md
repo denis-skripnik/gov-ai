@@ -231,3 +231,65 @@ The goal is to explore how AI can:
 - highlight risks and unknowns
 - make governance participation more accessible
 - while staying honest about uncertainty and failure modes
+
+
+## Benchmark (Web2 Micro-Challenge #4)
+
+This repository also includes an optional benchmark script used to compare **cost, latency, and reliability** of different inference providers using the same extracted proposal data and the same prompt.
+
+This was created as part of **Web2 Developer Loop – Micro-Challenge #4 (cost + latency reality check)**.
+
+### Files
+
+* `bench.js` — runs a benchmark for a given proposal URL and saves results to `bench-results/`.
+
+### Run
+
+```bash
+node bench.js "https://daodao.zone/dao/juno/proposals/370"
+```
+
+or set `PROPOSAL_URL` in `.env`.
+
+### Environment variables (in addition to the main ones)
+
+```env
+NOUS_API_KEY=...
+NOUS_MODEL=Hermes-4-70B
+
+BENCH_RUNS=3
+BENCH_TIMEOUT_MS=30000
+BENCH_RETRIES=2
+
+# Pricing (USD per 1M tokens), used to estimate cost from token usage:
+AMBIENT_TIER=standard   # or mini
+AMBIENT_STANDARD_IN_PER_M=0.35
+AMBIENT_STANDARD_OUT_PER_M=1.71
+AMBIENT_MINI_IN_PER_M=0.05
+AMBIENT_MINI_OUT_PER_M=0.50
+NOUS_IN_PER_M=0.05
+NOUS_OUT_PER_M=0.20
+```
+
+### Output
+
+The benchmark produces:
+
+* `bench-results/bench-result-<timestamp>.json` — full machine-readable report
+* `bench-results/bench-summary-<timestamp>.txt` — short human-readable summary
+
+### Example results
+
+This repository includes example benchmark results in:
+
+```
+bench-results/examples/
+```
+
+These files demonstrate the output format and contain one real comparison run between Ambient and an alternative provider.
+
+### Notes
+
+* Cost is estimated from `usage.prompt_tokens` and `usage.completion_tokens` if the API returns usage data.
+* If usage is missing, cost is reported as `null`.
+* This benchmark is meant as a **practical reality check**, not as a rigorous scientific performance evaluation.

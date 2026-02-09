@@ -163,6 +163,24 @@ This folder acts as a simple file-based storage for completed jobs.
 
 ## Output format
 
+
+### Ambient verification (optional)
+
+When using Ambient as the inference provider, the report includes an extra top-level field "__ambient".
+It contains verification metadata returned by Ambient (receipt-like info), for example:
+
+- verified: boolean
+- merkle_root: string
+- request_id: string
+- model: string
+- verified_by_validators: string (example: "Verified by 3 validators")
+- auction: { status, bids: { placed, revealed }, address } (may be null)
+- bidder: string (explorer URL) (may be null)
+
+Notes:
+- To capture "UI-like" fields such as auction and bidder, streaming must be enabled (stream=true).
+- This does not prove that the proposal data is correct - it only attaches provider-side verification metadata for the inference request.
+
 The tool produces a structured JSON report:
 
 - `input` – source URL and metadata
@@ -185,7 +203,7 @@ You can find them in the `reports/` folder:
 - [report-tally-uniswap-83.json](reports/report-tally-uniswap-83.json)  
   Example report generated from a Tally proposal (Uniswap governance).
 
-- [report-2026-01-24T10-15-26-521Z.json](reports/report-2026-01-24T10-15-26-521Z.json)  
+- [report-2026-02-07T19-26-28-237Z.json](reports/report-2026-02-07T19-26-28-237Z.json)  
   Example report generated from a DAO DAO proposal (via Next.js fallback extraction).
 
 These files allow reviewers to inspect the tool output format and behavior without running the code.
@@ -208,7 +226,8 @@ This tool helps with **orientation and structuring**, not with making final deci
 
 - It is NOT a trustless or cryptographically verifiable system.
 - It does NOT prove that the proposal data is correct.
-- It does NOT verify inference integrity or receipts.
+- It does NOT provide trustless / end-to-end verifiable inference integrity.
+- It may attach provider-side verification metadata (Ambient "__ambient"), but this is not the same as full trustless verification.
 - It does NOT automatically vote or execute actions.
 
 ---
@@ -293,3 +312,10 @@ These files demonstrate the output format and contain one real comparison run be
 * Cost is estimated from `usage.prompt_tokens` and `usage.completion_tokens` if the API returns usage data.
 * If usage is missing, cost is reported as `null`.
 * This benchmark is meant as a **practical reality check**, not as a rigorous scientific performance evaluation.
+
+### Streaming and verification details
+
+Ambient verification metadata is best captured in streaming mode.
+
+- stream=true: captures lifecycle events (auction, bids, bidder) and includes them in "__ambient"
+- stream=false: returns minimal verification (verified, merkle_root) without lifecycle details

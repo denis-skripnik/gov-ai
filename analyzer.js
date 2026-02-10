@@ -342,8 +342,56 @@ Produce a JSON report with the following rules:
 - If some fields (options, results, execution details) are missing or uncertain, you MUST explicitly say "UNKNOWN".
 - Do NOT guess voting options or results.
 - Base your analysis ONLY on provided data.
+- Interpretation note: Treat 'avoid_admin_key_changes' as: proposals that add or modify privileged roles, upgrade admins, multisig signers, or emergency permissions are high-risk.
+- Avoid generic statements. Every benefit/risk must reference a concrete mechanism or outcome mentioned in the proposal.
+- Do not mix categories: risks must describe negative outcomes of passing the proposal, benefits must describe positive outcomes of passing it. Do not put benefits into risks.
 - Be conservative and honest.
 - Output ONLY valid JSON, no comments, no markdown.
+- Output must be in English only. Do not use non-English words or characters.
+
+RECOMMENDATION DISCIPLINE (IMPORTANT):
+- Do NOT use "current_results" as social proof or as a reason to follow the crowd.
+- You MAY mention current_results factually (numbers/status) but must NOT infer sentiment, intent, or "community believes" from vote counts.
+- Recommendation reasoning must be based on proposal content: key_changes, benefits, risks, unknowns, and user principles - not on vote distribution.
+- Apply a higher evidence threshold for high-impact proposals (treasury spending, admin privileges, protocol security, upgrades).
+- If such a proposal is underspecified, treat it as high-risk and reflect that in risks/unknowns and in recommendation confidence.
+- Do NOT default to abstaining mechanically: choose the suggested_option ONLY from the extracted voting options (case-sensitive), based on whether benefits vs risks are supported by the proposal text.
+- If extracted options are ["YAE","NAY","Abstain"], suggested_option must be exactly "YAE" or "NAY" or "Abstain" (do NOT output FOR/AGAINST/YES/NO).
+
+BENEFITS FIELD REQUIREMENTS (NEW):
+
+The "analysis.benefits" field is a string array that must contain ONLY evidence-based potential upsides.
+
+Rules:
+1) Each benefit must be directly supported by the proposal text or extracted metadata
+2) Benefits must be concrete and specific, not vague or speculative
+3) If a benefit is mentioned but depends on missing information, move it to "unknowns" instead
+4) If no clear benefits are stated in the proposal, return empty array: []
+5) Do NOT use marketing language (revolutionary, game-changing, unprecedented, innovative)
+6) Keep each benefit short and factual
+7) Do NOT include generic platitudes (e.g. "improves decentralization") unless explicitly stated in the proposal text
+
+Examples of ACCEPTABLE benefits:
+✅ "Reduces deficit recognition latency (proposal states 'faster deficit realization')"
+✅ "Automates manual cleanup process"
+✅ "Provides budget-bounded approach to risk management"
+
+Examples of UNACCEPTABLE benefits (move to unknowns or omit):
+❌ "Could improve user confidence" (speculative, not in proposal)
+❌ "Revolutionary risk management approach" (marketing language)
+❌ "Will save millions in bad debt" (no amount specified → move to unknowns)
+❌ "Better than competing protocols" (no comparison made)
+
+Decision tree:
+- Is benefit explicitly mentioned in proposal?
+  → NO: Do not include
+  → YES: Continue
+- Is it concrete and measurable?
+  → NO: Move to unknowns as "Unclear: [detail]"
+  → YES: Continue
+- Does it use marketing language?
+  → YES: Rephrase neutrally
+  → NO: Include in benefits[]
 
 Follow this JSON structure exactly:
 ${fs.readFileSync("./report.schema.json", "utf-8")}

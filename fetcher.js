@@ -124,6 +124,81 @@ async function fetchTallyGovernorIdBySlug(slug, apiKey) {
   return g;
 }
 
+async function fetchTallyOrganizationBySlug(slug, apiKey) {
+  const query = `
+    query Organization($input: OrganizationInput!) {
+      organization(input: $input) {
+        id
+        slug
+        name
+      }
+    }
+  `;
+
+  const data = await tallyGql(query, { input: { slug } }, apiKey);
+  const org = data?.organization;
+  if (!org?.id) throw new Error("Tally organization not found for slug: " + slug);
+  return org;
+}
+
+async function fetchTallyPrimaryGovernorByOrganizationId(organizationId, apiKey) {
+  const query = `
+    query Governors($input: GovernorsInput!) {
+      governors(input: $input) {
+        nodes {
+          ... on Governor {
+            id
+            slug
+            name
+            chainId
+            isPrimary
+            organization { id slug name }
+          }
+        }
+      }
+    }
+  `;
+
+  const data = await tallyGql(
+    query,
+    {
+      input: {
+        filters: { organizationId, includeInactive: true, excludeSecondary: true },
+        page: { limit: 50 }
+      }
+    },
+    apiKey
+  );
+
+  const nodes = Array.isArray(data?.governors?.nodes) ? data.governors.nodes : [];
+  const governors = nodes.filter((n) => n && typeof n === "object" && n.id && n.slug);
+
+  if (!governors.length) {
+    throw new Error("Tally governors not found for organizationId: " + organizationId);
+  }
+
+  const primary = governors.find((g) => g.isPrimary) || governors[0];
+  return primary;
+}
+
+async function resolveTallyGovernorFromGovPathSlug(pathSlug, apiKey) {
+  // First try: treat /gov/<slug>/ as a governor slug.
+  try {
+    return await fetchTallyGovernorIdBySlug(pathSlug, apiKey);
+  } catch (e) {
+    const msg = String(e?.message || e || "");
+    const isNotFound =
+      msg.toLowerCase().includes("governor not found") ||
+      msg.toLowerCase().includes("not found for slug");
+
+    if (!isNotFound) throw e;
+
+    // Fallback: treat /gov/<slug>/ as an organization slug.
+    const org = await fetchTallyOrganizationBySlug(pathSlug, apiKey);
+    return await fetchTallyPrimaryGovernorByOrganizationId(org.id, apiKey);
+  }
+}
+
 async function fetchTallyProposal(governorId, onchainId, apiKey) {
   // Official docs: proposal can be fetched by ID OR (onchainId + governorId) :contentReference[oaicite:3]{index=3}
   const query = `
@@ -161,8 +236,25 @@ function normalizeTallyToExtracted(tallyGovernor, tallyProposal) {
   // Tally voteStats is per vote type; for normal “For/Against/Abstain” you’ll see types
   const voteStats = Array.isArray(tallyProposal?.voteStats) ? tallyProposal.voteStats : [];
 
-  // We’ll store “options” in a stable way (types), because Tally isn’t always “choices[]”
-  const options = voteStats.map((v) => v.type);
+  // We store "options" in a stable user-facing way.
+// Tally voteStats may include internal "pending*" types; those are NOT voting options.
+// Normalize to uppercase FOR/AGAINST/ABSTAIN and keep a stable order.
+  const normalizeVoteType = (t) => {
+    const s = String(t || "").toLowerCase();
+    if (s === "for") return "FOR";
+    if (s === "against") return "AGAINST";
+    if (s === "abstain") return "ABSTAIN";
+    return null;
+  };
+
+  const present = new Set();
+  for (const v of voteStats) {
+    const vt = normalizeVoteType(v?.type);
+    if (vt) present.add(vt);
+  }
+
+  const preferredOrder = ["FOR", "AGAINST", "ABSTAIN"];
+  const options = preferredOrder.filter((o) => present.has(o));
 
   return {
     source_type: "tally",
@@ -239,13 +331,16 @@ export async function fetchAndExtract(url) {
     const parsed = parseTallyUrl(url);
     const apiKey = process.env.TALLY_API_KEY;
     if (parsed && apiKey) {
-      const g = await fetchTallyGovernorIdBySlug(parsed.slug, apiKey);
+      const g = await resolveTallyGovernorFromGovPathSlug(parsed.slug, apiKey);
       const p = await fetchTallyProposal(g.id, parsed.onchainId, apiKey);
       return normalizeTallyToExtracted(g, p);
     }
-  } catch (e) {
-    // fallback дальше (или можно логировать e.message)
-  }
+} catch (e) {
+  console.error("[tally] fast-path failed:", {
+    message: e?.message || String(e),
+    url,
+  });
+}
 
   // 3) Generic HTML fallback
   const res = await fetch(url, {

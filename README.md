@@ -237,15 +237,15 @@ Notes:
 
 This repository includes example output reports for testing and demonstration purposes.
 
-You can find them in the `reports/` folder:
+You can find them in the `reports/examples/` folder:
 
-- [report-snapshot-0xd187826a4f0ac86466f1241dc906aa39fd398c1de37b5047aafb6e321d95d39f.json](reports/report-snapshot-0xd187826a4f0ac86466f1241dc906aa39fd398c1de37b5047aafb6e321d95d39f.json)  
+- [report-snapshot-0xc115a21b8762ede9a4af7421cb66e23fc73982b686706e8c5d858c0b21c53470.json](reports/examples/report-snapshot-0xc115a21b8762ede9a4af7421cb66e23fc73982b686706e8c5d858c0b21c53470.json)  
   Example report generated from a Snapshot proposal.
 
-- [report-tally-uniswap-83.json](reports/report-tally-uniswap-83.json)  
+- [report-tally-ens-107313977323541760723614084561841045035159333942448750767795024713131429640046.json](reports/examples/report-tally-ens-107313977323541760723614084561841045035159333942448750767795024713131429640046.json)  
   Example report generated from a Tally proposal (Uniswap governance).
 
-- [report-2026-02-07T19-26-28-237Z.json](reports/report-2026-02-07T19-26-28-237Z.json)  
+- [report-2026-02-12T19-56-56-834Z.json](reports/examples/report-2026-02-12T19-56-56-834Z.json)  
   Example report generated from a DAO DAO proposal (via Next.js fallback extraction).
 
 These files allow reviewers to inspect the tool output format and behavior without running the code.
@@ -355,7 +355,22 @@ These files demonstrate the output format and contain one real comparison run be
 * If usage is missing, cost is reported as `null`.
 * This benchmark is meant as a **practical reality check**, not as a rigorous scientific performance evaluation.
 
-### Streaming and verification details
+## Week 5 - Verification boundaries (Micro-Challenge #5)
+
+This project includes a Week 5 addition: the report is split into verifiable and non-verifiable layers.
+
+Each report includes a `verification_boundary` block with:
+
+* `deterministic` - statements that can be checked by matching extracted fields and evidence quotes, or by hard literals like numbers and addresses
+* `interpretive` - summaries, risks, benefits, and recommendation reasoning
+* `uncertainty_flags` - missing data signals and explicit uncertainty markers
+
+Important: `__ambient.verified = true` verifies the inference process and its commitment, but it does not make interpretive 
+conclusions "true". This boundary labeling exists to make that limitation explicit.
+
+An example Week 5 report with verification boundary labeling is available in the `reports/examples/` folder (see the most recent timestamped report file).
+
+## Streaming and verification details
 
 Ambient verification metadata is best captured in streaming mode.
 

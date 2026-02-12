@@ -1,0 +1,126 @@
+{
+  "version": 1,
+  "input": {
+    "url": "https://www.tally.xyz/gov/ens/proposal/107313977323541760723614084561841045035159333942448750767795024713131429640046",
+    "fetched_at": "2026-02-10T17:13:32.080Z",
+    "source_type": "tally"
+  },
+  "extracted": {
+    "title": "[EP 6.32] [Executable] Transfer $2.5M USDC from Endowment to wallet.ensdao.eth ",
+    "body": "# [EP 6.32] [Executable] Transfer $2.5M USDC from Endowment to wallet.ensdao.eth \n# Abstract\n\nFollowing the approval of the [\\[Executable\\] Collective Working Group Funding Request (Oct 2025)](https://www.tally.xyz/gov/ens/proposal/77525093718307720477107269225240955392442633055266271196124066559357053541713), the transactions included in that proposal cannot fully execute due to insufficient USDC in the ENS DAO timelock (`wallet.ensdao.eth`).\n\nThis proposal enables a **one-time internal transfer of 2.5M USDC** from the ENS Endowment to the ENS DAO timelock (`wallet.ensdao.eth`) to ensure execution of already approved governance decisions. It is an operational treasury action designed to maintain execution continuity without requiring ETH sales under current market conditions.\n\n# Motivation\n\nThe Working Group funding proposal was submitted on January 22, 2026, and its execution tests were performed against the block in which it was created (block 24293146). At that time, sufficient USDC was available.\n\nOn January 25, 2026, Superfluid wrapped approximately 616K USDC using the AutoWrap functionality to fund SPP streams. When the proposal became ready for execution, it required 959K USDC, while the timelock held approximately 505K USDC.\n\nAs a result, the approved proposal cannot execute as intended. This creates immediate operational risk, including:\n\n* SPP streams running out of funds and triggering liquidation on Superfluid\n* Labs and service providers being unable to claim approved streams\n* Failure of otherwise valid proposals due to insufficient timelock balance\n* Increased dependence on additional governance cycles for routine treasury operations\n\nHistorically, the DAO has sold ETH to meet USDC-denominated obligations. However, given current market conditions, selling ETH to cover this shortfall is suboptimal. The ENS Endowment holds sufficient USDC reserves to cover near-term obligations. An internal transfer avoids unnecessary market impact and preserves overall treasury flexibility.\n\nThis action enables execution of previously approved governance decisions, maintains operational continuity, and provides the Meta-Governance Working Group time to develop improved processes to prevent similar situations in the future. No new budget or funding program is created by this proposal.\n\n# Specification\n\n* Transfer **2,500,000 USDC** from the **ENS Endowment Safe** to **wallet.ensdao.eth (Timelock)**.\n\n**Addresses**\n\n* wallet.ensdao.eth (Timelock): `0xFe89cc7aBB2C4183683ab71653C4cdc9B02D44b7`\n* ENS Endowment Safe: `0x4F2083f5fBede34C2714aFfb3105539775f7FE64`\n\n***\n\nAcknowledgements: thanks to coltron.eth and the kpk team for the readiness and support to solve this together.",
+    "options": [
+      "FOR",
+      "AGAINST",
+      "ABSTAIN"
+    ],
+    "current_results": {
+      "voteStats": [
+        {
+          "type": "for",
+          "votesCount": "1083763236106431408885116",
+          "votersCount": 125,
+          "percent": 99.99999551871836
+        },
+        {
+          "type": "against",
+          "votesCount": "48566484984443895",
+          "votersCount": 1,
+          "percent": 0.000004481281629604331
+        },
+        {
+          "type": "abstain",
+          "votesCount": "0",
+          "votersCount": 1,
+          "percent": 0
+        },
+        {
+          "type": "pendingfor",
+          "votesCount": "0",
+          "votersCount": 0,
+          "percent": 0
+        },
+        {
+          "type": "pendingagainst",
+          "votesCount": "0",
+          "votersCount": 0,
+          "percent": 0
+        },
+        {
+          "type": "pendingabstain",
+          "votesCount": "0",
+          "votersCount": 0,
+          "percent": 0
+        }
+      ]
+    },
+    "metadata": {
+      "governor_id": "eip155:1:0x323A76393544d5ecca80cd6ef2A560C6a395b7E3",
+      "governor_slug": "uni",
+      "governor_name": "uni",
+      "chain_id": "eip155:1",
+      "organization_slug": "ens",
+      "organization_name": "ENS",
+      "proposal_id": "2787172295146210684",
+      "onchain_id": "107313977323541760723614084561841045035159333942448750767795024713131429640046",
+      "status": "active",
+      "quorum": "1000000000000000000000000",
+      "discourse_url": "https://discuss.ens.domains/t/ep-6-32-executable-transfer-2-5m-usdc-from-endowment-to-wallet-ensdao-eth/21882",
+      "snapshot_url": "",
+      "tx_hash": "0x3bbb8697623a1bca9108644c47d66b16fc929c9bb09ffce52941e2cfc4809a96",
+      "ipfs_hash": null,
+      "executable_calls_count": 1
+    }
+  },
+  "analysis": {
+    "summary": "Proposal to transfer 2.5M USDC from the ENS Endowment to the ENS DAO timelock to enable execution of an already approved funding proposal that cannot execute due to a USDC shortfall.",
+    "key_changes": [
+      "Transfer 2,500,000 USDC from ENS Endowment Safe (0x4F2083f5fBede34C2714aFfb3105539775f7FE64) to ENS DAO timelock (0xFe89cc7aBB2C4183683ab71653C4cdc9B02D44b7)"
+    ],
+    "risks": [
+      "Centralizes treasury operations by relying on internal transfers to fix shortfalls"
+    ],
+    "benefits": [
+      "Enables execution of already approved governance decisions",
+      "Precludes need to sell ETH under suboptimal market conditions",
+      "Avoids immediate risks: SPP stream liquidation and provider payment failures",
+      "Provides time for Meta-Governance Working Group to improve processes"
+    ],
+    "unknowns": [
+      "Long-term plan to prevent recurrence of timelock liquidity shortfalls",
+      "Impact on ENS Endowment's ability to meet future obligations"
+    ],
+    "evidence_quotes": [
+      "the transactions included in that proposal cannot fully execute due to insufficient USDC in the ENS DAO timelock",
+      "Transfer **2,500,000 USDC** from the **ENS Endowment Safe** to **wallet.ensdao.eth (Timelock)**",
+      "selling ETH to cover this shortfall is suboptimal",
+      "SPP streams running out of funds and triggering liquidation on Superfluid"
+    ]
+  },
+  "recommendation": {
+    "suggested_option": "FOR",
+    "confidence": "medium",
+    "reasoning": "The proposal presents a concrete, one-time internal transfer to solve an immediate operational shortfall without creating new spending or modifying permissions. It directly addresses risks of service disruption and avoids market impact from ETH sales, aligning with treasury risk sensitivity. While the root cause of the shortfall remains unresolved (reflected in unknowns), the benefits of maintaining operational continuity and protecting funded streams outweigh the centralization concern for this emergency action.",
+    "conflicts_with_user_principles": []
+  },
+  "limitations": [
+    "This is not legal or financial advice.",
+    "The tool may have failed to extract all proposal parameters.",
+    "Critical parameters must be checked manually."
+  ],
+  "__ambient": {
+    "verified": true,
+    "merkle_root": "4b5149bd6bb933d4eb9010fef36b846feedf3ba5c1f44a7816c06faad8863e85",
+    "request_id": "9bd0542a22be453f9da22a38319f5aac",
+    "model": "zai-org/GLM-4.6",
+    "verified_by_validators": "Verified by 3 validators",
+    "auction": {
+      "status": "Done",
+      "bids": {
+        "placed": 14,
+        "revealed": 14
+      },
+      "address": "https://explorer.ambient.xyz/address/qHsBYGBkK3iK5XLCmuS9o7ko13cu442PasCrtCf5tPr"
+    },
+    "bidder": "https://explorer.ambient.xyz/address/98WKDq5HzneuZycJiCSM5ajuKzscQMop2GsRdxK95q2m"
+  }
+}

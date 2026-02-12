@@ -1,5 +1,6 @@
 .env
 reports/*.json
+!reports/examples/
 prod-reports/*.json
 bench-results/*
 !bench-results/examples/

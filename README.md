@@ -239,13 +239,13 @@ This repository includes example output reports for testing and demonstration pu
 
 You can find them in the `reports/examples/` folder:
 
-- [report-snapshot-0xc115a21b8762ede9a4af7421cb66e23fc73982b686706e8c5d858c0b21c53470.json](reports/examples/report-snapshot-0xc115a21b8762ede9a4af7421cb66e23fc73982b686706e8c5d858c0b21c53470.json)  
+- [report-snapshot-0xe5435766bae1f44d1ce354cea93acf4f38216f4e7ca071ccbb0ad0e856b34363.json](reports/examples/report-snapshot-0xe5435766bae1f44d1ce354cea93acf4f38216f4e7ca071ccbb0ad0e856b34363.json)  
   Example report generated from a Snapshot proposal.
 
 - [report-tally-ens-107313977323541760723614084561841045035159333942448750767795024713131429640046.json](reports/examples/report-tally-ens-107313977323541760723614084561841045035159333942448750767795024713131429640046.json)  
   Example report generated from a Tally proposal (Uniswap governance).
 
-- [report-2026-02-12T19-56-56-834Z.json](reports/examples/report-2026-02-12T19-56-56-834Z.json)  
+- [report-2026-02-13T17-15-44-959Z.json](reports/examples/report-2026-02-13T17-15-44-959Z.json)  
   Example report generated from a DAO DAO proposal (via Next.js fallback extraction).
 
 These files allow reviewers to inspect the tool output format and behavior without running the code.
@@ -355,20 +355,73 @@ These files demonstrate the output format and contain one real comparison run be
 * If usage is missing, cost is reported as `null`.
 * This benchmark is meant as a **practical reality check**, not as a rigorous scientific performance evaluation.
 
-## Week 5 - Verification boundaries (Micro-Challenge #5)
+## Week 5 – Verification boundaries (Micro-Challenge #5)
 
-This project includes a Week 5 addition: the report is split into verifiable and non-verifiable layers.
+This project includes a Week 5 addition: the report is programmatically split into verifiable and non-verifiable layers after the LLM response is received.
 
-Each report includes a `verification_boundary` block with:
+Each report now includes a top-level `verification_boundary` block with:
 
-* `deterministic` - statements that can be checked by matching extracted fields and evidence quotes, or by hard literals like numbers and addresses
-* `interpretive` - summaries, risks, benefits, and recommendation reasoning
-* `uncertainty_flags` - missing data signals and explicit uncertainty markers
+### Structure
 
-Important: `__ambient.verified = true` verifies the inference process and its commitment, but it does not make interpretive 
-conclusions "true". This boundary labeling exists to make that limitation explicit.
+- `deterministic`
+  Statements that can be mechanically checked against:
 
-An example Week 5 report with verification boundary labeling is available in the `reports/examples/` folder (see the most recent timestamped report file).
+  - extracted proposal fields
+  - evidence quotes
+  - explicit numeric or address literals
+  - explicit voting option matches
+
+- `interpretive`
+  Statements that rely on reasoning, summarization, risk evaluation, or recommendation logic.
+
+- `uncertainty_flags`
+  Derived automatically from:
+
+  - missing extracted fields
+  - low confidence recommendations
+  - explicit uncertainty markers in the analysis
+
+### Important clarification
+
+`__ambient.verified = true` confirms inference integrity and commitment (provider-side verification),
+but it does **not** make interpretive conclusions true.
+
+The `verification_boundary` block exists to make this distinction explicit inside the report itself.
+
+### Deterministic labeling improvements
+
+The deterministic classification logic was refined to:
+
+- Only mark `contains_numbers_or_addresses` if actual numeric literals are present.
+- Only mark `mentions_extracted_options` if the suggested option appears with proper word boundaries.
+- Avoid false matches for short tokens like "yes" inside unrelated words.
+- Avoid incorrectly attaching evidence-match reasons to recommendation fields when no real textual match exists.
+
+This ensures deterministic labels reflect actual mechanical verifiability, not heuristic artifacts.
+
+### Example reports (Week 5 structure)
+
+Updated example reports are available in:
+
+```
+reports/examples/
+```
+
+- `report-2026-02-13T17-15-44-959Z.json`
+  DAO DAO proposal (open proposal example with verification boundary)
+
+- `report-snapshot-0xe5435766bae1f44d1ce354cea93acf4f38216f4e7ca071ccbb0ad0e856b34363.json`
+  Snapshot proposal example
+
+- `report-tally-ens-107313977323541760723614084561841045035159333942448750767795024713131429640046.json`
+  Tally proposal example
+
+These files demonstrate:
+
+- `__ambient` verification metadata
+- explicit separation of deterministic vs interpretive layers
+- uncertainty handling
+- structured DAO recommendation logic
 
 ## Streaming and verification details
 

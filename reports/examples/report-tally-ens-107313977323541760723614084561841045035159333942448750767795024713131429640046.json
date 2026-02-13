@@ -2,7 +2,7 @@
   "version": 1,
   "input": {
     "url": "https://www.tally.xyz/gov/ens/proposal/107313977323541760723614084561841045035159333942448750767795024713131429640046",
-    "fetched_at": "2026-02-10T17:13:32.080Z",
+    "fetched_at": "2026-02-13T17:10:02.021Z",
     "source_type": "tally"
   },
   "extracted": {
@@ -17,21 +17,21 @@
       "voteStats": [
         {
           "type": "for",
-          "votesCount": "1083763236106431408885116",
-          "votersCount": 125,
-          "percent": 99.99999551871836
+          "votesCount": "1553701310446693728239663",
+          "votersCount": 196,
+          "percent": 99.99999608248496
         },
         {
           "type": "against",
           "votesCount": "48566484984443895",
           "votersCount": 1,
-          "percent": 0.000004481281629604331
+          "percent": 0.0000031258571229422167
         },
         {
           "type": "abstain",
-          "votesCount": "0",
-          "votersCount": 1,
-          "percent": 0
+          "votesCount": "12300000000000000",
+          "votersCount": 2,
+          "percent": 7.916579226292448e-7
         },
         {
           "type": "pendingfor",
@@ -72,34 +72,41 @@
     }
   },
   "analysis": {
-    "summary": "Proposal to transfer 2.5M USDC from the ENS Endowment to the ENS DAO timelock to enable execution of an already approved funding proposal that cannot execute due to a USDC shortfall.",
+    "summary": "This proposal requests a one-time transfer of 2.5M USDC from the ENS Endowment Safe to the ENS DAO timelock to address a liquidity shortfall that prevents execution of an approved Working Group funding proposal.",
     "key_changes": [
-      "Transfer 2,500,000 USDC from ENS Endowment Safe (0x4F2083f5fBede34C2714aFfb3105539775f7FE64) to ENS DAO timelock (0xFe89cc7aBB2C4183683ab71653C4cdc9B02D44b7)"
+      "Transfer 2,500,000 USDC from ENS Endowment Safe (0x4F2083f5fBede34C2714aFfb3105539775f7FE64) to wallet.ensdao.eth Timelock (0xFe89cc7aBB2C4183683ab71653C4cdc9B02D44b7)"
     ],
     "risks": [
-      "Centralizes treasury operations by relying on internal transfers to fix shortfalls"
+      "Large internal transfer of 2.5M USDC increases the amount held in the timelock, which could become a larger target if the timelock is compromised.",
+      "Avoids ETH sales which may impact the ETH/USDC ratio of the treasury, potentially affecting future funding flexibility.",
+      "Does not address the root cause of the liquidity shortfall in the timelock, relying instead on an emergency transfer."
     ],
     "benefits": [
-      "Enables execution of already approved governance decisions",
-      "Precludes need to sell ETH under suboptimal market conditions",
-      "Avoids immediate risks: SPP stream liquidation and provider payment failures",
-      "Provides time for Meta-Governance Working Group to improve processes"
+      "Enables execution of already approved governance decisions to prevent immediate operational risk.",
+      "Prevents SPP streams from running out of funds and triggering liquidation on Superfluid.",
+      "Allows labs and service providers to claim approved streams without delay.",
+      "Avoids market impact and potential suboptimal ETH sales under current market conditions.",
+      "Maintains operational continuity without creating a new budget or funding program."
     ],
     "unknowns": [
-      "Long-term plan to prevent recurrence of timelock liquidity shortfalls",
-      "Impact on ENS Endowment's ability to meet future obligations"
+      "Specific details about why the timelock balance fell unexpectedly are only partially explained.",
+      "Whether similar liquidity shortfalls might recur without structural changes.",
+      "Confirmation that 2.5M USDC is sufficient for near-term timelock obligations.",
+      "Details of the Meta-Governance Working Group's planned process improvements are not included."
     ],
     "evidence_quotes": [
-      "the transactions included in that proposal cannot fully execute due to insufficient USDC in the ENS DAO timelock",
-      "Transfer **2,500,000 USDC** from the **ENS Endowment Safe** to **wallet.ensdao.eth (Timelock)**",
-      "selling ETH to cover this shortfall is suboptimal",
-      "SPP streams running out of funds and triggering liquidation on Superfluid"
+      "This proposal enables a **one-time internal transfer of 2.5M USDC** from the ENS Endowment to the ENS DAO timelock (`wallet.ensdao.eth`) to ensure execution of already approved governance decisions.",
+      "When the proposal became ready for execution, it required 959K USDC, while the timelock held approximately 505K USDC.",
+      "SPP streams running out of funds and triggering liquidation on Superfluid.",
+      "Labs and service providers being unable to claim approved streams.",
+      "Historically, the DAO has sold ETH to meet USDC-denominated obligations. However, given current market conditions, selling ETH to cover this shortfall is suboptimal.",
+      "No new budget or funding program is created by this proposal."
     ]
   },
   "recommendation": {
     "suggested_option": "FOR",
-    "confidence": "medium",
-    "reasoning": "The proposal presents a concrete, one-time internal transfer to solve an immediate operational shortfall without creating new spending or modifying permissions. It directly addresses risks of service disruption and avoids market impact from ETH sales, aligning with treasury risk sensitivity. While the root cause of the shortfall remains unresolved (reflected in unknowns), the benefits of maintaining operational continuity and protecting funded streams outweigh the centralization concern for this emergency action.",
+    "confidence": "high",
+    "reasoning": "The proposal addresses an immediate treasury operational shortfall that prevents execution of an already approved decision. It is a one-time internal transfer that avoids market impact and maintains existing commitments without creating new obligations. While there is an inherent concentration risk moving funds to the timelock, the alternative of failing to execute prior approvals poses greater immediate risk to operations. The transferred amount is specified, addresses a concrete shortfall, and aligns with treasury risk sensitivity by avoiding unfavorable ETH sales.",
     "conflicts_with_user_principles": []
   },
   "limitations": [
@@ -109,8 +116,8 @@
   ],
   "__ambient": {
     "verified": true,
-    "merkle_root": "4b5149bd6bb933d4eb9010fef36b846feedf3ba5c1f44a7816c06faad8863e85",
-    "request_id": "9bd0542a22be453f9da22a38319f5aac",
+    "merkle_root": "47227464a5531b36ffe15aa1f27ca8ae873f51a9ef2b458dd05080672060f38d",
+    "request_id": "0206333c93a945e79f19c16db428b50b",
     "model": "zai-org/GLM-4.6",
     "verified_by_validators": "Verified by 3 validators",
     "auction": {
@@ -119,8 +126,146 @@
         "placed": 14,
         "revealed": 14
       },
-      "address": "https://explorer.ambient.xyz/address/qHsBYGBkK3iK5XLCmuS9o7ko13cu442PasCrtCf5tPr"
+      "address": "https://explorer.ambient.xyz/address/GN3tBFZPmfH7rrAzkCKqNDKNjTjVFphZMqR1LbjGf43y"
     },
     "bidder": "https://explorer.ambient.xyz/address/98WKDq5HzneuZycJiCSM5ajuKzscQMop2GsRdxK95q2m"
+  },
+  "verification_boundary": {
+    "deterministic": [
+      {
+        "path": "analysis.evidence_quotes[0]",
+        "text": "This proposal enables a **one-time internal transfer of 2.5M USDC** from the ENS Endowment to the ENS DAO timelock (`wallet.ensdao.eth`) to ensure execution of already approved governance decisions.",
+        "reason": "deterministic:verbatim_quote"
+      },
+      {
+        "path": "analysis.evidence_quotes[1]",
+        "text": "When the proposal became ready for execution, it required 959K USDC, while the timelock held approximately 505K USDC.",
+        "reason": "deterministic:verbatim_quote"
+      },
+      {
+        "path": "analysis.evidence_quotes[2]",
+        "text": "SPP streams running out of funds and triggering liquidation on Superfluid.",
+        "reason": "deterministic:verbatim_quote"
+      },
+      {
+        "path": "analysis.evidence_quotes[3]",
+        "text": "Labs and service providers being unable to claim approved streams.",
+        "reason": "deterministic:verbatim_quote"
+      },
+      {
+        "path": "analysis.evidence_quotes[4]",
+        "text": "Historically, the DAO has sold ETH to meet USDC-denominated obligations. However, given current market conditions, selling ETH to cover this shortfall is suboptimal.",
+        "reason": "deterministic:verbatim_quote"
+      },
+      {
+        "path": "analysis.evidence_quotes[5]",
+        "text": "No new budget or funding program is created by this proposal.",
+        "reason": "deterministic:verbatim_quote"
+      },
+      {
+        "path": "analysis.summary",
+        "text": "This proposal requests a one-time transfer of 2.5M USDC from the ENS Endowment Safe to the ENS DAO timelock to address a liquidity shortfall that prevents execution of an approved Working Group funding proposal.",
+        "reason": "deterministic:contains_numbers_or_addresses,contains_ticker"
+      },
+      {
+        "path": "analysis.key_changes[0]",
+        "text": "Transfer 2,500,000 USDC from ENS Endowment Safe (0x4F2083f5fBede34C2714aFfb3105539775f7FE64) to wallet.ensdao.eth Timelock (0xFe89cc7aBB2C4183683ab71653C4cdc9B02D44b7)",
+        "reason": "deterministic:contains_numbers_or_addresses,contains_ticker"
+      },
+      {
+        "path": "recommendation.suggested_option",
+        "text": "FOR",
+        "reason": "deterministic:mentions_extracted_options"
+      }
+    ],
+    "interpretive": [
+      {
+        "path": "analysis.risks[0]",
+        "text": "Large internal transfer of 2.5M USDC increases the amount held in the timelock, which could become a larger target if the timelock is compromised.",
+        "reason": "interpretive"
+      },
+      {
+        "path": "analysis.risks[1]",
+        "text": "Avoids ETH sales which may impact the ETH/USDC ratio of the treasury, potentially affecting future funding flexibility.",
+        "reason": "interpretive"
+      },
+      {
+        "path": "analysis.risks[2]",
+        "text": "Does not address the root cause of the liquidity shortfall in the timelock, relying instead on an emergency transfer.",
+        "reason": "interpretive"
+      },
+      {
+        "path": "analysis.benefits[0]",
+        "text": "Enables execution of already approved governance decisions to prevent immediate operational risk.",
+        "reason": "interpretive"
+      },
+      {
+        "path": "analysis.benefits[1]",
+        "text": "Prevents SPP streams from running out of funds and triggering liquidation on Superfluid.",
+        "reason": "interpretive"
+      },
+      {
+        "path": "analysis.benefits[2]",
+        "text": "Allows labs and service providers to claim approved streams without delay.",
+        "reason": "interpretive"
+      },
+      {
+        "path": "analysis.benefits[3]",
+        "text": "Avoids market impact and potential suboptimal ETH sales under current market conditions.",
+        "reason": "interpretive"
+      },
+      {
+        "path": "analysis.benefits[4]",
+        "text": "Maintains operational continuity without creating a new budget or funding program.",
+        "reason": "interpretive"
+      },
+      {
+        "path": "analysis.unknowns[0]",
+        "text": "Specific details about why the timelock balance fell unexpectedly are only partially explained.",
+        "reason": "uncertainty"
+      },
+      {
+        "path": "analysis.unknowns[1]",
+        "text": "Whether similar liquidity shortfalls might recur without structural changes.",
+        "reason": "uncertainty"
+      },
+      {
+        "path": "analysis.unknowns[2]",
+        "text": "Confirmation that 2.5M USDC is sufficient for near-term timelock obligations.",
+        "reason": "uncertainty"
+      },
+      {
+        "path": "analysis.unknowns[3]",
+        "text": "Details of the Meta-Governance Working Group's planned process improvements are not included.",
+        "reason": "uncertainty"
+      },
+      {
+        "path": "recommendation.reasoning",
+        "text": "The proposal addresses an immediate treasury operational shortfall that prevents execution of an already approved decision. It is a one-time internal transfer that avoids market impact and maintains existing commitments without creating new obligations. While there is an inherent concentration risk moving funds to the timelock, the alternative of failing to execute prior approvals poses greater immediate risk to operations. The transferred amount is specified, addresses a concrete shortfall, and aligns with treasury risk sensitivity by avoiding unfavorable ETH sales.",
+        "reason": "interpretive"
+      }
+    ],
+    "uncertainty_flags": [
+      "unknowns:Specific details about why the timelock balance ...",
+      "unknowns:Whether similar liquidity shortfalls might recur...",
+      "unknowns:Confirmation that 2.5M USDC is sufficient for ne...",
+      "unknowns:Details of the Meta-Governance Working Group's p..."
+    ],
+    "method": {
+      "kind": "heuristic",
+      "version": 2,
+      "notes": [
+        "Deterministic layer is based on direct matching to extracted fields and evidence_quotes, plus presence of hard literals (numbers, addresses, option strings).",
+        "Interpretive layer includes summary, risks, benefits, and recommendation reasoning.",
+        "This is a boundary labeling aid, not a proof of truth."
+      ]
+    }
+  },
+  "decision_layer": {
+    "action": "REQUIRE_REVIEW",
+    "reason": "Uncertainty flags present.",
+    "rules_triggered": [
+      "uncertainty_detected"
+    ]
   }
 }

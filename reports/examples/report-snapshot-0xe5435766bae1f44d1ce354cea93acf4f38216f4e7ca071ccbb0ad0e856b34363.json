@@ -1,0 +1,299 @@
+{
+  "version": 1,
+  "input": {
+    "url": "https://snapshot.org/#/s:aavedao.eth/proposal/0xe5435766bae1f44d1ce354cea93acf4f38216f4e7ca071ccbb0ad0e856b34363",
+    "fetched_at": "2026-02-13T17:13:20.191Z",
+    "source_type": "snapshot"
+  },
+  "extracted": {
+    "title": "[TEMP CHECK] Aave Service Provider & Orbit Delegate Revenue Alignment Framework",
+    "body": "## **[TEMP CHECK]** Aave Service Provider & Orbit Delegate Revenue Alignment Framework\n\n**Authors:** ApuMallku & Phenk53\n\n**Date:** 2026-02-04\n\n### **Simple Summary**\n\nThis proposal seeks to establish the “**Aave Revenue Alignment & Governance Integrity Framework**”. It codifies the fiduciary duties of all entities receiving financial compensation or governance incentives from the Aave DAO.\n\nThe Framework mandates that actively engaged **Service Providers (SPs) and Orbit Delegates** are prohibited from operating proprietary, revenue-generating ventures — like web front-ends, mobile applications, and infrastructure tools — built on Aave while receiving DAO funding, unless a formal revenue-sharing agreement is ratified and approved by the DAO, as its seen as fair for tokenholder.\n\nThis proposal is inspired by [Arbitrums watchdog for grants misuse](https://forum.arbitrum.foundation/t/the-watchdog-arbitrum-daos-grant-misuse-bounty-program/27978) and the general idea is, **if you work for the DAO, you work for its revenue**. If you want to start your own ventures, you have to leave the DAO or share with it.\n\n### **Motivation**\n\nCurrently, the Aave DAO subsidizes the operational overhead of various entities to maintain and expand the protocol. However, a systemic misalignment has emerged:\n\n**1. Revenue Leakage:** SPs leverage DAO-funded research, infrastructure, and non-public information to launch private, fee-collecting products that bypass the DAOs treasury.\n\n**2. Brand Dilution**: The “Aave” identity is being utilized by private entities to provide a veneer of officiality to ventures that do not return value to the DAOs treasury.\n\n**3. Governance Capture:** Orbit Delegates, who hold significant political power, may face conflicts of interest when voting on parameters that affect their private commercial ventures.\n\nTo protect the $AAVE tokenholders and ensure the long-term sustainability of the DAO, all value generated through the protocol’s infrastructure must be centralized within the DAO’s treasury.\n\n### **Specification**\n\nAny product (Web, Mobile, or Infrastructure) developed or operated by an active SP or Orbit Delegate that interfaces with the Aave Protocol is classified as a “Derivative Venture.”\n\n**Default Prohibition:**\nPrivate monetization of Derivative Ventures is prohibited while the entity is actively engaged with the DAO and receives compensation.\n\n**The 70/30 Revenue Rule:**\nTo authorize a monetized venture, the entity must commit to a revenue-share model where a minimum of 70% of gross revenue is streamed to the Aave DAOs treasury. Additionally, it has to be approved by the DAO in a separate proposal.\n\n**Aave Governance Integrity Council (AGIC):** \nTo ensure this framework is not merely “social consensus”, the DAO will elect the **AGIC**, a member oversight committee.\n\n**Powers:**\nThe AGIC is authorized to audit SP activity, maintain a “Disclosure Registry,” and investigate “shadow” applications or hidden fees.\n\n**Enforcement**:\nThe AGIC holds the power to initiate an emergency vote to terminate the payment streams of any entity found in violation of this framework.\n\n**Composition:**\nIt should consist of 1 person of each actively engaged SP and an Orbit delegate.\n\n**Selection Process:** \nThe members of the AGIC will be selected through a separate and dedicated governance proposal. Team members of each SP and orbit delegates can run for election. The DAO will vote on who they want to have in the AGIC via Snapshot.\n\n**Incentives:**\nDrawing inspiration from Arbitrums watchdog, AGIC members are entitled to a compensation/bounty for successful investigations and findings that lead to the protection of the DAOs treasury.\n\nTo give the DAO an example we can take the recent findings from Orbit delegate @EzR3aL from his post in December about the [cowswap integration](https://governance.aave.com/t/aave-cowswap-integration-tokenholder questions/23530) by Aave Labs.\nThis finding and the current [revenue amount of roughly 5m$](https://aave.tokenlogic.xyz/swap-adapters) would lead to a bounty for him.\nThe exact amount can be defined together with the DAO, but we propose a bounty of 5-10%.\n\n### **Rationale:**\n\n**Fiduciary Duty**:\nSPs are working towards the DAO and its tokenholders. In no other industry is a contractor allowed to build a competing private business using their “employer’s” tools and brand to generate revenue for themselves.\n\n**Token Value:**\nBy recapturing “lost” revenue from these privatized ventures, the DAO increases the fundamental value backing the $AAVE ecosystem and giving back confidence to $AAVE tokenholder.\n\n**Ecosystem Scalability**:\nThe DAO must transition toward a model where intellectual property (IP) and branding are fully controlled by the DAO itself, rather than centralized entities. The current status quo, where off-chain assets remain siloed, creates a “glass ceiling” for innovation. A clear example is the recent abandonment of “Project E” by BGD Labs, where legal and branding complexities hindered a high-potential initiative. For AAVE to truly expand, it must empower third-party projects to build on top of the protocol without fear of “gatekeeping” or legal ambiguity, ensuring the DAO is an enabler of growth, not a bottleneck.\n\n**Innovation**:\nThis proposal does not intend to stop innovation. It’s about securing these innovations within the DAOs treasury and even wants to push for it. If any SP or orbit delegate has a great product idea that increases the DAOs revenue, this entity should propose it to the DAO and receive a fair compensation for it.\n*One example is GHO, which has been created for free for the DAO and Aave Labs should have received a fair compensation for it.*\n\n## **Next Steps**\n\n1. Gather feedback from the community.\n\n2. If consensus is reached on this TEMP CHECK, escalate this proposal to the Snapshot stage.\n\n3. If Snapshot outcome is YAE, prepare different proposals to vote on AGIC and decide other parameters.\n\n## **Disclaimer**\n\nThe authors of this proposal are not acting on behalf of any third party and are not and have never been compensated for creating this TEMP CHECK proposal.\n\nApuMallku has been a DAO member for nearly 3 years and is holding either AAVE, aAAVE or stkAAVE as well as GHO or sGHO token.\n\nPhenk53 has been an Aave delegate for almost a year and is holding either AAVE, aAAVE or stkAAVE as well as GHO or sGHO token.\n\n## **Copyright**\n\nCopyright and related rights waived under [Creative Commons Zero (CC0)](https://creativecommons.org/publicdomain/zero/1.0/).",
+    "options": [
+      "YAE",
+      "NAY",
+      "Abstain"
+    ],
+    "current_results": {
+      "scores": [
+        0.12000000000000002,
+        0,
+        0
+      ],
+      "scores_total": 0.12000000000000002,
+      "scores_updated": 1771000202,
+      "state": "active"
+    },
+    "metadata": {
+      "proposal_id": "0xe5435766bae1f44d1ce354cea93acf4f38216f4e7ca071ccbb0ad0e856b34363",
+      "space_id": "aavedao.eth",
+      "space_name": "Aave DAO",
+      "author": "0xF1dF824419879Bb8a7E758173523F88EfB7Af193",
+      "start": 1770993353,
+      "end": 1771252553,
+      "state": "active",
+      "type": "basic",
+      "quorum": 0
+    }
+  },
+  "analysis": {
+    "summary": "This TEMP CHECK proposes a framework to prohibit DAO-funded Service Providers (SPs) and Orbit Delegates from monetizing derivative ventures built on Aave without a DAO-approved revenue-sharing agreement (minimum 70% to DAO). It introduces an oversight council (AGIC) to audit and enforce compliance, with the power to terminate payment streams of violators.",
+    "key_changes": [
+      "Prohibits private monetization of derivative ventures by active SPs and Orbit Delegates without DAO approval.",
+      "Establishes a minimum 70% gross revenue share rule approved via DAO vote for any monetized derivative venture.",
+      "Creates the Aave Governance Integrity Council (AGIC) to audit SP activity and enforce the framework.",
+      "Grants AGIC authority to initiate emergency votes to terminate payments to violating entities.",
+      "Requires a separate DAO proposal to define AGIC composition, selection process, and bounty incentives.",
+      "Mandates a 'Disclosure Registry' for derivative ventures maintained by AGIC."
+    ],
+    "risks": [
+      "Creates a new oversight committee (AGIC) with significant enforcement powers, including the ability to terminate payment streams via emergency vote, which introduces centralization risk.",
+      "May discourage innovation or participation from SPs if the revenue-sharing terms are perceived as too restrictive or punitive.",
+      "Enforcement mechanisms rely on DAO votes and AGIC investigations, which could lead to protracted disputes or governance battles.",
+      "Defines 'Derivative Ventures' broadly (Web, Mobile, Infrastructure), potentially capturing unintended activities or discouraging beneficial tooling.",
+      "Initial proposer bounty of 5-10% of recovered revenue could incentivize aggressive investigations that strain relationships with key contributors."
+    ],
+    "benefits": [
+      "Requires a minimum 70% of gross revenue from monetized derivative ventures to be streamed to the Aave DAO treasury.",
+      "Empowers an elected council (AGIC) to audit SP activity and investigate undocumented revenue streams.",
+      "Provides a formal mechanism (emergency vote) to terminate payments to entities violating the revenue-sharing rules.",
+      "Creates a 'Disclosure Registry' to improve transparency around derivative ventures interfacing with Aave.",
+      "Proposes a bounty incentive for AGIC members (e.g., 5-10% of protected revenue) to encourage enforcement."
+    ],
+    "unknowns": [
+      "The exact composition size of the AGIC beyond '1 person of each actively engaged SP and an Orbit delegate'.",
+      "Specific AGIC member selection and election process details beyond being decided in a separate proposal.",
+      "Clear criteria for what constitutes 'active engagement' and how compliance will be objectively verified.",
+      "Definition of 'shadow applications or hidden fees' and the methodology for AGIC investigations.",
+      "Potential legal ramifications of enforcing revenue-sharing agreements on private entities.",
+      "How the framework applies retroactively to existing derivative ventures created by SPs or delegates.",
+      "Impact on existing contracts and service provider agreements.",
+      "Process for resolving disputes or false accusations by the AGIC."
+    ],
+    "evidence_quotes": [
+      "The Framework mandates that actively engaged Service Providers (SPs) and Orbit Delegates are prohibited from operating proprietary, revenue-generating ventures — like web front-ends, mobile applications, and infrastructure tools — built on Aave while receiving DAO funding, unless a formal revenue-sharing agreement is ratified and approved by the DAO",
+      "The 70/30 Revenue Rule: To authorize a monetized venture, the entity must commit to a revenue-share model where a minimum of 70% of gross revenue is streamed to the Aave DAOs treasury.",
+      "AGIC is authorized to audit SP activity, maintain a 'Disclosure Registry,' and investigate 'shadow' applications or hidden fees.",
+      "The AGIC holds the power to initiate an emergency vote to terminate the payment streams of any entity found in violation.",
+      "AGIC members are entitled to a compensation/bounty for successful investigations and findings that lead to the protection of the DAOs treasury."
+    ]
+  },
+  "recommendation": {
+    "suggested_option": "YAE",
+    "confidence": "medium",
+    "reasoning": "The proposal directly addresses treasury revenue leakage and conflicts of interest, which aligns with the user's high treasury risk sensitivity and preference for avoiding admin key changes by introducing a DAO-elected oversight council rather than granting new admin privileges. The 70/30 revenue rule and AGIC enforcement mechanism provide concrete paths to recapture value for tokenholders, though uncertainties around execution and potential innovation chilling effects slightly reduce confidence.",
+    "conflicts_with_user_principles": []
+  },
+  "limitations": [
+    "This is not legal or financial advice.",
+    "The tool may have failed to extract all proposal parameters.",
+    "Critical parameters must be checked manually."
+  ],
+  "__ambient": {
+    "verified": true,
+    "merkle_root": "8cf1fc93e379701d87c813e8aea8ef5c6d17a130f7e781f528145867dfa37526",
+    "request_id": "54a5f47fff6d477cab36d6c87d3e1793",
+    "model": "zai-org/GLM-4.6",
+    "verified_by_validators": "Verified by 3 validators",
+    "auction": {
+      "status": "Done",
+      "bids": {
+        "placed": 14,
+        "revealed": 14
+      },
+      "address": "https://explorer.ambient.xyz/address/J1aX1BSQE4dnSFBg2onhgNT6NVoqjofzejA7f6FEFgsn"
+    },
+    "bidder": "https://explorer.ambient.xyz/address/98WKDq5HzneuZycJiCSM5ajuKzscQMop2GsRdxK95q2m"
+  },
+  "verification_boundary": {
+    "deterministic": [
+      {
+        "path": "analysis.evidence_quotes[0]",
+        "text": "The Framework mandates that actively engaged Service Providers (SPs) and Orbit Delegates are prohibited from operating proprietary, revenue-generating ventures — like web front-ends, mobile applications, and infrastructure tools — built on Aave while receiving DAO funding, unless a formal revenue-sharing agreement is ratified and approved by the DAO",
+        "reason": "deterministic:verbatim_quote"
+      },
+      {
+        "path": "analysis.evidence_quotes[1]",
+        "text": "The 70/30 Revenue Rule: To authorize a monetized venture, the entity must commit to a revenue-share model where a minimum of 70% of gross revenue is streamed to the Aave DAOs treasury.",
+        "reason": "deterministic:verbatim_quote"
+      },
+      {
+        "path": "analysis.evidence_quotes[2]",
+        "text": "AGIC is authorized to audit SP activity, maintain a 'Disclosure Registry,' and investigate 'shadow' applications or hidden fees.",
+        "reason": "deterministic:verbatim_quote"
+      },
+      {
+        "path": "analysis.evidence_quotes[3]",
+        "text": "The AGIC holds the power to initiate an emergency vote to terminate the payment streams of any entity found in violation.",
+        "reason": "deterministic:verbatim_quote"
+      },
+      {
+        "path": "analysis.evidence_quotes[4]",
+        "text": "AGIC members are entitled to a compensation/bounty for successful investigations and findings that lead to the protection of the DAOs treasury.",
+        "reason": "deterministic:verbatim_quote"
+      },
+      {
+        "path": "analysis.summary",
+        "text": "This TEMP CHECK proposes a framework to prohibit DAO-funded Service Providers (SPs) and Orbit Delegates from monetizing derivative ventures built on Aave without a DAO-approved revenue-sharing agreement (minimum 70% to DAO). It introduces an oversight council (AGIC) to audit and enforce compliance, with the power to terminate payment streams of violators.",
+        "reason": "deterministic:contains_numbers_or_addresses,contains_ticker"
+      },
+      {
+        "path": "analysis.key_changes[0]",
+        "text": "Prohibits private monetization of derivative ventures by active SPs and Orbit Delegates without DAO approval.",
+        "reason": "deterministic:contains_ticker"
+      },
+      {
+        "path": "analysis.key_changes[1]",
+        "text": "Establishes a minimum 70% gross revenue share rule approved via DAO vote for any monetized derivative venture.",
+        "reason": "deterministic:contains_numbers_or_addresses,contains_ticker"
+      },
+      {
+        "path": "analysis.key_changes[2]",
+        "text": "Creates the Aave Governance Integrity Council (AGIC) to audit SP activity and enforce the framework.",
+        "reason": "deterministic:contains_ticker"
+      },
+      {
+        "path": "analysis.key_changes[3]",
+        "text": "Grants AGIC authority to initiate emergency votes to terminate payments to violating entities.",
+        "reason": "deterministic:contains_ticker"
+      },
+      {
+        "path": "analysis.key_changes[4]",
+        "text": "Requires a separate DAO proposal to define AGIC composition, selection process, and bounty incentives.",
+        "reason": "deterministic:contains_ticker"
+      },
+      {
+        "path": "analysis.key_changes[5]",
+        "text": "Mandates a 'Disclosure Registry' for derivative ventures maintained by AGIC.",
+        "reason": "deterministic:contains_ticker"
+      },
+      {
+        "path": "recommendation.suggested_option",
+        "text": "YAE",
+        "reason": "deterministic:mentions_extracted_options"
+      }
+    ],
+    "interpretive": [
+      {
+        "path": "analysis.risks[0]",
+        "text": "Creates a new oversight committee (AGIC) with significant enforcement powers, including the ability to terminate payment streams via emergency vote, which introduces centralization risk.",
+        "reason": "interpretive"
+      },
+      {
+        "path": "analysis.risks[1]",
+        "text": "May discourage innovation or participation from SPs if the revenue-sharing terms are perceived as too restrictive or punitive.",
+        "reason": "interpretive"
+      },
+      {
+        "path": "analysis.risks[2]",
+        "text": "Enforcement mechanisms rely on DAO votes and AGIC investigations, which could lead to protracted disputes or governance battles.",
+        "reason": "interpretive"
+      },
+      {
+        "path": "analysis.risks[3]",
+        "text": "Defines 'Derivative Ventures' broadly (Web, Mobile, Infrastructure), potentially capturing unintended activities or discouraging beneficial tooling.",
+        "reason": "interpretive"
+      },
+      {
+        "path": "analysis.risks[4]",
+        "text": "Initial proposer bounty of 5-10% of recovered revenue could incentivize aggressive investigations that strain relationships with key contributors.",
+        "reason": "interpretive"
+      },
+      {
+        "path": "analysis.benefits[0]",
+        "text": "Requires a minimum 70% of gross revenue from monetized derivative ventures to be streamed to the Aave DAO treasury.",
+        "reason": "interpretive"
+      },
+      {
+        "path": "analysis.benefits[1]",
+        "text": "Empowers an elected council (AGIC) to audit SP activity and investigate undocumented revenue streams.",
+        "reason": "interpretive"
+      },
+      {
+        "path": "analysis.benefits[2]",
+        "text": "Provides a formal mechanism (emergency vote) to terminate payments to entities violating the revenue-sharing rules.",
+        "reason": "interpretive"
+      },
+      {
+        "path": "analysis.benefits[3]",
+        "text": "Creates a 'Disclosure Registry' to improve transparency around derivative ventures interfacing with Aave.",
+        "reason": "interpretive"
+      },
+      {
+        "path": "analysis.benefits[4]",
+        "text": "Proposes a bounty incentive for AGIC members (e.g., 5-10% of protected revenue) to encourage enforcement.",
+        "reason": "interpretive"
+      },
+      {
+        "path": "analysis.unknowns[0]",
+        "text": "The exact composition size of the AGIC beyond '1 person of each actively engaged SP and an Orbit delegate'.",
+        "reason": "uncertainty"
+      },
+      {
+        "path": "analysis.unknowns[1]",
+        "text": "Specific AGIC member selection and election process details beyond being decided in a separate proposal.",
+        "reason": "uncertainty"
+      },
+      {
+        "path": "analysis.unknowns[2]",
+        "text": "Clear criteria for what constitutes 'active engagement' and how compliance will be objectively verified.",
+        "reason": "uncertainty"
+      },
+      {
+        "path": "analysis.unknowns[3]",
+        "text": "Definition of 'shadow applications or hidden fees' and the methodology for AGIC investigations.",
+        "reason": "uncertainty"
+      },
+      {
+        "path": "analysis.unknowns[4]",
+        "text": "Potential legal ramifications of enforcing revenue-sharing agreements on private entities.",
+        "reason": "uncertainty"
+      },
+      {
+        "path": "analysis.unknowns[5]",
+        "text": "How the framework applies retroactively to existing derivative ventures created by SPs or delegates.",
+        "reason": "uncertainty"
+      },
+      {
+        "path": "analysis.unknowns[6]",
+        "text": "Impact on existing contracts and service provider agreements.",
+        "reason": "uncertainty"
+      },
+      {
+        "path": "analysis.unknowns[7]",
+        "text": "Process for resolving disputes or false accusations by the AGIC.",
+        "reason": "uncertainty"
+      },
+      {
+        "path": "recommendation.reasoning",
+        "text": "The proposal directly addresses treasury revenue leakage and conflicts of interest, which aligns with the user's high treasury risk sensitivity and preference for avoiding admin key changes by introducing a DAO-elected oversight council rather than granting new admin privileges. The 70/30 revenue rule and AGIC enforcement mechanism provide concrete paths to recapture value for tokenholders, though uncertainties around execution and potential innovation chilling effects slightly reduce confidence.",
+        "reason": "interpretive"
+      }
+    ],
+    "uncertainty_flags": [
+      "unknowns:The exact composition size of the AGIC beyond '1...",
+      "unknowns:Specific AGIC member selection and election proc...",
+      "unknowns:Clear criteria for what constitutes 'active enga...",
+      "unknowns:Definition of 'shadow applications or hidden fee...",
+      "unknowns:Potential legal ramifications of enforcing reven...",
+      "unknowns:How the framework applies retroactively to exist...",
+      "unknowns:Impact on existing contracts and service provide...",
+      "unknowns:Process for resolving disputes or false accusati..."
+    ],
+    "method": {
+      "kind": "heuristic",
+      "version": 2,
+      "notes": [
+        "Deterministic layer is based on direct matching to extracted fields and evidence_quotes, plus presence of hard literals (numbers, addresses, option strings).",
+        "Interpretive layer includes summary, risks, benefits, and recommendation reasoning.",
+        "This is a boundary labeling aid, not a proof of truth."
+      ]
+    }
+  },
+  "decision_layer": {
+    "action": "REQUIRE_REVIEW",
+    "reason": "Uncertainty flags present.",
+    "rules_triggered": [
+      "uncertainty_detected"
+    ]
+  }
+}

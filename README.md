@@ -1,8 +1,24 @@
-# gov-ai
+﻿# gov-ai
 
 AI assistant for DAO governance proposals.
 
-This project is a demo for **Web3 Developer Loop – Experiment #3 (AI for governance or automation)**.
+## Table of Contents
+
+- [Week 6 - Refusal handling (Web2)](#week-6---refusal-handling-web2)
+- [Moderator checklist (Week 6 Web2)](#moderator-checklist-week-6-web2)
+- [Run analysis (CLI)](#run-analysis-cli)
+- [Output format](#output-format)
+- [Example reports](#example-reports)
+- [API server (production-style)](#api-server-production-style)
+- [Report viewer (pageServer.js)](#report-viewer-pageserverjs)
+- [Benchmark (Web2 Micro-Challenge #4)](#benchmark-web2-micro-challenge-4)
+- [Week 5 - Verification boundaries (Micro-Challenge #5)](#week-5---verification-boundaries-micro-challenge-5)
+- [Important limitations](#important-limitations)
+
+This project started as **Web3 Developer Loop - Experiment #3 (AI for governance or automation)**.
+It now also documents and ships:
+- Week 5 verification boundaries (verifiable vs interpretive layers)
+- Week 6 refusal handling (Web2): deterministic refusal detection plus routing and human review tickets
 
 It takes a proposal URL (Snapshot, Tally, DAO DAO), extracts available data, and produces a structured analysis:
 - summary of the proposal
@@ -17,6 +33,41 @@ The design goal is **honesty and conservatism**:
 - if some data cannot be extracted, it is marked as `UNKNOWN`
 - the tool does not guess voting options or results
 - the output is meant to **assist** human decision-making, not replace it
+
+---
+
+## Week 6 - Refusal handling (Web2)
+
+Refusal is a **system decision**, not just model text.
+
+The detector uses deterministic signals from the produced report and extracted input:
+- `recommendation.suggested_option == "UNKNOWN"`
+- `recommendation.confidence == "low"`
+- missing extracted options (`extracted.options` is empty)
+- `analysis.unknowns` is present (underspecified inputs)
+- `extracted.source_type == "generic"` (incomplete-source signal)
+
+Current conservative trigger rule marks refusal when high-signal conditions are present (`UNKNOWN` option, low confidence, missing options, or unknowns present). The system can still route to review based on incomplete inputs even when model wording sounds confident.
+
+---
+
+## Downstream handling (routing)
+
+CLI runs produce explicit downstream artifacts:
+- full report in `reports/`
+- routing decision in `routes/route-*.json` for every run
+- review ticket in `reviews/ticket-*.json` when refusal is detected
+
+Review tickets store a reference to `report_path` instead of duplicating the report payload.
+This keeps refusal behavior observable and auditable across report, route, and review artifacts.
+
+---
+
+## Moderator checklist (Week 6 Web2)
+
+- Prompt used: `report.input.prompt_used`
+- Refusal state and signals: `report.refusal_handling.refusal_detected` and `report.refusal_handling.signals`
+- Routing trail: `routes/`, `reviews/`, and the referenced report in `reports/`
 
 ---
 
@@ -43,7 +94,7 @@ Create `.env` (see `.env.example` for reference):
 AMBIENT_API_KEY=...
 PROPOSAL_URL="https://..."
 TALLY_API_KEY=...   # optional, only for tally.xyz
-API_PORT=3000       # optional, default port for gov-ai-api.js
+PORT=3000           # optional, default port for gov-ai-api.js
 PAGE_PORT=3100      # optional, default port for pageServer.js
 ```
 
@@ -51,7 +102,7 @@ PAGE_PORT=3100      # optional, default port for pageServer.js
 - `AMBIENT_API_KEY` (required) - API key for Ambient inference provider
 - `PROPOSAL_URL` (required for CLI) - URL of the proposal to analyze
 - `TALLY_API_KEY` (optional) - API key for Tally GraphQL API, required only for Tally proposals
-- `API_PORT` (optional) - Port for the HTTP API server (default: 3000)
+- `PORT` (optional) - Port for the HTTP API server (default: 3000)
 - `PAGE_PORT` (optional) - Port for the report viewer server (default: 3100)
 
 ---
@@ -80,9 +131,13 @@ node gov-ai.js analyze <url>
 
 The result will be saved as:
 
-- `report-snapshot-<id>.json`
-- `report-tally-<org>-<id>.json`
-- `report-<timestamp>.json` (fallback)
+- `reports/report-*.json` - full analysis report
+- `routes/route-*.json` - routing decision
+- `reviews/ticket-*.json` - review queue ticket (only when refusal is detected)
+
+Notes:
+- CLI report filenames still use source-aware naming when available (for example `report-snapshot-...`, `report-tally-...`, or `report-<timestamp>.json`).
+- `reports/`, `routes/`, and `reviews/` are created automatically by the CLI when needed.
 
 ---
 
@@ -90,8 +145,8 @@ The result will be saved as:
 
 This repository contains two ways to run the project:
 
-- `gov-ai.js` — CLI / demo version for local usage and experiments.
-- `gov-ai-api.js` — minimal HTTP API server suitable as a base for a service.
+- `gov-ai.js` - CLI / demo version for local usage and experiments.
+- `gov-ai-api.js` - minimal HTTP API server suitable as a base for a service.
 
 Both use the same core logic (`fetcher.js` and `analyzer.js`) and produce the same report JSON format.
 
@@ -111,7 +166,7 @@ By default it starts on:
 http://localhost:3000
 ```
 
-(you can override the port via `API_PORT` environment variable)
+(you can override the port via `PORT` environment variable)
 
 ### Endpoints
 
@@ -184,6 +239,11 @@ The viewer provides:
 - Rendering of the `benefits` field alongside other analysis sections
 - Display of `__ambient` verification metadata when present in the report JSON
 
+Page server behavior:
+- It reads reports from `./reports/`.
+- Example files are not loaded automatically at runtime.
+- To view bundled examples in the browser, copy files from `examples/reports/` into `reports/`.
+
 ---
 
 ## prod-reports
@@ -200,19 +260,37 @@ This folder acts as a simple file-based storage for completed jobs.
 
 ## Output format
 
-The tool produces a structured JSON report:
+The tool produces a structured JSON report with these main blocks:
 
-- `input` – source URL and metadata
-- `extracted` – data actually extracted from the source
-- `analysis` – LLM-generated structured analysis
-  - `summary` – brief overview of the proposal
-  - `key_changes` – list of key changes proposed
-  - `benefits` – list of potential benefits
-  - `risks` – list of identified risks
-  - `unknowns` – list of unknown or missing information
-  - `evidence_quotes` – relevant quotes from the proposal text
-- `recommendation` – suggested action + reasoning
-- `limitations` – explicit list of caveats
+- `input` - source URL and metadata
+- `extracted` - data actually extracted from the source
+- `analysis` - LLM-generated structured analysis
+- `recommendation` - suggested action + reasoning
+- `limitations` - explicit list of caveats
+- `verification_boundary` - Week 5 deterministic vs interpretive split
+- `refusal_handling` - Week 6 refusal decision and deterministic signals
+- `week6_evaluation` - manual evaluation placeholder (`agree_with_refusal`)
+
+Key analysis fields:
+- `analysis.summary` - brief overview of the proposal
+- `analysis.key_changes` - list of key changes proposed
+- `analysis.benefits` - list of potential benefits
+- `analysis.risks` - list of identified risks
+- `analysis.unknowns` - list of unknown or missing information
+- `analysis.evidence_quotes` - relevant quotes from the proposal text
+
+### Prompt provenance
+
+Each report includes `report.input.prompt_used` for reproducibility without duplicating the full prompt payload.
+
+Included fields:
+- `prompt_used_excerpt`
+- `prompt_used_sha256`
+- `prompt_used_files`
+
+`prompt_used_files` references input files (with per-file hashes), including:
+- `./principles.json`
+- `./report.schema.json`
 
 ### Ambient verification (optional)
 
@@ -235,20 +313,23 @@ Notes:
 
 ## Example reports
 
-This repository includes example output reports for testing and demonstration purposes.
+This repository includes example artifacts for testing and demonstration.
 
-You can find them in the `reports/examples/` folder:
+Examples live under:
+- `examples/reports/`
+- `examples/routes/`
+- `examples/reviews/`
 
-- [report-snapshot-0xe5435766bae1f44d1ce354cea93acf4f38216f4e7ca071ccbb0ad0e856b34363.json](reports/examples/report-snapshot-0xe5435766bae1f44d1ce354cea93acf4f38216f4e7ca071ccbb0ad0e856b34363.json)  
-  Example report generated from a Snapshot proposal.
+Report examples:
+- [report-snapshot-0xe5435766bae1f44d1ce354cea93acf4f38216f4e7ca071ccbb0ad0e856b34363.json](examples/reports/report-snapshot-0xe5435766bae1f44d1ce354cea93acf4f38216f4e7ca071ccbb0ad0e856b34363.json)
+- [report-tally-ens-107313977323541760723614084561841045035159333942448750767795024713131429640046.json](examples/reports/report-tally-ens-107313977323541760723614084561841045035159333942448750767795024713131429640046.json)
+- [report-2026-02-26T06-07-34-157Z.json](examples/reports/report-2026-02-26T06-07-34-157Z.json)
 
-- [report-tally-ens-107313977323541760723614084561841045035159333942448750767795024713131429640046.json](reports/examples/report-tally-ens-107313977323541760723614084561841045035159333942448750767795024713131429640046.json)  
-  Example report generated from a Tally proposal (Uniswap governance).
+Routing and review examples:
+- [route-2026-02-26T06-07-34-158Z.json](examples/routes/route-2026-02-26T06-07-34-158Z.json)
+- [ticket-2026-02-26T06-07-34-158Z.json](examples/reviews/ticket-2026-02-26T06-07-34-158Z.json)
 
-- [report-2026-02-13T17-15-44-959Z.json](reports/examples/report-2026-02-13T17-15-44-959Z.json)  
-  Example report generated from a DAO DAO proposal (via Next.js fallback extraction).
-
-These files allow reviewers to inspect the tool output format and behavior without running the code.
+Examples are documentation-only fixtures. Runtime outputs are written to `reports/`, `routes/`, and `reviews/`.
 
 ---
 
@@ -258,6 +339,7 @@ These files allow reviewers to inspect the tool output format and behavior witho
 - The tool may fail to extract all proposal parameters.
 - Voting options or current results may be missing.
 - The AI model may misunderstand technical details.
+- Refusal routing escalates ambiguous or underspecified cases to human review instead of forcing a confident answer.
 - **Critical proposals must always be reviewed manually.**
 
 This tool helps with **orientation and structuring**, not with making final decisions.
@@ -293,16 +375,15 @@ The goal is to explore how AI can:
 - make governance participation more accessible
 - while staying honest about uncertainty and failure modes
 
-
 ## Benchmark (Web2 Micro-Challenge #4)
 
 This repository also includes an optional benchmark script used to compare **cost, latency, and reliability** of different inference providers using the same extracted proposal data and the same prompt.
 
-This was created as part of **Web2 Developer Loop – Micro-Challenge #4 (cost + latency reality check)**.
+This was created as part of **Web2 Developer Loop - Micro-Challenge #4 (cost + latency reality check)**.
 
 ### Files
 
-* `bench.js` — runs a benchmark for a given proposal URL and saves results to `bench-results/`.
+- `bench.js` - runs a benchmark for a given proposal URL and saves results to `bench-results/`.
 
 ### Run
 
@@ -336,55 +417,40 @@ NOUS_OUT_PER_M=0.20
 
 The benchmark produces:
 
-* `bench-results/bench-result-<timestamp>.json` — full machine-readable report
-* `bench-results/bench-summary-<timestamp>.txt` — short human-readable summary
+- `bench-results/bench-result-<timestamp>.json` - full machine-readable report
+- `bench-results/bench-summary-<timestamp>.txt` - short human-readable summary
 
 ### Example results
 
 This repository includes example benchmark results in:
 
 ```
-bench-results/examples/
+examples/bench-results/
 ```
 
 These files demonstrate the output format and contain one real comparison run between Ambient and an alternative provider.
 
 ### Notes
 
-* Cost is estimated from `usage.prompt_tokens` and `usage.completion_tokens` if the API returns usage data.
-* If usage is missing, cost is reported as `null`.
-* This benchmark is meant as a **practical reality check**, not as a rigorous scientific performance evaluation.
+- Cost is estimated from `usage.prompt_tokens` and `usage.completion_tokens` if the API returns usage data.
+- If usage is missing, cost is reported as `null`.
+- This benchmark is meant as a **practical reality check**, not as a rigorous scientific performance evaluation.
 
-## Week 5 – Verification boundaries (Micro-Challenge #5)
+## Week 5 - Verification boundaries (Micro-Challenge #5)
 
 This project includes a Week 5 addition: the report is programmatically split into verifiable and non-verifiable layers after the LLM response is received.
 
-Each report now includes a top-level `verification_boundary` block with:
+Each report includes a top-level `verification_boundary` block with:
 
 ### Structure
 
-- `deterministic`
-  Statements that can be mechanically checked against:
-
-  - extracted proposal fields
-  - evidence quotes
-  - explicit numeric or address literals
-  - explicit voting option matches
-
-- `interpretive`
-  Statements that rely on reasoning, summarization, risk evaluation, or recommendation logic.
-
-- `uncertainty_flags`
-  Derived automatically from:
-
-  - missing extracted fields
-  - low confidence recommendations
-  - explicit uncertainty markers in the analysis
+- `deterministic` - statements that can be mechanically checked against extracted proposal fields, evidence quotes, explicit numeric or address literals, and explicit voting option matches.
+- `interpretive` - statements that rely on reasoning, summarization, risk evaluation, or recommendation logic.
+- `uncertainty_flags` - derived automatically from missing extracted fields, low confidence recommendations, and explicit uncertainty markers in the analysis.
 
 ### Important clarification
 
-`__ambient.verified = true` confirms inference integrity and commitment (provider-side verification),
-but it does **not** make interpretive conclusions true.
+`__ambient.verified = true` confirms inference integrity and commitment (provider-side verification), but it does **not** make interpretive conclusions true.
 
 The `verification_boundary` block exists to make this distinction explicit inside the report itself.
 
@@ -404,17 +470,12 @@ This ensures deterministic labels reflect actual mechanical verifiability, not h
 Updated example reports are available in:
 
 ```
-reports/examples/
+examples/reports/
 ```
 
-- `report-2026-02-13T17-15-44-959Z.json`
-  DAO DAO proposal (open proposal example with verification boundary)
-
+- `report-2026-02-26T06-07-34-157Z.json`
 - `report-snapshot-0xe5435766bae1f44d1ce354cea93acf4f38216f4e7ca071ccbb0ad0e856b34363.json`
-  Snapshot proposal example
-
 - `report-tally-ens-107313977323541760723614084561841045035159333942448750767795024713131429640046.json`
-  Tally proposal example
 
 These files demonstrate:
 

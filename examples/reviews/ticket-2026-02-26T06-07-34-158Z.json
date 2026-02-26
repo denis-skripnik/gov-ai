@@ -1,0 +1,9 @@
+{
+  "status": "PENDING_REVIEW",
+  "created_at": "2026-02-26T06:07:34.158Z",
+  "report_path": "./reports/report-2026-02-26T06-07-34-157Z.json",
+  "refusal_signals": [
+    "unknowns_present:4"
+  ],
+  "note": "Refusal detected. Escalated to human review queue."
+}

@@ -1,0 +1,9 @@
+{
+  "refusal_detected": true,
+  "routed_to": "HUMAN_REVIEW:reviews/ticket-2026-02-26T06-07-34-158Z.json",
+  "at": "2026-02-26T06:07:34.158Z",
+  "signals": [
+    "unknowns_present:4"
+  ],
+  "report_path": "./reports/report-2026-02-26T06-07-34-157Z.json"
+}

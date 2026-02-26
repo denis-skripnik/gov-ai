@@ -1,0 +1,185 @@
+{
+  "version": 1,
+  "input": {
+    "url": "https://daodao.zone/dao/juno1h5ex5dn62arjwvwkh88r475dap8qppmmec4sgxzmtdn5tnmke3lqwpplgg/proposals/A80",
+    "fetched_at": "2026-02-26T06:07:10.152Z",
+    "source_type": "daodao",
+    "prompt_used": {
+      "prompt_used_summary": "Structured governance analysis prompt. Must output ONLY valid JSON. Must not guess missing options/results; use UNKNOWN.",
+      "prompt_used_excerpt": "\nYou are given:\n\nURL:\nhttps://daodao.zone/dao/juno1h5ex5dn62arjwvwkh88r475dap8qppmmec4sgxzmtdn5tnmke3lqwpplgg/proposals/A80\n\nEXTRACTED_DATA (may be incomplete):\n{\n  \"source_type\": \"daodao\",\n  \"fetched_at\": \"2026-02-26T06:07:10.152Z\",\n  \"title\": \"Stop validating Aura Network\",\n  \"body\": \"Our validator in Aura Network:https://explorer.posthuman.digital/aura/staking/auravaloper15pzl0s6ym85qx4yeq29rflp702wtx3dntle05a\\n\\nReason:\\n\\nThe income from Aura Network is too low compare to the maintaining cost\\n\\n---\\n\\n- Vote YES, if you agree to stop validating Aura Network\\n- Vote NO, if you want that POSTHUMAN validate Aura Network\\n- Vote Abstain, if you don't understand proposal, or just don't care\",\n  \"options\": [\n    \"YES\",\n    \"NO\",\n    \"ABSTAIN\"\n  ],\n  \"current_results\": {\n    \"votes\": {\n    ",
+      "prompt_used_excerpt_truncated": true,
+      "prompt_used_sha256": "3fbeb62b4cfdf6a51a7b6baefbb6b72fd79de99f1fdfb5c9961ed7dbd5a1d4d4",
+      "model": "zai-org/GLM-4.6",
+      "stream": true,
+      "prompt_used_files": {
+        "principles": {
+          "path": "./principles.json",
+          "sha256": "e446239714ddff5d3c0f2e575e52a9ec7b904c0d3ac85d257ee7f1509aa69a86"
+        },
+        "schema": {
+          "path": "./report.schema.json",
+          "sha256": "97f41c978611f91ac0bc2e0550760849e9c9bd4a189c842893d6ef3714758cb5"
+        }
+      }
+    }
+  },
+  "extracted": {
+    "title": "Stop validating Aura Network",
+    "body": "Our validator in Aura Network:https://explorer.posthuman.digital/aura/staking/auravaloper15pzl0s6ym85qx4yeq29rflp702wtx3dntle05a\n\nReason:\n\nThe income from Aura Network is too low compare to the maintaining cost\n\n---\n\n- Vote YES, if you agree to stop validating Aura Network\n- Vote NO, if you want that POSTHUMAN validate Aura Network\n- Vote Abstain, if you don't understand proposal, or just don't care",
+    "options": [
+      "YES",
+      "NO",
+      "ABSTAIN"
+    ],
+    "current_results": {
+      "votes": {
+        "no": "510579431",
+        "yes": "17505082829",
+        "abstain": "33638206"
+      },
+      "status": "open"
+    },
+    "metadata": {
+      "nextjs": true
+    }
+  },
+  "analysis": {
+    "summary": "Proposal to stop POSTHUMAN's validator operation on Aura Network due to insufficient income relative to maintenance costs.",
+    "key_changes": [
+      "POSTHUMAN will cease validating on Aura Network"
+    ],
+    "risks": [
+      "Unknown financial impact if estimating actual maintenance costs vs income",
+      "Unknown impact on network decentralization or security from validator exit",
+      "Unknown timeframe or process for unwinding validator operations"
+    ],
+    "benefits": [
+      "Eliminates costs of maintaining an unprofitable validator operation"
+    ],
+    "unknowns": [
+      "Quantitative details about maintaining costs vs current income",
+      "Process and timeline for un-staking and ceasing validation",
+      "Impact on Aura Network's validator set and decentralization",
+      "Whether funds staked for validation will be reclaimed and how"
+    ],
+    "evidence_quotes": [
+      "The income from Aura Network is too low compare to the maintaining cost",
+      "Our validator in Aura Network:https://explorer.posthuman.digital/aura/staking/auravaloper15pzl0s6ym85qx4yeq29rflp702wtx3dntle05a"
+    ]
+  },
+  "recommendation": {
+    "suggested_option": "ABSTAIN",
+    "confidence": "medium",
+    "reasoning": "The proposal states a clear intention to stop an unprofitable activity, which aligns with treasury risk sensitivity. However, it lacks quantitative details about costs/income, exit process, and potential network impacts. Without governance values explicitly stated, moderate risk suggests abstention pending more details.",
+    "conflicts_with_user_principles": []
+  },
+  "limitations": [
+    "This is not legal or financial advice.",
+    "The tool may have failed to extract all proposal parameters.",
+    "Critical parameters must be checked manually."
+  ],
+  "__ambient": {
+    "verified": true,
+    "merkle_root": "a315eacf5aa930ff010aa8a194694cbe1f309940cc120b6ddcdbf5f0d44de93a",
+    "request_id": "75555041205741f6a88a9c5ff8ed095b",
+    "model": "zai-org/GLM-4.6",
+    "verified_by_validators": "Verified by 3 validators",
+    "auction": {
+      "status": "Done",
+      "bids": {
+        "placed": 14,
+        "revealed": 14
+      },
+      "address": "https://explorer.ambient.xyz/address/7BgxvhwtnuxDyWVGAaNQUdrGiULgBFBkLj4w8pbyFkKX"
+    },
+    "bidder": "https://explorer.ambient.xyz/address/98WKDq5HzneuZycJiCSM5ajuKzscQMop2GsRdxK95q2m"
+  },
+  "verification_boundary": {
+    "deterministic": [],
+    "interpretive": [
+      {
+        "path": "analysis.summary",
+        "text": "Proposal to stop POSTHUMAN's validator operation on Aura Network due to insufficient income relative to maintenance costs.",
+        "reason": "interpretive"
+      },
+      {
+        "path": "analysis.key_changes[0]",
+        "text": "POSTHUMAN will cease validating on Aura Network",
+        "reason": "interpretive"
+      },
+      {
+        "path": "analysis.risks[0]",
+        "text": "Unknown financial impact if estimating actual maintenance costs vs income",
+        "reason": "interpretive"
+      },
+      {
+        "path": "analysis.risks[1]",
+        "text": "Unknown impact on network decentralization or security from validator exit",
+        "reason": "interpretive"
+      },
+      {
+        "path": "analysis.risks[2]",
+        "text": "Unknown timeframe or process for unwinding validator operations",
+        "reason": "interpretive"
+      },
+      {
+        "path": "analysis.benefits[0]",
+        "text": "Eliminates costs of maintaining an unprofitable validator operation",
+        "reason": "interpretive"
+      },
+      {
+        "path": "analysis.unknowns[0]",
+        "text": "Quantitative details about maintaining costs vs current income",
+        "reason": "uncertainty"
+      },
+      {
+        "path": "analysis.unknowns[1]",
+        "text": "Process and timeline for un-staking and ceasing validation",
+        "reason": "uncertainty"
+      },
+      {
+        "path": "analysis.unknowns[2]",
+        "text": "Impact on Aura Network's validator set and decentralization",
+        "reason": "uncertainty"
+      },
+      {
+        "path": "analysis.unknowns[3]",
+        "text": "Whether funds staked for validation will be reclaimed and how",
+        "reason": "uncertainty"
+      },
+      {
+        "path": "recommendation.reasoning",
+        "text": "The proposal states a clear intention to stop an unprofitable activity, which aligns with treasury risk sensitivity. However, it lacks quantitative details about costs/income, exit process, and potential network impacts. Without governance values explicitly stated, moderate risk suggests abstention pending more details.",
+        "reason": "interpretive"
+      }
+    ],
+    "uncertainty_flags": [
+      "text_uncertain:Proposal to stop POSTHUMAN's validator operation...",
+      "unknowns:Quantitative details about maintaining costs vs ...",
+      "unknowns:Process and timeline for un-staking and ceasing ...",
+      "unknowns:Impact on Aura Network's validator set and decen...",
+      "unknowns:Whether funds staked for validation will be recl..."
+    ],
+    "method": {
+      "kind": "heuristic",
+      "version": 2,
+      "notes": [
+        "Deterministic layer is based on direct matching to extracted fields and evidence_quotes, plus presence of hard literals (numbers, addresses, option strings).",
+        "Interpretive layer includes summary, risks, benefits, and recommendation reasoning.",
+        "This is a boundary labeling aid, not a proof of truth."
+      ]
+    }
+  },
+  "refusal_handling": {
+    "refusal_detected": true,
+    "signals": [
+      "unknowns_present:4"
+    ],
+    "routed_to": "HUMAN_REVIEW",
+    "note": "Refusal detection is heuristic and conservative. It routes ambiguous or underspecified cases to human review."
+  },
+  "week6_evaluation": {
+    "refusal_occurred": true,
+    "agree_with_refusal": null
+  }
+}

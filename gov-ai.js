@@ -66,7 +66,18 @@ const report = await analyzeWithLLM(url, extracted, principles);
 // Week 5: programmatically split into deterministic vs interpretive layers
 addVerificationBoundary(report, extracted);
 
+// Week 6: detect refusal + route differently (escalate to human review)
+const refusal = detectRefusal(report, extracted);
+report.refusal_handling = refusal;
+report.week6_evaluation = {
+  refusal_occurred: Boolean(refusal?.refusal_detected),
+  agree_with_refusal: null, // заполнишь руками перед отправкой, это честнее
+};
+
 const filename = buildReportFilename(url, extracted);
+
+// Route based on refusal state (needs report filename for review ticket)
+routeByRefusal(report, refusal, `./reports/${filename}`);
 
 // Ensure reports folder exists
 if (!fs.existsSync("reports")) fs.mkdirSync("reports", { recursive: true });
@@ -311,4 +322,96 @@ function looksUncertain(text) {
     t.includes("unclear") ||
     t.includes("missing information")
   );
+}
+
+/**
+ * Week 6: "Detect and handle refusal programmatically."
+ * Refusal is detected via deterministic heuristics, not by trusting model self-reporting.
+ */
+function detectRefusal(report, extracted) {
+  const signals = [];
+
+  const suggested = safeStr(report?.recommendation?.suggested_option).toUpperCase();
+  const confidence = safeStr(report?.recommendation?.confidence).toLowerCase();
+
+  // Signal 1: model cannot choose an option
+  if (suggested === "UNKNOWN") signals.push("suggested_option_unknown");
+
+  // Signal 2: low confidence (explicit uncertainty)
+  if (confidence === "low") signals.push("confidence_low");
+
+  // Signal 3: unknowns present (underspecified input)
+  const unknownsCount = Array.isArray(report?.analysis?.unknowns) ? report.analysis.unknowns.length : 0;
+  if (unknownsCount > 0) signals.push(`unknowns_present:${unknownsCount}`);
+
+  // Signal 4: missing extracted options (cannot recommend safely)
+  const optionsCount = Array.isArray(extracted?.options) ? extracted.options.length : 0;
+  if (optionsCount === 0) signals.push("missing_extracted_options");
+
+  // Signal 5: generic source extraction (often incomplete for SPAs if API path fails)
+  const sourceType = safeStr(extracted?.source_type).toLowerCase();
+  if (sourceType === "generic") signals.push("source_type_generic");
+
+  // Conservative rule: refusal if any high-signal present
+  const refusalDetected =
+    signals.includes("suggested_option_unknown") ||
+    signals.includes("confidence_low") ||
+    signals.includes("missing_extracted_options") ||
+    signals.some((s) => s.startsWith("unknowns_present:"));
+
+  return {
+    refusal_detected: refusalDetected,
+    signals,
+    routed_to: refusalDetected ? "HUMAN_REVIEW" : "NORMAL_PIPELINE",
+    note:
+      "Refusal detection is heuristic and conservative. It routes ambiguous or underspecified cases to human review.",
+  };
+}
+
+function routeByRefusal(report, refusal, reportPath) {
+  // Always write routing decision (makes downstream handling explicit)
+  if (!fs.existsSync("routes")) fs.mkdirSync("routes", { recursive: true });
+
+  const ts = new Date().toISOString().replace(/[:.]/g, "-");
+  const routeFile = `routes/route-${ts}.json`;
+
+  if (!refusal?.refusal_detected) {
+    const out = {
+      refusal_detected: false,
+      routed_to: "NORMAL_PIPELINE",
+      at: new Date().toISOString(),
+      report_path: reportPath,
+    };
+    fs.writeFileSync(routeFile, JSON.stringify(out, null, 2));
+    console.log(`No refusal -> routed to NORMAL_PIPELINE (${routeFile})`);
+    return;
+  }
+
+  // Create a review ticket instead of duplicating the whole report
+  if (!fs.existsSync("reviews")) fs.mkdirSync("reviews", { recursive: true });
+
+  const ticketName = `ticket-${ts}.json`;
+  const ticketPath = `reviews/${ticketName}`;
+
+  const ticket = {
+    status: "PENDING_REVIEW",
+    created_at: new Date().toISOString(),
+    report_path: reportPath,
+    refusal_signals: refusal?.signals || [],
+    note: "Refusal detected. Escalated to human review queue.",
+  };
+
+  fs.writeFileSync(ticketPath, JSON.stringify(ticket, null, 2));
+
+  const out = {
+    refusal_detected: true,
+    routed_to: `HUMAN_REVIEW:${ticketPath}`,
+    at: new Date().toISOString(),
+    signals: refusal?.signals || [],
+    report_path: reportPath,
+  };
+
+  fs.writeFileSync(routeFile, JSON.stringify(out, null, 2));
+
+  console.log(`Refusal detected -> escalated to ${ticketPath} (${routeFile})`);
 }

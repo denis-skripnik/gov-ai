@@ -1,5 +1,6 @@
 import fs from "fs";
 import "dotenv/config";
+import crypto from "crypto";
 
 const API_URL = "https://api.ambient.xyz/v1/chat/completions";
 const API_KEY = process.env.AMBIENT_API_KEY;
@@ -25,6 +26,33 @@ function shorten(str, max = 180) {
   const s = str.replace(/\s+/g, " ").trim();
   if (s.length <= max) return s;
   return `${s.slice(0, max)}...`;
+}
+
+function isRetryableNetworkError(e) {
+  const code = e?.code || e?.cause?.code;
+  if (code === "UND_ERR_SOCKET" || code === "ECONNRESET" || code === "ETIMEDOUT" || code === "EAI_AGAIN") {
+    return true;
+  }
+  const msg = String(e?.message || e?.cause?.message || "").toLowerCase();
+  return msg.includes("other side closed") || msg.includes("fetch failed");
+}
+
+function sleep(ms) {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
+async function withRetry(fn, { tries = 3, baseDelayMs = 600 } = {}) {
+  let retries = 0;
+  while (true) {
+    try {
+      return await fn();
+    } catch (e) {
+      if (!isRetryableNetworkError(e) || retries >= tries - 1) throw e;
+      const delay = baseDelayMs * 2 ** retries;
+      retries += 1;
+      await sleep(delay);
+    }
+  }
 }
 
 // Minimal base58 encoder (no deps)
@@ -126,7 +154,77 @@ export async function analyzeWithLLM(url, extracted, principles, opts = {}) {
   const prompt = buildPrompt(url, extracted, principles);
 
   if (!stream) {
-    // Non-streaming mode: you only get verified + merkle_root (no lifecycle events).
+    return withRetry(async () => {
+      // Non-streaming mode: you only get verified + merkle_root (no lifecycle events).
+      const response = await fetch(API_URL, {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${API_KEY}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          model,
+          messages: [
+            { role: "system", content: "You are a governance analysis assistant. You must output ONLY valid JSON." },
+            { role: "user", content: prompt },
+          ],
+          stream: false,
+          emit_verified: true,
+          emit_ambient_events: true,
+          wait_for_verification: true,
+          emit_usage: true,
+        }),
+      });
+
+      const requestId = response.headers.get("x-request-id") || null;
+      if (!response.ok) {
+        const bodyText = await response.text().catch(() => "");
+        throw new Error(`Ambient API error HTTP ${response.status} (x-request-id: ${requestId || "UNKNOWN"}): ${shorten(bodyText, 800)}`);
+      }
+
+      const data = await response.json().catch(async () => {
+        const bodyText = await response.text().catch(() => "");
+        throw new Error(`Ambient returned non-JSON response (x-request-id: ${requestId || "UNKNOWN"}): ${shorten(bodyText, 500)}`);
+      });
+
+      const verificationUI = {
+        verified: data?.verified ?? null,
+        merkle_root: data?.merkle_root ?? null,
+        request_id: requestId,
+        verified_by_validators: null,
+        validators: null,
+        auction: null,
+        bids: null,
+        bidder: null,
+      };
+
+      console.log("verification:", verificationUI);
+
+      const assistantMsg = data?.choices?.[0]?.message;
+      const text = assistantMsg?.content;
+      if (!text) throw new Error(`No response from Ambient (x-request-id: ${requestId || "UNKNOWN"})`);
+
+      const report = safeJsonParse(text);
+      if (!report) throw new Error("Invalid JSON from model");
+
+      report.__ambient = verificationUI;
+      // Attach prompt in the correct place (input.prompt_used), programmatically (not model-controlled)
+      attachPromptUsed(report, {
+        prompt,
+        model,
+        stream: false,
+        files: {
+principles: "./principles.json",
+schema: "./report.schema.json",
+        },
+      });
+
+      return report;
+    });
+  }
+
+  return withRetry(async () => {
+    // Streaming mode: captures ambient.lifecycle events + text chunks + merkle_root + verified
     const response = await fetch(API_URL, {
       method: "POST",
       headers: {
@@ -139,7 +237,8 @@ export async function analyzeWithLLM(url, extracted, principles, opts = {}) {
           { role: "system", content: "You are a governance analysis assistant. You must output ONLY valid JSON." },
           { role: "user", content: prompt },
         ],
-        stream: false,
+        stream: true,
+
         emit_verified: true,
         emit_ambient_events: true,
         wait_for_verification: true,
@@ -148,179 +247,184 @@ export async function analyzeWithLLM(url, extracted, principles, opts = {}) {
     });
 
     const requestId = response.headers.get("x-request-id") || null;
-
-    const data = await response.json().catch(async () => {
+    if (!response.ok) {
       const bodyText = await response.text().catch(() => "");
-      throw new Error(`Ambient returned non-JSON response (x-request-id: ${requestId || "UNKNOWN"}): ${shorten(bodyText, 500)}`);
-    });
+      throw new Error(`Ambient API error HTTP ${response.status} (x-request-id: ${requestId || "UNKNOWN"}): ${shorten(bodyText, 800)}`);
+    }
 
-    const verificationUI = {
-      verified: data?.verified ?? null,
-      merkle_root: data?.merkle_root ?? null,
-      request_id: requestId,
-      verified_by_validators: null,
-      validators: null,
-      auction: null,
-      bids: null,
-      bidder: null,
+    let text = "";
+    let verified = null;
+    let merkleRoot = null;
+    let usage = null;
+
+    // Collect minimal lifecycle info needed for UI-like verification
+    const lifecycle = {
+      jobRequested: null,
+      bundled: null,
+      auctionStarted: null,
+      auctionEnded: null,
+      winningBid: null,
     };
 
-    console.log("verification:", verificationUI);
+    // Optional raw event log file (off by default)
+    let rawEvents = [];
+    const rawPath = debugRawToFile ? `ambient-sse-${isoSafeFileName()}.jsonl` : null;
 
-    const assistantMsg = data?.choices?.[0]?.message;
-    const text = assistantMsg?.content;
-    if (!text) throw new Error(`No response from Ambient (x-request-id: ${requestId || "UNKNOWN"})`);
+    for await (const dataLine of sseDataLines(response)) {
+      if (dataLine === "[DONE]") continue;
 
-    const report = safeJsonParse(text);
-    if (!report) throw new Error("Invalid JSON from model");
+      const obj = safeJsonParse(dataLine);
+      if (!obj) continue;
 
-    report.__ambient = verificationUI;
-    
-    return report;
-  }
+      if (debugRawToFile) {
+        rawEvents.push(obj);
+        if (rawEvents.length >= 50) {
+          fs.appendFileSync(rawPath, rawEvents.map((o) => JSON.stringify(o)).join("\n") + "\n", "utf8");
+          rawEvents = [];
+        }
+      }
 
-  // Streaming mode: captures ambient.lifecycle events + text chunks + merkle_root + verified
-  const response = await fetch(API_URL, {
-    method: "POST",
-    headers: {
-      Authorization: `Bearer ${API_KEY}`,
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({
-      model,
-      messages: [
-        { role: "system", content: "You are a governance analysis assistant. You must output ONLY valid JSON." },
-        { role: "user", content: prompt },
-      ],
-      stream: true,
+      if (obj.object === "ambient.lifecycle") {
+        const t = obj.type;
+        if (t === "jobRequested") lifecycle.jobRequested = obj.content;
+        else if (t === "bundled") lifecycle.bundled = obj.content;
+        else if (t === "auctionStarted") lifecycle.auctionStarted = obj.content;
+        else if (t === "auctionEnded") lifecycle.auctionEnded = obj.content;
+        else if (t === "winningBid") lifecycle.winningBid = obj.content;
+        continue;
+      }
 
-      emit_verified: true,
-      emit_ambient_events: true,
-      wait_for_verification: true,
-      emit_usage: true,
-    }),
-  });
+      if (obj.object === "chat.completion.chunk") {
+        const delta = obj.choices?.[0]?.delta?.content;
+        if (typeof delta === "string") text += delta;
+        continue;
+      }
 
-  const requestId = response.headers.get("x-request-id") || null;
-  if (!response.ok) {
-    const bodyText = await response.text().catch(() => "");
-    throw new Error(`Ambient API error HTTP ${response.status} (x-request-id: ${requestId || "UNKNOWN"}): ${shorten(bodyText, 800)}`);
-  }
+      if (obj.object === "chat.completion.usage") {
+        if (obj.merkle_root) merkleRoot = obj.merkle_root;
+        if (obj.usage) usage = obj.usage;
+        continue;
+      }
 
-  let text = "";
-  let verified = null;
-  let merkleRoot = null;
-  let usage = null;
-
-  // Collect minimal lifecycle info needed for UI-like verification
-  const lifecycle = {
-    jobRequested: null,
-    bundled: null,
-    auctionStarted: null,
-    auctionEnded: null,
-    winningBid: null,
-  };
-
-  // Optional raw event log file (off by default)
-  let rawEvents = [];
-  const rawPath = debugRawToFile ? `ambient-sse-${isoSafeFileName()}.jsonl` : null;
-
-  for await (const dataLine of sseDataLines(response)) {
-    if (dataLine === "[DONE]") continue;
-
-    const obj = safeJsonParse(dataLine);
-    if (!obj) continue;
+      if (typeof obj.verified === "boolean") {
+        verified = obj.verified;
+        continue;
+      }
+    }
 
     if (debugRawToFile) {
-      rawEvents.push(obj);
-      if (rawEvents.length >= 50) {
+      if (rawEvents.length) {
         fs.appendFileSync(rawPath, rawEvents.map((o) => JSON.stringify(o)).join("\n") + "\n", "utf8");
         rawEvents = [];
       }
     }
 
-    if (obj.object === "ambient.lifecycle") {
-      const t = obj.type;
-      if (t === "jobRequested") lifecycle.jobRequested = obj.content;
-      else if (t === "bundled") lifecycle.bundled = obj.content;
-      else if (t === "auctionStarted") lifecycle.auctionStarted = obj.content;
-      else if (t === "auctionEnded") lifecycle.auctionEnded = obj.content;
-      else if (t === "winningBid") lifecycle.winningBid = obj.content;
-      continue;
+    // Build UI-like verification block (similar to app.ambient.xyz)
+    const verifiers = lifecycle?.bundled?.verifiers?.keys || null;
+    const validatorsCount = Array.isArray(verifiers) ? verifiers.length : null;
+
+    const auctionAddress = lifecycle?.bundled?.auction || lifecycle?.auctionStarted?.auction || lifecycle?.auctionEnded?.auction || null;
+    const auctionStatusRaw = pickAuctionStatus(lifecycle);
+    const auctionStatus = auctionStatusRaw ? (String(auctionStatusRaw).toLowerCase() === "ended" ? "Done" : auctionStatusRaw) : null;
+
+    const bids = pickBidsCount(lifecycle);
+    const bidder = pickBidder(lifecycle);
+
+    const verificationUI = {
+      verified: verified,
+      merkle_root: merkleRoot,
+      request_id: requestId,
+      model,
+
+      // UI-like lines
+      verified_by_validators: validatorsCount != null ? `Verified by ${validatorsCount} validators` : null,
+      auction: auctionAddress
+        ? {
+            status: auctionStatus,
+            bids: (bids.placed != null || bids.revealed != null) ? { placed: bids.placed, revealed: bids.revealed } : null,
+            address: ambientAddressUrl(auctionAddress),
+          }
+        : null,
+
+      bidder: bidder ? ambientAddressUrl(bidder) : null,
+    };
+
+    // Print only verification block (as you requested)
+    console.log("verification:", verificationUI);
+
+    // Parse JSON report (model output is expected to be JSON)
+    if (!text) throw new Error(`No streamed content from Ambient (x-request-id: ${requestId || "UNKNOWN"})`);
+
+    const report = safeJsonParse(text);
+    if (!report) {
+      console.error("Model returned non-JSON (first 2000 chars):");
+      console.error(text.slice(0, 2000));
+      throw new Error("Invalid JSON from model");
     }
 
-    if (obj.object === "chat.completion.chunk") {
-      const delta = obj.choices?.[0]?.delta?.content;
-      if (typeof delta === "string") text += delta;
-      continue;
-    }
+    // Attach metadata (keeps existing pipeline unchanged)
+    report.__ambient = verificationUI;
 
-    if (obj.object === "chat.completion.usage") {
-      if (obj.merkle_root) merkleRoot = obj.merkle_root;
-      if (obj.usage) usage = obj.usage;
-      continue;
-    }
+    // Attach prompt in the correct place (input.prompt_used), programmatically (not model-controlled)
+    attachPromptUsed(report, {
+      prompt,
+      model,
+      stream: true,
+      files: {
+principles: "./principles.json",
+schema: "./report.schema.json",
+      },
+    });
 
-    if (typeof obj.verified === "boolean") {
-      verified = obj.verified;
-      continue;
-    }
-  }
+    return report;
+  });
+}
 
-  if (debugRawToFile) {
-    if (rawEvents.length) {
-      fs.appendFileSync(rawPath, rawEvents.map((o) => JSON.stringify(o)).join("\n") + "\n", "utf8");
-      rawEvents = [];
-    }
-  }
+function sha256(text) {
+  return crypto.createHash("sha256").update(text, "utf8").digest("hex");
+}
 
-  // Build UI-like verification block (similar to app.ambient.xyz)
-  const verifiers = lifecycle?.bundled?.verifiers?.keys || null;
-  const validatorsCount = Array.isArray(verifiers) ? verifiers.length : null;
+function sha256File(path) {
+  const buf = fs.readFileSync(path);
+  return crypto.createHash("sha256").update(buf).digest("hex");
+}
 
-  const auctionAddress = lifecycle?.bundled?.auction || lifecycle?.auctionStarted?.auction || lifecycle?.auctionEnded?.auction || null;
-  const auctionStatusRaw = pickAuctionStatus(lifecycle);
-  const auctionStatus = auctionStatusRaw ? (String(auctionStatusRaw).toLowerCase() === "ended" ? "Done" : auctionStatusRaw) : null;
+function attachPromptUsed(report, { prompt, model, stream, files }) {
+  if (!report || typeof report !== "object") return;
 
-  const bids = pickBidsCount(lifecycle);
-  const bidder = pickBidder(lifecycle);
+  if (!report.input || typeof report.input !== "object") report.input = {};
 
-  const verificationUI = {
-    verified: verified,
-    merkle_root: merkleRoot,
-    request_id: requestId,
-model,
-    
-// UI-like lines
-    verified_by_validators: validatorsCount != null ? `Verified by ${validatorsCount} validators` : null,
-    auction: auctionAddress
-      ? {
-          status: auctionStatus,
-          bids: (bids.placed != null || bids.revealed != null) ? { placed: bids.placed, revealed: bids.revealed } : null,
-          address: ambientAddressUrl(auctionAddress),
-        }
-      : null,
+  const excerptMax = 800;
+  const excerpt = prompt.length > excerptMax ? prompt.slice(0, excerptMax) : prompt;
 
-    bidder: bidder ? ambientAddressUrl(bidder) : null,
+  const promptMeta = {
+    // This satisfies "Prompt used" without bloating report.json
+    prompt_used_summary:
+      "Structured governance analysis prompt. Must output ONLY valid JSON. Must not guess missing options/results; use UNKNOWN.",
+    prompt_used_excerpt: excerpt,
+    prompt_used_excerpt_truncated: prompt.length > excerptMax,
+    prompt_used_sha256: sha256(prompt),
+
+    // Helpful run metadata
+    model,
+    stream: Boolean(stream),
   };
 
-  // Print only verification block (as you requested)
-  console.log("verification:", verificationUI);
-
-  // Parse JSON report (model output is expected to be JSON)
-  if (!text) throw new Error(`No streamed content from Ambient (x-request-id: ${requestId || "UNKNOWN"})`);
-
-  const report = safeJsonParse(text);
-  if (!report) {
-    console.error("Model returned non-JSON (first 2000 chars):");
-    console.error(text.slice(0, 2000));
-    throw new Error("Invalid JSON from model");
+  // Optional: reference input files instead of duplicating their contents
+  if (files && typeof files === "object") {
+    const out = {};
+    for (const [key, path] of Object.entries(files)) {
+      if (!path) continue;
+      if (fs.existsSync(path)) {
+        out[key] = { path, sha256: sha256File(path) };
+      } else {
+        out[key] = { path, sha256: null, missing: true };
+      }
+    }
+    promptMeta.prompt_used_files = out;
   }
 
-  // Attach metadata (keeps existing pipeline unchanged)
-  report.__ambient = verificationUI;
-  
-  return report;
+  report.input.prompt_used = promptMeta;
 }
 
 function buildPrompt(url, extracted, principles) {

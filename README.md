@@ -5,8 +5,13 @@ AI assistant for DAO governance proposals.
 ## Table of Contents
 
 - [Week 6 - Refusal handling (Web2)](#week-6---refusal-handling-web2)
+- [Downstream handling (routing)](#downstream-handling-routing)
 - [Moderator checklist (Week 6 Web2)](#moderator-checklist-week-6-web2)
+- [Supported sources](#supported-sources)
+- [Setup](#setup)
+- [Init user principles](#init-user-principles)
 - [Run analysis (CLI)](#run-analysis-cli)
+- [Two modes: CLI and API](#two-modes-cli-and-api)
 - [Output format](#output-format)
 - [Example reports](#example-reports)
 - [API server (production-style)](#api-server-production-style)
@@ -14,6 +19,7 @@ AI assistant for DAO governance proposals.
 - [Benchmark (Web2 Micro-Challenge #4)](#benchmark-web2-micro-challenge-4)
 - [Week 5 - Verification boundaries (Micro-Challenge #5)](#week-5---verification-boundaries-micro-challenge-5)
 - [Important limitations](#important-limitations)
+- [What this project is NOT](#what-this-project-is-not)
 
 This project started as **Web3 Developer Loop - Experiment #3 (AI for governance or automation)**.
 It now also documents and ships:

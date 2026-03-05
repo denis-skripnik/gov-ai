@@ -66,7 +66,23 @@ const I18N = {
     bidsPlaced: 'Bids placed',
     bidsRevealed: 'Bids revealed',
     auctionAddress: 'Auction address',
-    bidder: 'Bidder'
+    bidder: 'Bidder',
+    verificationBoundary: 'Verification Boundary',
+    deterministic: 'Deterministic (verifiable)',
+    interpretive: 'Interpretive (requires review)',
+    uncertaintyFlags: 'Uncertainty Flags',
+    method: 'Method',
+    refusalHandling: 'Refusal Handling',
+    refusalDetected: 'Refusal Detected',
+    signals: 'Signals',
+    routedTo: 'Routed To',
+    systemIdentity: 'System Identity',
+    promptUsed: 'Prompt Used',
+    showDetails: 'Show details',
+    hideDetails: 'Hide details',
+    week7Evaluation: 'Week 7 - System Identity',
+    whatSurprised: 'What Surprised',
+    externalExplanation: 'External Explanation Needed'
   },
   ru: {
     pageTitle: 'Отчёты DAO Governance',
@@ -118,7 +134,23 @@ const I18N = {
     bidsPlaced: 'Ставок размещено',
     bidsRevealed: 'Ставок раскрыто',
     auctionAddress: 'Адрес аукциона',
-    bidder: 'Участник'
+    bidder: 'Участник',
+    verificationBoundary: 'Граница верификации',
+    deterministic: 'Детерминистическое (проверяемое)',
+    interpretive: 'Интерпретативное (требует проверки)',
+    uncertaintyFlags: 'Флаги неопределённости',
+    method: 'Метод',
+    refusalHandling: 'Обработка отказов',
+    refusalDetected: 'Отказ обнаружен',
+    signals: 'Сигналы',
+    routedTo: 'Перенаправлено в',
+    systemIdentity: 'Системная идентичность',
+    promptUsed: 'Использованный промпт',
+    showDetails: 'Показать детали',
+    hideDetails: 'Скрыть детали',
+    week7Evaluation: 'Неделя 7 - Системная идентичность',
+    whatSurprised: 'Что удивило',
+    externalExplanation: 'Требуется внешнее объяснение'
   }
 };
 
@@ -499,6 +531,158 @@ function formatVerification(ambient, t) {
     html += `<p><strong>${t.bidder}:</strong> <a href="${ambient.bidder}" rel="noreferrer" target="_blank">${ambient.bidder}</a></p>`;
   }
   
+  html += '</div>';
+  return html;
+}
+
+function formatVerificationBoundary(boundary, t) {
+  if (!boundary) return '';
+  
+  let html = '<div class="section verification-boundary collapsible">';
+  html += `<h2>${t.verificationBoundary}</h2>`;
+  html += `<button class="collapsible-btn" onclick="this.nextElementSibling.classList.toggle('expanded')">${t.showDetails}</button>`;
+  html += '<div class="collapsible-content">';
+  
+  // Deterministic
+  if (boundary.deterministic && boundary.deterministic.length > 0) {
+    html += `<h3>${t.deterministic}</h3>`;
+    html += '<ul class="boundary-list deterministic">';
+    for (const item of boundary.deterministic) {
+      html += `<li><code>${item.path || item}</code></li>`;
+    }
+    html += '</ul>';
+  }
+  
+  // Interpretive
+  if (boundary.interpretive && boundary.interpretive.length > 0) {
+    html += `<h3>${t.interpretive}</h3>`;
+    html += '<ul class="boundary-list interpretive">';
+    for (const item of boundary.interpretive) {
+      const path = item.path || item;
+      const text = item.text ? `"${item.text.substring(0, 100)}..."` : '';
+      const reason = item.reason ? `(${item.reason})` : '';
+      html += `<li><code>${path}</code> ${reason} ${text}</li>`;
+    }
+    html += '</ul>';
+  }
+  
+  // Uncertainty flags
+  if (boundary.uncertainty_flags && boundary.uncertainty_flags.length > 0) {
+    html += `<h3>${t.uncertaintyFlags}</h3>`;
+    html += '<ul class="uncertainty-flags">';
+    for (const flag of boundary.uncertainty_flags) {
+      html += `<li><code>${flag}</code></li>`;
+    }
+    html += '</ul>';
+  }
+  
+  // Method
+  if (boundary.method) {
+    html += `<h3>${t.method}</h3>`;
+    if (boundary.method.kind) {
+      html += `<p><strong>Kind:</strong> ${boundary.method.kind}</p>`;
+    }
+    if (boundary.method.version) {
+      html += `<p><strong>Version:</strong> ${boundary.method.version}</p>`;
+    }
+    if (boundary.method.notes && boundary.method.notes.length > 0) {
+      html += '<ul class="method-notes">';
+      for (const note of boundary.method.notes) {
+        html += `<li>${note}</li>`;
+      }
+      html += '</ul>';
+    }
+  }
+  
+  html += '</div>';
+  html += '</div>';
+  return html;
+}
+
+function formatRefusalHandling(refusal, t) {
+  if (!refusal) return '';
+  
+  let html = '<div class="section refusal-handling collapsible">';
+  html += `<h2>${t.refusalHandling}</h2>`;
+  html += `<button class="collapsible-btn" onclick="this.nextElementSibling.classList.toggle('expanded')">${t.showDetails}</button>`;
+  html += '<div class="collapsible-content">';
+  
+  // Refusal detected
+  if (typeof refusal.refusal_detected !== 'undefined') {
+    const detectedClass = refusal.refusal_detected ? 'true' : 'false';
+    const detectedText = refusal.refusal_detected ? 'Yes' : 'No';
+    html += `<p><strong>${t.refusalDetected}:</strong> <span class="refusal-badge ${detectedClass}">${detectedText}</span></p>`;
+  }
+  
+  // Signals
+  if (refusal.signals && refusal.signals.length > 0) {
+    html += `<h3>${t.signals}</h3>`;
+    html += '<ul class="signals-list">';
+    for (const signal of refusal.signals) {
+      html += `<li><code>${signal}</code></li>`;
+    }
+    html += '</ul>';
+  }
+  
+  // Routed to
+  if (refusal.routed_to) {
+    html += `<p><strong>${t.routedTo}:</strong> ${refusal.routed_to}</p>`;
+  }
+  
+  // Note
+  if (refusal.note) {
+    html += `<p class="refusal-note">${refusal.note}</p>`;
+  }
+  
+  html += '</div>';
+  html += '</div>';
+  return html;
+}
+
+function formatWeek7Evaluation(week7, t) {
+  if (!week7) return '';
+  
+  let html = '<div class="section week7-evaluation collapsible">';
+  html += `<h2>${t.week7Evaluation}</h2>`;
+  html += `<button class="collapsible-btn" onclick="this.nextElementSibling.classList.toggle('expanded')">${t.showDetails}</button>`;
+  html += '<div class="collapsible-content">';
+  
+  if (week7.what_surprised) {
+    html += `<h3>${t.whatSurprised}</h3>`;
+    html += `<p>${week7.what_surprised}</p>`;
+  }
+  
+  if (week7.external_explanation_needed) {
+    html += `<h3>${t.externalExplanation}</h3>`;
+    html += `<p>${week7.external_explanation_needed}</p>`;
+  }
+  
+  html += '</div>';
+  html += '</div>';
+  return html;
+}
+
+function formatPromptUsed(promptUsed, t) {
+  if (!promptUsed) return '';
+  
+  let html = '<div class="section prompt-used collapsible">';
+  html += `<h2>${t.promptUsed}</h2>`;
+  html += `<button class="collapsible-btn" onclick="this.nextElementSibling.classList.toggle('expanded')">${t.showDetails}</button>`;
+  html += '<div class="collapsible-content">';
+  
+  if (promptUsed.prompt_used_summary) {
+    html += `<p>${promptUsed.prompt_used_summary}</p>`;
+  }
+  
+  if (promptUsed.prompt_used_excerpt) {
+    html += `<pre class="prompt-excerpt"><code>${promptUsed.prompt_used_excerpt.substring(0, 500)}...</code></pre>`;
+  }
+  
+  if (promptUsed.model) {
+    html += `<p><strong>${t.model}:</strong> ${promptUsed.model}</p>`;
+  }
+  
+  html += '</div>';
   html += '</div>';
   return html;
 }
@@ -991,6 +1175,26 @@ function getStyles() {
       color: #6c757d;
       margin: 20px 0;
     }
+    
+    .collapsible { margin: 20px 0; border: 1px solid #dee2e6; border-radius: 6px; overflow: hidden; }
+    .collapsible h2 { background: #f8f9fa; padding: 15px; margin: 0; cursor: pointer; }
+    .collapsible-btn { background: #007bff; color: white; border: none; padding: 8px 16px; border-radius: 4px; cursor: pointer; font-size: 0.9em; margin: 10px 15px; }
+    .collapsible-btn:hover { background: #0056b3; }
+    .collapsible-content { display: none; padding: 15px; background: white; }
+    .collapsible-content.expanded { display: block; }
+    .boundary-list, .uncertainty-flags, .signals-list { margin-left: 20px; margin-top: 10px; }
+    .boundary-list.deterministic li { color: #28a745; }
+    .boundary-list.interpretive li { color: #ffc107; }
+    .method-notes { margin-left: 20px; margin-top: 10px; font-size: 0.9em; color: #6c757d; }
+    .refusal-badge { padding: 4px 10px; border-radius: 4px; font-weight: bold; }
+    .refusal-badge.true { background: #dc3545; color: white; }
+    .refusal-badge.false { background: #28a745; color: white; }
+    .refusal-note { font-style: italic; color: #6c757d; margin-top: 10px; }
+    .prompt-excerpt { background: #f8f9fa; padding: 10px; border-radius: 4px; overflow-x: auto; font-size: 0.85em; }
+    .week7-evaluation { background: #e7f3ff; border-left: 4px solid #007bff; }
+    .verification-boundary { background: #fff3cd; border-left: 4px solid #ffc107; }
+    .refusal-handling { background: #f8d7da; border-left: 4px solid #dc3545; }
+    .prompt-used { background: #d1e7dd; border-left: 4px solid #198754; }
   `;
 }
 
@@ -1088,6 +1292,10 @@ function generateReportPage(report, filename, lang, currentUrl) {
           ${formatRecommendation(report.recommendation, t)}
           ${formatLimitations(report.limitations, t)}
           ${formatVerification(report.__ambient, t)}
+          ${formatVerificationBoundary(report.verification_boundary, t)}
+          ${formatRefusalHandling(report.refusal_handling, t)}
+          ${formatWeek7Evaluation(report.week7_evaluation, t)}
+          ${formatPromptUsed(report.input.prompt_used, t)}
         </article>
       </div>
     </body>

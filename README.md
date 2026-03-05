@@ -4,6 +4,7 @@ AI assistant for DAO governance proposals.
 
 ## Table of Contents
 
+- [Week 7 - System Identity (Web2)](#week-7---system-identity-web2)
 - [Week 6 - Refusal handling (Web2)](#week-6---refusal-handling-web2)
 - [Downstream handling (routing)](#downstream-handling-routing)
 - [Moderator checklist (Week 6 Web2)](#moderator-checklist-week-6-web2)
@@ -25,6 +26,7 @@ This project started as **Web3 Developer Loop - Experiment #3 (AI for governance
 It now also documents and ships:
 - Week 5 verification boundaries (verifiable vs interpretive layers)
 - Week 6 refusal handling (Web2): deterministic refusal detection plus routing and human review tickets
+- Week 7 system identity (Web2): exposes system identity, verification boundaries, and refusal handling in the UI
 
 It takes a proposal URL (Snapshot, Tally, DAO DAO), extracts available data, and produces a structured analysis:
 - summary of the proposal
@@ -39,6 +41,44 @@ The design goal is **honesty and conservatism**:
 - if some data cannot be extracted, it is marked as `UNKNOWN`
 - the tool does not guess voting options or results
 - the output is meant to **assist** human decision-making, not replace it
+
+---
+
+## Week 7 - System Identity (Web2)
+
+Week 7's goal: "Expose system identity in your app."
+
+This project now exposes system identity through collapsible sections in the report viewer:
+
+### Verification Boundary Section
+Shows which parts of the analysis are deterministic (verifiable) vs interpretive (require human review):
+- **Deterministic**: Fields that can be directly verified from extracted data
+- **Interpretive**: Fields requiring human judgment
+- **Uncertainty Flags**: Signals indicating incomplete information
+- **Method**: How boundaries are determined
+
+### Refusal Handling Section
+Displays when the system refused to provide a recommendation:
+- **Refusal Detected**: Yes/No indicator
+- **Signals**: What triggered the refusal (e.g., `unknowns_present`, `low_confidence`)
+- **Routed To**: Where the request was forwarded (e.g., `HUMAN_REVIEW`)
+
+### Prompt Used Section
+Shows the prompt that generated the analysis:
+- Summary of prompt intent
+- Excerpt of prompt text
+- Model used
+
+### Week 7 Evaluation Section
+For reports tagged with Week 7 evaluation:
+- What surprised the tester
+- Where external explanation was needed
+
+The UI uses color-coded collapsible sections:
+- 🔵 Blue: Week 7 evaluation
+- 🟡 Yellow: Verification boundaries
+- 🔴 Red: Refusal handling
+- 🟢 Green: Prompt used
 
 ---
 

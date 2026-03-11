@@ -142,7 +142,7 @@ function pickBidder(lifecycle) {
 
 export async function analyzeWithLLM(url, extracted, principles, opts = {}) {
   const {
-    model = "zai-org/GLM-4.6",
+    model = "zai-org/GLM-5",
 
     // Keep raw response JSON? For now: no spam, but can save if you need.
     debugRawToFile = false,

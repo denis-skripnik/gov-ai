@@ -132,6 +132,15 @@ Enhanced console output:
 ```
 ==================================================
 GovAI Analysis - 2026-03-22T10:54:00.000Z
+```
+
+### Example Reports (Week 8)
+
+Example from Week 8 testing on DAO DAO Injective proposal:
+
+- [report-2026-03-22T13-03-22-812Z.json](examples/reports/report-2026-03-22T13-03-22-812Z.json)
+- [ticket-2026-03-22T13-03-22-812Z.json](examples/reviews/ticket-2026-03-22T13-03-22-812Z.json)
+- [route-2026-03-22T13-03-22-812Z.json](examples/routes/route-2026-03-22T13-03-22-812Z.json)
 Proposal: https://snapshot.org/...
 ==================================================
 Fetching and extracting proposal data...

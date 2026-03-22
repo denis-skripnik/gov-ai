@@ -57,7 +57,13 @@ if (!fs.existsSync("principles.json")) {
 const principles = JSON.parse(fs.readFileSync("principles.json", "utf-8"));
 
 // ---------- RUN ----------
-console.log("Analyzing:", url);
+// Week 8: Progress logging
+console.log('='.repeat(50));
+console.log(`GovAI Analysis - ${new Date().toISOString()}`);
+console.log(`Proposal: ${url}`);
+console.log('='.repeat(50));
+
+console.log("Fetching and extracting proposal data...");
 
 const extracted = await fetchAndExtract(url);
 

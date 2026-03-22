@@ -5,6 +5,153 @@ import crypto from "crypto";
 const API_URL = "https://api.ambient.xyz/v1/chat/completions";
 const API_KEY = process.env.AMBIENT_API_KEY;
 
+// ========== Week 8: Dynamic Timeout ==========
+class LatencyTracker {
+  constructor(windowSize = 10) {
+    this.windowSize = windowSize;
+    this.latencies = [];
+  }
+  
+  add(latencyMs) {
+    this.latencies.push(latencyMs);
+    if (this.latencies.length > this.windowSize) {
+      this.latencies.shift();
+    }
+  }
+  
+  getDynamicTimeout() {
+    if (this.latencies.length < 3) return 60000; // default 60s
+    const sorted = [...this.latencies].sort((a, b) => a - b);
+    const median = sorted[Math.floor(sorted.length / 2)];
+    return median * 3; // 3x median as timeout
+  }
+}
+
+// Global latency tracker instance
+const latencyTracker = new LatencyTracker();
+
+// ========== Week 8: Financial Proposal Detection ==========
+function isFinancialProposal(title, body) {
+  const text = `${title} ${body}`.toLowerCase();
+  
+  const patterns = [
+    /\$\d+[.,]?\d*\s*(m|k|million|billion)?/i,
+    /\b(usdc|eth|dai|weth|aave|ens|btc|wbtc|DAI|Jun|ATOM)\b/i,
+    /\b(transfer|allocate|distribute|fund|pay|grant|budget|send)\b/i,
+    /\b(treasury|endowment|safe|timelock|budget|revenue|compensation|bounty|payment)\b/i,
+    /0x[a-fA-F0-9]{40}/, // Ethereum addresses
+  ];
+  
+  let matches = 0;
+  for (const pattern of patterns) {
+    if (pattern.test(text)) matches++;
+  }
+  
+  return matches >= 2; // минимум 2 совпадения
+}
+
+// ========== Week 8: Multi-node Analysis ==========
+function findConsensusIndex(results) {
+  // results = [{ result: {...}}, ...] с analysis и recommendation
+  
+  // Создай ключи для сравнения:
+  // suggested_option + confidence + first 50 chars of reasoning
+  
+  const keys = results.map(r => {
+    const rec = r.result.recommendation || {};
+    const key = [
+      rec.suggested_option || 'UNKNOWN',
+      rec.confidence || 'unknown',
+      (rec.reasoning || '').substring(0, 50)
+    ].join('|');
+    return key;
+  });
+  
+  // Подсчитай совпадения
+  const counts = {};
+  keys.forEach((key, idx) => {
+    if (!counts[key]) counts[key] = [];
+    counts[key].push(idx);
+  });
+  
+  // Найди консенсус (2+)
+  let bestCount = 0;
+  let bestIndex = 0;
+  
+  for (const key in counts) {
+    if (counts[key].length > bestCount) {
+      bestCount = counts[key].length;
+      bestIndex = counts[key][0];
+    }
+  }
+  
+  // Логируй
+  console.log(`[${new Date().toISOString()}] Consensus check: ${bestCount} identical out of ${keys.length}`);
+  console.log(`[${new Date().toISOString()}] Recommendation keys:`, keys);
+  
+  return bestCount >= 2 ? bestIndex : 0;
+}
+
+async function multiNodeAnalysis(url, extracted, principles, maxAttempts = 3) {
+  const results = [];
+  const tempDir = './temp/multi-node';
+  
+  // Create temp directory if not exists
+  if (!fs.existsSync(tempDir)) {
+    fs.mkdirSync(tempDir, { recursive: true });
+  }
+  
+  for (let i = 1; i <= maxAttempts; i++) {
+    try {
+      const startTime = Date.now();
+      const result = await analyzeWithLLM(url, extracted, principles);
+      const latency = Date.now() - startTime;
+      latencyTracker.add(latency);
+      
+      const filename = `${tempDir}/analysis-${Date.now()}-attempt-${i}.json`;
+      fs.writeFileSync(filename, JSON.stringify(result, null, 2));
+      results.push({ attempt: i, result, filename, success: true, latencyMs: latency });
+    } catch (e) {
+      const filename = `${tempDir}/analysis-${Date.now()}-attempt-${i}-error.json`;
+      fs.writeFileSync(filename, JSON.stringify({ error: e.message }, null, 2));
+      results.push({ attempt: i, error: e.message, filename, success: false });
+    }
+  }
+  
+  // Compare results
+  const successful = results.filter(r => r.success);
+  if (successful.length === 0) {
+    throw new Error('All attempts failed');
+  }
+  
+  // Compare recommendations for consensus
+  const chosenIndex = findConsensusIndex(successful);
+  const chosen = successful[chosenIndex].result;
+  
+  // For debugging: collect recommendation keys
+  const recommendationKeys = successful.map(r => {
+    const rec = r.result?.recommendation || {};
+    return [rec.suggested_option || 'UNKNOWN', rec.confidence || 'unknown'].join('|');
+  });
+  
+  // Log why this choice was made
+  const reason = chosenIndex === 0 ? 'first-or-no-consensus' : 'consensus';
+  console.log(`[${new Date().toISOString()}] Multi-node comparison: ${successful.length} successful, consensus index: ${chosenIndex}, reason: ${reason}`);
+  
+  // Save final choice with reason
+  const summaryFile = `${tempDir}/analysis-${Date.now()}-chosen.json`;
+  fs.writeFileSync(summaryFile, JSON.stringify({ 
+    chosenFrom: successful.map(r => r.filename),
+    chosenIndex,
+    recommendationKeys,
+    final: chosen,
+    reason,
+    attempts: results
+  }, null, 2));
+  
+  return chosen;
+}
+
 if (!API_KEY) {
   throw new Error("Set AMBIENT_API_KEY env variable");
 }
@@ -44,9 +191,14 @@ function sleep(ms) {
 async function withRetry(fn, { tries = 3, baseDelayMs = 600 } = {}) {
   let retries = 0;
   while (true) {
+    const startTime = Date.now();
     try {
       return await fn();
     } catch (e) {
+      // Track latency even on failure (for timeout calculation)
+      const latency = Date.now() - startTime;
+      latencyTracker.add(latency);
+      
       if (!isRetryableNetworkError(e) || retries >= tries - 1) throw e;
       const delay = baseDelayMs * 2 ** retries;
       retries += 1;
@@ -54,6 +206,9 @@ async function withRetry(fn, { tries = 3, baseDelayMs = 600 } = {}) {
     }
   }
 }
+
+// Export for external use
+export { latencyTracker, isFinancialProposal, multiNodeAnalysis };
 
 // Minimal base58 encoder (no deps)
 const B58_ALPHABET = "123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz";
@@ -141,6 +296,9 @@ function pickBidder(lifecycle) {
 }
 
 export async function analyzeWithLLM(url, extracted, principles, opts = {}) {
+  // Week 8: Progress logging
+  console.log(`[${new Date().toISOString()}] Starting analysis for: ${url}`);
+  
   const {
     model = "zai-org/GLM-5",
 
@@ -151,6 +309,22 @@ export async function analyzeWithLLM(url, extracted, principles, opts = {}) {
     stream = true,
   } = opts;
 
+  // Week 8: Check if financial proposal
+  const isFinancial = isFinancialProposal(extracted?.title || '', extracted?.body || '');
+  console.log(`[${new Date().toISOString()}] Checking if financial proposal... ${isFinancial ? 'YES' : 'NO'}`);
+  
+  // Week 8: Multi-node analysis for financial proposals (default: enabled)
+  const MULTI_NODE_ENABLED = process.env.MULTI_NODE_ENABLED === 'true' || process.env.MULTI_NODE_ENABLED === undefined;
+  if (isFinancial && MULTI_NODE_ENABLED) {
+    console.log(`[${new Date().toISOString()}] Financial proposal detected - running multi-node analysis...`);
+    const report = await multiNodeAnalysis(url, extracted, principles);
+    // Attach financial proposal flag to report
+    if (report && report.input) {
+      report.input.isFinancialProposal = true;
+    }
+    return report;
+  }
+  
   const prompt = buildPrompt(url, extracted, principles);
 
   if (!stream) {
@@ -218,6 +392,11 @@ principles: "./principles.json",
 schema: "./report.schema.json",
         },
       });
+
+      // Week 8: Attach financial proposal flag
+      if (report && report.input) {
+        report.input.isFinancialProposal = isFinancial;
+      }
 
       return report;
     });
@@ -375,6 +554,11 @@ principles: "./principles.json",
 schema: "./report.schema.json",
       },
     });
+
+    // Week 8: Attach financial proposal flag
+    if (report && report.input) {
+      report.input.isFinancialProposal = isFinancial;
+    }
 
     return report;
   });

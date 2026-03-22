@@ -100,10 +100,10 @@ GovAI Analysis - 2026-03-22T10:54:00.000Z
 
 Example from Week 8 testing on DAO DAO Injective proposal:
 
-- [report-2026-03-22T13-03-22-812Z.json](examples/reports/report-2026-03-22T13-03-22-812Z.json)
-- [ticket-2026-03-22T13-03-22-812Z.json](examples/reviews/ticket-2026-03-22T13-03-22-812Z.json)
-- [route-2026-03-22T13-03-22-812Z.json](examples/routes/route-2026-03-22T13-03-22-812Z.json)
-Proposal: https://snapshot.org/...
+- [report-2026-03-22T13-38-05-856Z.json](examples/reports/report-2026-03-22T13-38-05-856Z.json)
+- [ticket-2026-03-22T13-38-05-856Z.json](examples/reviews/ticket-2026-03-22T13-38-05-856Z.json)
+- [route-2026-03-22T13-38-05-856Z.json](examples/routes/route-2026-03-22T13-38-05-856Z.json)
+Proposal: https://daodao.zone/...
 ==================================================
 Fetching and extracting proposal data...
 [2026-03-22T10:54:01.000Z] Starting analysis for: ...

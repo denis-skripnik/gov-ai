@@ -1,0 +1,233 @@
+{
+  "version": 1,
+  "input": {
+    "url": "https://daodao.zone/dao/injective/proposals/627",
+    "fetched_at": "2026-03-22T13:32:44.745Z",
+    "source_type": "daodao",
+    "prompt_used": {
+      "prompt_used_summary": "Structured governance analysis prompt. Must output ONLY valid JSON. Must not guess missing options/results; use UNKNOWN.",
+      "prompt_used_excerpt": "\nYou are given:\n\nURL:\nhttps://daodao.zone/dao/injective/proposals/627\n\nEXTRACTED_DATA (may be incomplete):\n{\n  \"source_type\": \"daodao\",\n  \"fetched_at\": \"2026-03-22T13:32:44.745Z\",\n  \"title\": \"OLP Reward Disbursement – Epoch 56\",\n  \"body\": \"If passed, this proposal confirms the final Open Liquidity Program institutional performance of epoch 56 as well as the distribution of 29380.273 INJ tokens, comprising 14580.364 INJ vested from epoch 53, and 14799.909 INJ representing 50% of the epoch 56 rewards allocation. The remaining OLP rewards from epoch 56 will be disbursed along with the rewards disbursement of epoch 59. The recipient must still be an active participant of the program in order to receive future disbursements. For a further breakdown of rewards, refer to the IPFS link: https://ol",
+      "prompt_used_excerpt_truncated": true,
+      "prompt_used_sha256": "8a00f733dc106e770f740c645f582dbc44345df5b085aff4a5e1c91b98e19e98",
+      "model": "zai-org/GLM-5-FP8",
+      "stream": true,
+      "prompt_used_files": {
+        "principles": {
+          "path": "./principles.json",
+          "sha256": "e446239714ddff5d3c0f2e575e52a9ec7b904c0d3ac85d257ee7f1509aa69a86"
+        },
+        "schema": {
+          "path": "./report.schema.json",
+          "sha256": "97f41c978611f91ac0bc2e0550760849e9c9bd4a189c842893d6ef3714758cb5"
+        }
+      }
+    },
+    "isFinancialProposal": true
+  },
+  "extracted": {
+    "title": "OLP Reward Disbursement – Epoch 56",
+    "body": "If passed, this proposal confirms the final Open Liquidity Program institutional performance of epoch 56 as well as the distribution of 29380.273 INJ tokens, comprising 14580.364 INJ vested from epoch 53, and 14799.909 INJ representing 50% of the epoch 56 rewards allocation. The remaining OLP rewards from epoch 56 will be disbursed along with the rewards disbursement of epoch 59. The recipient must still be an active participant of the program in order to receive future disbursements. For a further breakdown of rewards, refer to the IPFS link: https://olp.mypinata.cloud/ipfs/QmfPemtxCRf2ZdTJWEBSpukGeSUyZ6tc8o95o1CbLrv11n\n\n<strong>Actions:</strong>\n\n- By voting <strong>yes</strong> on this proposal, you support spending 29380.273 INJ tokens from the community pool for the epoch 56 OLP rewards distribution.\n- By voting <strong>no</strong> on the proposal, you do not support spending 29380.273 INJ tokens from the community pool for the epoch 56 OLP rewards distribution.\n- By voting <strong>no with veto</strong>, you find this proposal to be spam, irrelevant, or malicious to governance, and support burning the 100 INJ deposit if NoWithVeto votes are greater than one-third of the total voting power.\n- By voting <strong>abstain</strong>, you wish to contribute to quorum while formally declining to vote either for or against the proposal.\n\n<em>Disclosure: I am a member of the Injective Labs team.</em>",
+    "options": [],
+    "current_results": null,
+    "metadata": {
+      "nextjs": true
+    }
+  },
+  "analysis": {
+    "summary": "This proposal authorizes spending 29,380.273 INJ from the community pool for Open Liquidity Program (OLP) epoch 56 rewards distribution. The disbursement combines vested rewards from epoch 53 (14,580.364 INJ) and 50% of epoch 56 rewards (14,799.909 INJ).",
+    "key_changes": [
+      "Spend 29,380.273 INJ from the community pool for OLP rewards",
+      "Disburse 14,580.364 INJ vested from epoch 53",
+      "Disburse 14,799.909 INJ representing 50% of epoch 56 rewards allocation",
+      "Remaining 50% of epoch 56 rewards deferred to epoch 59 disbursement"
+    ],
+    "risks": [
+      "Treasury outflow of 29,380.273 INJ represents a material expenditure from community pool",
+      "Recipients must remain active participants to receive future disbursements, creating ongoing commitment for deferred rewards",
+      "50% deferral of epoch 56 rewards to epoch 59 creates future treasury liability",
+      "No verification method specified for confirming recipient eligibility or reward calculations beyond the IPFS link"
+    ],
+    "benefits": [
+      "Fulfills committed OLP rewards for institutional participants from epoch 53 and epoch 56",
+      "Detailed reward breakdown available via IPFS link for transparency",
+      "Split disbursement (50% now, 50% with epoch 59) provides budget-bounded approach to reward distribution"
+    ],
+    "unknowns": [
+      "Voting options not extracted from source - cannot determine exact option names",
+      "Current voting results unavailable - cannot assess proposal status",
+      "No independent verification of IPFS reward calculations provided",
+      "Total number of recipients and individual reward amounts not specified in proposal body",
+      "Criteria for 'active participant' status not defined in proposal text"
+    ],
+    "evidence_quotes": [
+      "distribution of 29380.273 INJ tokens, comprising 14580.364 INJ vested from epoch 53, and 14799.909 INJ representing 50% of the epoch 56 rewards allocation",
+      "The remaining OLP rewards from epoch 56 will be disbursed along with the rewards disbursement of epoch 59",
+      "The recipient must still be an active participant of the program in order to receive future disbursements",
+      "By voting yes on this proposal, you support spending 29380.273 INJ tokens from the community pool"
+    ]
+  },
+  "recommendation": {
+    "suggested_option": "UNKNOWN",
+    "confidence": "low",
+    "reasoning": "The proposal is a routine OLP reward disbursement with clear amounts and transparency via IPFS documentation. Treasury spending of 29,380.273 INJ is transparent but significant given user's high treasury risk sensitivity. However, voting options were not extracted from the source, making it impossible to suggest a specific option. The proposal appears legitimate as a scheduled incentive distribution rather than a risky protocol change. Manual verification of IPFS reward calculations is recommended due to high treasury risk sensitivity and lack of on-chain verification details.",
+    "conflicts_with_user_principles": [
+      "High treasury risk sensitivity conflicts with community pool expenditure of 29,380.273 INJ without explicit budget-bounded verification beyond IPFS documentation"
+    ]
+  },
+  "limitations": [
+    "This is not legal or financial advice.",
+    "The tool may have failed to extract all proposal parameters.",
+    "Critical parameters must be checked manually."
+  ],
+  "__ambient": {
+    "verified": true,
+    "merkle_root": "c4d71dba54128e3e657003c2429278ae47a0962284b59771fa88b367f5ee4a94",
+    "request_id": "f3b56e6198ee4d60b12a9698e5c891c6",
+    "model": "zai-org/GLM-5-FP8",
+    "verified_by_validators": "Verified by 3 validators",
+    "auction": {
+      "status": "Done",
+      "bids": {
+        "placed": 5,
+        "revealed": 5
+      },
+      "address": "https://explorer.ambient.xyz/address/CEw81xTnvbr5KZHaw6EJhWGRCqaLBCsHriJUkidEWcFH"
+    },
+    "bidder": "https://explorer.ambient.xyz/address/98WKDq5HzneuZycJiCSM5ajuKzscQMop2GsRdxK95q2m"
+  },
+  "verification_boundary": {
+    "deterministic": [
+      {
+        "path": "analysis.summary",
+        "text": "This proposal authorizes spending 29,380.273 INJ from the community pool for Open Liquidity Program (OLP) epoch 56 rewards distribution. The disbursement combines vested rewards from epoch 53 (14,580.364 INJ) and 50% of epoch 56 rewards (14,799.909 INJ).",
+        "reason": "deterministic:contains_numbers_or_addresses"
+      },
+      {
+        "path": "analysis.key_changes[0]",
+        "text": "Spend 29,380.273 INJ from the community pool for OLP rewards",
+        "reason": "deterministic:contains_numbers_or_addresses"
+      },
+      {
+        "path": "analysis.key_changes[1]",
+        "text": "Disburse 14,580.364 INJ vested from epoch 53",
+        "reason": "deterministic:contains_numbers_or_addresses"
+      },
+      {
+        "path": "analysis.key_changes[2]",
+        "text": "Disburse 14,799.909 INJ representing 50% of epoch 56 rewards allocation",
+        "reason": "deterministic:contains_numbers_or_addresses"
+      },
+      {
+        "path": "analysis.key_changes[3]",
+        "text": "Remaining 50% of epoch 56 rewards deferred to epoch 59 disbursement",
+        "reason": "deterministic:contains_numbers_or_addresses"
+      }
+    ],
+    "interpretive": [
+      {
+        "path": "analysis.risks[0]",
+        "text": "Treasury outflow of 29,380.273 INJ represents a material expenditure from community pool",
+        "reason": "interpretive"
+      },
+      {
+        "path": "analysis.risks[1]",
+        "text": "Recipients must remain active participants to receive future disbursements, creating ongoing commitment for deferred rewards",
+        "reason": "interpretive"
+      },
+      {
+        "path": "analysis.risks[2]",
+        "text": "50% deferral of epoch 56 rewards to epoch 59 creates future treasury liability",
+        "reason": "interpretive"
+      },
+      {
+        "path": "analysis.risks[3]",
+        "text": "No verification method specified for confirming recipient eligibility or reward calculations beyond the IPFS link",
+        "reason": "interpretive"
+      },
+      {
+        "path": "analysis.benefits[0]",
+        "text": "Fulfills committed OLP rewards for institutional participants from epoch 53 and epoch 56",
+        "reason": "interpretive"
+      },
+      {
+        "path": "analysis.benefits[1]",
+        "text": "Detailed reward breakdown available via IPFS link for transparency",
+        "reason": "interpretive"
+      },
+      {
+        "path": "analysis.benefits[2]",
+        "text": "Split disbursement (50% now, 50% with epoch 59) provides budget-bounded approach to reward distribution",
+        "reason": "interpretive"
+      },
+      {
+        "path": "analysis.unknowns[0]",
+        "text": "Voting options not extracted from source - cannot determine exact option names",
+        "reason": "uncertainty"
+      },
+      {
+        "path": "analysis.unknowns[1]",
+        "text": "Current voting results unavailable - cannot assess proposal status",
+        "reason": "uncertainty"
+      },
+      {
+        "path": "analysis.unknowns[2]",
+        "text": "No independent verification of IPFS reward calculations provided",
+        "reason": "uncertainty"
+      },
+      {
+        "path": "analysis.unknowns[3]",
+        "text": "Total number of recipients and individual reward amounts not specified in proposal body",
+        "reason": "uncertainty"
+      },
+      {
+        "path": "analysis.unknowns[4]",
+        "text": "Criteria for 'active participant' status not defined in proposal text",
+        "reason": "uncertainty"
+      },
+      {
+        "path": "recommendation.reasoning",
+        "text": "The proposal is a routine OLP reward disbursement with clear amounts and transparency via IPFS documentation. Treasury spending of 29,380.273 INJ is transparent but significant given user's high treasury risk sensitivity. However, voting options were not extracted from the source, making it impossible to suggest a specific option. The proposal appears legitimate as a scheduled incentive distribution rather than a risky protocol change. Manual verification of IPFS reward calculations is recommended due to high treasury risk sensitivity and lack of on-chain verification details.",
+        "reason": "interpretive"
+      },
+      {
+        "path": "recommendation.conflicts_with_user_principles[0]",
+        "text": "High treasury risk sensitivity conflicts with community pool expenditure of 29,380.273 INJ without explicit budget-bounded verification beyond IPFS documentation",
+        "reason": "interpretive"
+      }
+    ],
+    "uncertainty_flags": [
+      "unknowns:Voting options not extracted from source - canno...",
+      "unknowns:Current voting results unavailable - cannot asse...",
+      "unknowns:No independent verification of IPFS reward calcu...",
+      "unknowns:Total number of recipients and individual reward...",
+      "unknowns:Criteria for 'active participant' status not def...",
+      "suggested_option:UNKNOWN",
+      "confidence:low",
+      "missing:extracted.options"
+    ],
+    "method": {
+      "kind": "heuristic",
+      "version": 2,
+      "notes": [
+        "Deterministic layer is based on direct matching to extracted fields and evidence_quotes, plus presence of hard literals (numbers, addresses, option strings).",
+        "Interpretive layer includes summary, risks, benefits, and recommendation reasoning.",
+        "This is a boundary labeling aid, not a proof of truth."
+      ]
+    }
+  },
+  "refusal_handling": {
+    "refusal_detected": true,
+    "signals": [
+      "suggested_option_unknown",
+      "confidence_low",
+      "unknowns_present:5",
+      "missing_extracted_options"
+    ],
+    "routed_to": "HUMAN_REVIEW",
+    "note": "Refusal detection is heuristic and conservative. It routes ambiguous or underspecified cases to human review."
+  },
+  "week6_evaluation": {
+    "refusal_occurred": true,
+    "agree_with_refusal": null
+  }
+}

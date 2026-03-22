@@ -41,7 +41,7 @@ function isFinancialProposal(title, body) {
     // Financial actions
     /\b(transfer|allocate|distribute|fund|pay|grant|budget|send|disperse|vest|stake|unlock|claim)\b/i,
     // Treasury/governance terms
-    /\b(treasury|endowment|safe|timelock|budget|revenue|compensation|bounty|payment|rewards|allocation|vesting|token.*distribution)\b/i,
+    /\b(treasury|endowment|safe|timelock|budget|revenue|compensation|bounty|payment|rewards|allocation|vesting|distribution|disbursement)\b/i,
     // Addresses (contract interactions)
     /0x[a-fA-F0-9]{40}/,
     // Vote/governance with amounts

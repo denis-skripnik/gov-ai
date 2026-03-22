@@ -4,6 +4,7 @@ AI assistant for DAO governance proposals.
 
 ## Table of Contents
 
+- [Week 8 - Design for Many Small Miners (Web2)](#week-8---design-for-many-small-miners-web2)
 - [Week 7 - System Identity (Web2)](#week-7---system-identity-web2)
 - [Week 6 - Refusal handling (Web2)](#week-6---refusal-handling-web2)
 - [Downstream handling (routing)](#downstream-handling-routing)
@@ -27,6 +28,7 @@ It now also documents and ships:
 - Week 5 verification boundaries (verifiable vs interpretive layers)
 - Week 6 refusal handling (Web2): deterministic refusal detection plus routing and human review tickets
 - Week 7 system identity (Web2): exposes system identity, verification boundaries, and refusal handling in the UI
+- Week 8 design for many small miners (Web2): dynamic timeout, financial proposal detection, multi-node consensus analysis
 
 It takes a proposal URL (Snapshot, Tally, DAO DAO), extracts available data, and produces a structured analysis:
 - summary of the proposal
@@ -79,6 +81,65 @@ The UI uses color-coded collapsible sections:
 - 🟡 Yellow: Verification boundaries
 - 🔴 Red: Refusal handling
 - 🟢 Green: Prompt used
+
+---
+
+## Week 8 - Design for Many Small Miners (Web2)
+
+Week 8's goal: "Design for many small miners."
+
+This project implements solutions for handling variable miner speeds in a decentralized network.
+
+### LatencyTracker (Dynamic Timeout)
+
+Adaptive timeout based on rolling median of recent latencies:
+- Stores last N latency measurements
+- Timeout = median * 3
+- Default: 60s if less than 3 measurements
+
+### Financial Proposal Detection
+
+Automatic detection of financial proposals using pattern matching:
+- Dollar amounts: `$2.5M`, `$100K`
+- Crypto tokens: `USDC`, `ETH`, `DAI`, `AAVE`, `ENS`
+- Financial verbs: `transfer`, `allocate`, `distribute`, `fund`
+- Treasury terms: `treasury`, `endowment`, `budget`, `revenue`
+- Ethereum addresses: `0x...`
+
+Minimum 2 pattern matches = financial proposal.
+
+### Multi-Node Analysis (Consensus)
+
+For financial proposals, the system runs 3 independent analyses:
+1. Makes 3 requests to different nodes
+2. Saves each result to `./temp/multi-node/`
+3. Compares recommendations (suggested_option + confidence + reasoning)
+4. Selects by consensus (2+ identical = consensus)
+5. If no consensus, takes first result
+
+Results saved:
+- `analysis-{timestamp}-attempt-{N}.json` - each attempt
+- `analysis-{timestamp}-chosen.json` - final choice with reason
+
+### Configuration
+
+- `MULTI_NODE_ENABLED` (default: true) - enable multi-node for financial proposals
+- Set in environment or `.env` file
+
+### Progress Logging
+
+Enhanced console output:
+```
+==================================================
+GovAI Analysis - 2026-03-22T10:54:00.000Z
+Proposal: https://snapshot.org/...
+==================================================
+Fetching and extracting proposal data...
+[2026-03-22T10:54:01.000Z] Starting analysis for: ...
+[2026-03-22T10:54:01.000Z] Checking if financial proposal... YES
+[2026-03-22T10:54:02.000Z] Financial proposal detected - running multi-node analysis...
+[2026-03-22T10:54:15.000Z] Consensus check: 3 identical out of 3
+```
 
 ---
 

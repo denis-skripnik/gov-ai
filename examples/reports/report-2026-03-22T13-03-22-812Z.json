@@ -1,0 +1,219 @@
+{
+  "version": 1,
+  "input": {
+    "url": "https://daodao.zone/dao/injective/proposals/627",
+    "fetched_at": "2026-03-22T13:00:25.381Z",
+    "source_type": "daodao",
+    "prompt_used": {
+      "prompt_used_summary": "Structured governance analysis prompt. Must output ONLY valid JSON. Must not guess missing options/results; use UNKNOWN.",
+      "prompt_used_excerpt": "\nYou are given:\n\nURL:\nhttps://daodao.zone/dao/injective/proposals/627\n\nEXTRACTED_DATA (may be incomplete):\n{\n  \"source_type\": \"daodao\",\n  \"fetched_at\": \"2026-03-22T13:00:25.381Z\",\n  \"title\": \"OLP Reward Disbursement – Epoch 56\",\n  \"body\": \"If passed, this proposal confirms the final Open Liquidity Program institutional performance of epoch 56 as well as the distribution of 29380.273 INJ tokens, comprising 14580.364 INJ vested from epoch 53, and 14799.909 INJ representing 50% of the epoch 56 rewards allocation. The remaining OLP rewards from epoch 56 will be disbursed along with the rewards disbursement of epoch 59. The recipient must still be an active participant of the program in order to receive future disbursements. For a further breakdown of rewards, refer to the IPFS link: https://ol",
+      "prompt_used_excerpt_truncated": true,
+      "prompt_used_sha256": "a56b074ee6d7156bc0899fce6a43e0054d8f3f2d20de32f257c8a07067089c83",
+      "model": "zai-org/GLM-5-FP8",
+      "stream": true,
+      "prompt_used_files": {
+        "principles": {
+          "path": "./principles.json",
+          "sha256": "e446239714ddff5d3c0f2e575e52a9ec7b904c0d3ac85d257ee7f1509aa69a86"
+        },
+        "schema": {
+          "path": "./report.schema.json",
+          "sha256": "97f41c978611f91ac0bc2e0550760849e9c9bd4a189c842893d6ef3714758cb5"
+        }
+      }
+    },
+    "isFinancialProposal": true
+  },
+  "extracted": {
+    "title": "OLP Reward Disbursement – Epoch 56",
+    "body": "If passed, this proposal confirms the final Open Liquidity Program institutional performance of epoch 56 as well as the distribution of 29380.273 INJ tokens, comprising 14580.364 INJ vested from epoch 53, and 14799.909 INJ representing 50% of the epoch 56 rewards allocation. The remaining OLP rewards from epoch 56 will be disbursed along with the rewards disbursement of epoch 59. The recipient must still be an active participant of the program in order to receive future disbursements. For a further breakdown of rewards, refer to the IPFS link: https://olp.mypinata.cloud/ipfs/QmfPemtxCRf2ZdTJWEBSpukGeSUyZ6tc8o95o1CbLrv11n\n\n<strong>Actions:</strong>\n\n- By voting <strong>yes</strong> on this proposal, you support spending 29380.273 INJ tokens from the community pool for the epoch 56 OLP rewards distribution.\n- By voting <strong>no</strong> on the proposal, you do not support spending 29380.273 INJ tokens from the community pool for the epoch 56 OLP rewards distribution.\n- By voting <strong>no with veto</strong>, you find this proposal to be spam, irrelevant, or malicious to governance, and support burning the 100 INJ deposit if NoWithVeto votes are greater than one-third of the total voting power.\n- By voting <strong>abstain</strong>, you wish to contribute to quorum while formally declining to vote either for or against the proposal.\n\n<em>Disclosure: I am a member of the Injective Labs team.</em>",
+    "options": [],
+    "current_results": null,
+    "metadata": {
+      "nextjs": true
+    }
+  },
+  "analysis": {
+    "summary": "This proposal authorizes spending 29,380.273 INJ from the community pool for Open Liquidity Program (OLP) rewards distribution for epoch 56, combining vested rewards from epoch 53 and a partial allocation from epoch 56 rewards.",
+    "key_changes": [
+      "Spend 29,380.273 INJ tokens from the community pool",
+      "Distribute 14,580.364 INJ as vested rewards from epoch 53",
+      "Distribute 14,799.909 INJ as 50% of epoch 56 rewards allocation",
+      "Defer remaining epoch 56 rewards to epoch 59 disbursement"
+    ],
+    "risks": [
+      "Community pool outflow of 29,380.273 INJ reduces treasury reserves available for other initiatives",
+      "Future disbursements are contingent on recipients remaining active program participants, creating uncertainty for reward recipients",
+      "Detailed reward breakdown relies on external IPFS link which must be manually verified for accuracy"
+    ],
+    "benefits": [
+      "Fulfills committed OLP rewards for epoch 56 institutional participants",
+      "Clear specification of disbursement amounts: 14,580.364 INJ (epoch 53 vested) and 14,799.909 INJ (epoch 56 partial)",
+      "Provides explicit IPFS link for reward breakdown verification"
+    ],
+    "unknowns": [
+      "Voting options not extracted from source - cannot map to specific option strings",
+      "Current vote tally and quorum status UNKNOWN",
+      "Individual recipient addresses and reward allocations not specified in proposal body",
+      "Total OLP program budget and remaining community pool balance not stated",
+      "Criteria for 'active participant' status not defined in proposal"
+    ],
+    "evidence_quotes": [
+      "distribution of 29380.273 INJ tokens, comprising 14580.364 INJ vested from epoch 53, and 14799.909 INJ representing 50% of the epoch 56 rewards allocation",
+      "The remaining OLP rewards from epoch 56 will be disbursed along with the rewards disbursement of epoch 59",
+      "The recipient must still be an active participant of the program in order to receive future disbursements"
+    ]
+  },
+  "recommendation": {
+    "suggested_option": "UNKNOWN",
+    "confidence": "low",
+    "reasoning": "This is a routine treasury disbursement for a defined rewards program with clear amounts specified. However, voting options were not extracted, making it impossible to suggest a specific option. User has high treasury risk sensitivity, which warrants manual verification of the IPFS breakdown link and confirmation that this disbursement aligns with previously approved OLP program parameters. The disclosure of proposer affiliation with Injective Labs is transparent. Cannot provide specific vote recommendation without extracted option strings.",
+    "conflicts_with_user_principles": []
+  },
+  "limitations": [
+    "This is not legal or financial advice.",
+    "The tool may have failed to extract all proposal parameters.",
+    "Critical parameters must be checked manually."
+  ],
+  "__ambient": {
+    "verified": true,
+    "merkle_root": "7eb161945a9f77a6f422d5c6ea7d51c641aff848b357b9fb2ccdd050905e8c21",
+    "request_id": "7ed8b3cd1a8a41e297edd2f41e926590",
+    "model": "zai-org/GLM-5-FP8",
+    "verified_by_validators": "Verified by 3 validators",
+    "auction": {
+      "status": "Done",
+      "bids": {
+        "placed": 5,
+        "revealed": 5
+      },
+      "address": "https://explorer.ambient.xyz/address/EtR9hkMJyf65U7mGt5takUxGaP8zmeC4dDfH4vmcv5w2"
+    },
+    "bidder": "https://explorer.ambient.xyz/address/98WKDq5HzneuZycJiCSM5ajuKzscQMop2GsRdxK95q2m"
+  },
+  "verification_boundary": {
+    "deterministic": [
+      {
+        "path": "analysis.summary",
+        "text": "This proposal authorizes spending 29,380.273 INJ from the community pool for Open Liquidity Program (OLP) rewards distribution for epoch 56, combining vested rewards from epoch 53 and a partial allocation from epoch 56 rewards.",
+        "reason": "deterministic:contains_numbers_or_addresses"
+      },
+      {
+        "path": "analysis.key_changes[0]",
+        "text": "Spend 29,380.273 INJ tokens from the community pool",
+        "reason": "deterministic:contains_numbers_or_addresses"
+      },
+      {
+        "path": "analysis.key_changes[1]",
+        "text": "Distribute 14,580.364 INJ as vested rewards from epoch 53",
+        "reason": "deterministic:contains_numbers_or_addresses"
+      },
+      {
+        "path": "analysis.key_changes[2]",
+        "text": "Distribute 14,799.909 INJ as 50% of epoch 56 rewards allocation",
+        "reason": "deterministic:contains_numbers_or_addresses"
+      },
+      {
+        "path": "analysis.key_changes[3]",
+        "text": "Defer remaining epoch 56 rewards to epoch 59 disbursement",
+        "reason": "deterministic:contains_numbers_or_addresses"
+      }
+    ],
+    "interpretive": [
+      {
+        "path": "analysis.risks[0]",
+        "text": "Community pool outflow of 29,380.273 INJ reduces treasury reserves available for other initiatives",
+        "reason": "interpretive"
+      },
+      {
+        "path": "analysis.risks[1]",
+        "text": "Future disbursements are contingent on recipients remaining active program participants, creating uncertainty for reward recipients",
+        "reason": "interpretive"
+      },
+      {
+        "path": "analysis.risks[2]",
+        "text": "Detailed reward breakdown relies on external IPFS link which must be manually verified for accuracy",
+        "reason": "interpretive"
+      },
+      {
+        "path": "analysis.benefits[0]",
+        "text": "Fulfills committed OLP rewards for epoch 56 institutional participants",
+        "reason": "interpretive"
+      },
+      {
+        "path": "analysis.benefits[1]",
+        "text": "Clear specification of disbursement amounts: 14,580.364 INJ (epoch 53 vested) and 14,799.909 INJ (epoch 56 partial)",
+        "reason": "interpretive"
+      },
+      {
+        "path": "analysis.benefits[2]",
+        "text": "Provides explicit IPFS link for reward breakdown verification",
+        "reason": "interpretive"
+      },
+      {
+        "path": "analysis.unknowns[0]",
+        "text": "Voting options not extracted from source - cannot map to specific option strings",
+        "reason": "uncertainty"
+      },
+      {
+        "path": "analysis.unknowns[1]",
+        "text": "Current vote tally and quorum status UNKNOWN",
+        "reason": "uncertainty"
+      },
+      {
+        "path": "analysis.unknowns[2]",
+        "text": "Individual recipient addresses and reward allocations not specified in proposal body",
+        "reason": "uncertainty"
+      },
+      {
+        "path": "analysis.unknowns[3]",
+        "text": "Total OLP program budget and remaining community pool balance not stated",
+        "reason": "uncertainty"
+      },
+      {
+        "path": "analysis.unknowns[4]",
+        "text": "Criteria for 'active participant' status not defined in proposal",
+        "reason": "uncertainty"
+      },
+      {
+        "path": "recommendation.reasoning",
+        "text": "This is a routine treasury disbursement for a defined rewards program with clear amounts specified. However, voting options were not extracted, making it impossible to suggest a specific option. User has high treasury risk sensitivity, which warrants manual verification of the IPFS breakdown link and confirmation that this disbursement aligns with previously approved OLP program parameters. The disclosure of proposer affiliation with Injective Labs is transparent. Cannot provide specific vote recommendation without extracted option strings.",
+        "reason": "interpretive"
+      }
+    ],
+    "uncertainty_flags": [
+      "unknowns:Voting options not extracted from source - canno...",
+      "unknowns:Current vote tally and quorum status UNKNOWN",
+      "unknowns:Individual recipient addresses and reward alloca...",
+      "unknowns:Total OLP program budget and remaining community...",
+      "unknowns:Criteria for 'active participant' status not def...",
+      "suggested_option:UNKNOWN",
+      "confidence:low",
+      "missing:extracted.options"
+    ],
+    "method": {
+      "kind": "heuristic",
+      "version": 2,
+      "notes": [
+        "Deterministic layer is based on direct matching to extracted fields and evidence_quotes, plus presence of hard literals (numbers, addresses, option strings).",
+        "Interpretive layer includes summary, risks, benefits, and recommendation reasoning.",
+        "This is a boundary labeling aid, not a proof of truth."
+      ]
+    }
+  },
+  "refusal_handling": {
+    "refusal_detected": true,
+    "signals": [
+      "suggested_option_unknown",
+      "confidence_low",
+      "unknowns_present:5",
+      "missing_extracted_options"
+    ],
+    "routed_to": "HUMAN_REVIEW",
+    "note": "Refusal detection is heuristic and conservative. It routes ambiguous or underspecified cases to human review."
+  },
+  "week6_evaluation": {
+    "refusal_occurred": true,
+    "agree_with_refusal": null
+  }
+}

@@ -75,7 +75,7 @@ Minimum 2 pattern matches = financial proposal.
 For financial proposals, the system runs 3 independent analyses:
 1. Makes 3 requests to different nodes
 2. Saves each result to `./temp/multi-node/`
-3. Compares recommendations (suggested_option + confidence + reasoning)
+3. Compares recommendations (suggested_option only: YAE/NAY/UNKNOWN)
 4. Selects by consensus (2+ identical = consensus)
 5. If no consensus, takes first result
 
@@ -109,7 +109,7 @@ Fetching and extracting proposal data...
 [2026-03-22T10:54:01.000Z] Starting analysis for: ...
 [2026-03-22T10:54:01.000Z] Checking if financial proposal... YES
 [2026-03-22T10:54:02.000Z] Financial proposal detected - running multi-node analysis...
-[2026-03-22T10:54:15.000Z] Consensus check: 3 identical out of 3
+[2026-03-22T10:54:15.000Z] Consensus check: 3 identical out of 3 (by suggested_option)
 ```
 
 ---

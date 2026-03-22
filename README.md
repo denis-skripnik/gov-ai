@@ -46,44 +46,6 @@ The design goal is **honesty and conservatism**:
 
 ---
 
-## Week 7 - System Identity (Web2)
-
-Week 7's goal: "Expose system identity in your app."
-
-This project now exposes system identity through collapsible sections in the report viewer:
-
-### Verification Boundary Section
-Shows which parts of the analysis are deterministic (verifiable) vs interpretive (require human review):
-- **Deterministic**: Fields that can be directly verified from extracted data
-- **Interpretive**: Fields requiring human judgment
-- **Uncertainty Flags**: Signals indicating incomplete information
-- **Method**: How boundaries are determined
-
-### Refusal Handling Section
-Displays when the system refused to provide a recommendation:
-- **Refusal Detected**: Yes/No indicator
-- **Signals**: What triggered the refusal (e.g., `unknowns_present`, `low_confidence`)
-- **Routed To**: Where the request was forwarded (e.g., `HUMAN_REVIEW`)
-
-### Prompt Used Section
-Shows the prompt that generated the analysis:
-- Summary of prompt intent
-- Excerpt of prompt text
-- Model used
-
-### Week 7 Evaluation Section
-For reports tagged with Week 7 evaluation:
-- What surprised the tester
-- Where external explanation was needed
-
-The UI uses color-coded collapsible sections:
-- 🔵 Blue: Week 7 evaluation
-- 🟡 Yellow: Verification boundaries
-- 🔴 Red: Refusal handling
-- 🟢 Green: Prompt used
-
----
-
 ## Week 8 - Design for Many Small Miners (Web2)
 
 Week 8's goal: "Design for many small miners."
@@ -151,6 +113,44 @@ Fetching and extracting proposal data...
 ```
 
 ---
+## Week 7 - System Identity (Web2)
+
+Week 7's goal: "Expose system identity in your app."
+
+This project now exposes system identity through collapsible sections in the report viewer:
+
+### Verification Boundary Section
+Shows which parts of the analysis are deterministic (verifiable) vs interpretive (require human review):
+- **Deterministic**: Fields that can be directly verified from extracted data
+- **Interpretive**: Fields requiring human judgment
+- **Uncertainty Flags**: Signals indicating incomplete information
+- **Method**: How boundaries are determined
+
+### Refusal Handling Section
+Displays when the system refused to provide a recommendation:
+- **Refusal Detected**: Yes/No indicator
+- **Signals**: What triggered the refusal (e.g., `unknowns_present`, `low_confidence`)
+- **Routed To**: Where the request was forwarded (e.g., `HUMAN_REVIEW`)
+
+### Prompt Used Section
+Shows the prompt that generated the analysis:
+- Summary of prompt intent
+- Excerpt of prompt text
+- Model used
+
+### Week 7 Evaluation Section
+For reports tagged with Week 7 evaluation:
+- What surprised the tester
+- Where external explanation was needed
+
+The UI uses color-coded collapsible sections:
+- 🔵 Blue: Week 7 evaluation
+- 🟡 Yellow: Verification boundaries
+- 🔴 Red: Refusal handling
+- 🟢 Green: Prompt used
+
+---
+
 
 ## Week 6 - Refusal handling (Web2)
 

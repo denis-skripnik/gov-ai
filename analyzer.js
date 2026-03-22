@@ -58,29 +58,16 @@ function isFinancialProposal(title, body) {
 
 // ========== Week 8: Multi-node Analysis ==========
 function findConsensusIndex(results) {
-  // results = [{ result: {...}}, ...] с analysis и recommendation
+  // Compare ONLY suggested_option - simpler and more reliable
+  const keys = results.map(r => r.result.recommendation?.suggested_option || 'UNKNOWN');
   
-  // Создай ключи для сравнения:
-  // suggested_option + confidence + first 50 chars of reasoning
-  
-  const keys = results.map(r => {
-    const rec = r.result.recommendation || {};
-    const key = [
-      rec.suggested_option || 'UNKNOWN',
-      rec.confidence || 'unknown',
-      (rec.reasoning || '').substring(0, 50)
-    ].join('|');
-    return key;
-  });
-  
-  // Подсчитай совпадения
   const counts = {};
   keys.forEach((key, idx) => {
     if (!counts[key]) counts[key] = [];
     counts[key].push(idx);
   });
   
-  // Найди консенсус (2+)
+  // Find most common option
   let bestCount = 0;
   let bestIndex = 0;
   
@@ -91,11 +78,15 @@ function findConsensusIndex(results) {
     }
   }
   
-  // Логируй
+  // Log details
   console.log(`[${new Date().toISOString()}] Consensus check: ${bestCount} identical out of ${keys.length}`);
-  console.log(`[${new Date().toISOString()}] Recommendation keys:`, keys);
+  console.log(`[${new Date().toISOString()}] Recommendation options:`, keys);
   
-  return bestCount >= 2 ? bestIndex : 0;
+  // Consensus = 2+ identical
+  const hasConsensus = bestCount >= 2;
+  const reason = hasConsensus ? 'consensus' : 'first-or-no-consensus';
+  
+  return { index: bestIndex, reason };
 }
 
 async function multiNodeAnalysis(url, extracted, principles, maxAttempts = 3, isRecursive = false) {
@@ -131,7 +122,8 @@ async function multiNodeAnalysis(url, extracted, principles, maxAttempts = 3, is
   }
   
   // Compare recommendations for consensus
-  const chosenIndex = findConsensusIndex(successful);
+  const consensusResult = findConsensusIndex(successful);
+  const chosenIndex = consensusResult.index;
   const chosen = successful[chosenIndex].result;
   
   // For debugging: collect recommendation keys
@@ -141,8 +133,7 @@ async function multiNodeAnalysis(url, extracted, principles, maxAttempts = 3, is
   });
   
   // Log why this choice was made
-  const reason = chosenIndex === 0 ? 'first-or-no-consensus' : 'consensus';
-  console.log(`[${new Date().toISOString()}] Multi-node comparison: ${successful.length} successful, consensus index: ${chosenIndex}, reason: ${reason}`);
+  console.log(`[${new Date().toISOString()}] Multi-node comparison: ${successful.length} successful, consensus index: ${chosenIndex}, reason: ${consensusResult.reason}`);
   
   // Save final choice with reason
   const summaryFile = `${tempDir}/analysis-${Date.now()}-chosen.json`;
@@ -151,7 +142,7 @@ async function multiNodeAnalysis(url, extracted, principles, maxAttempts = 3, is
     chosenIndex,
     recommendationKeys,
     final: chosen,
-    reason,
+    reason: consensusResult.reason,
     attempts: results
   }, null, 2));
   

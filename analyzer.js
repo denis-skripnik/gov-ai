@@ -306,7 +306,7 @@ export async function analyzeWithLLM(url, extracted, principles, opts = {}) {
   console.log(`[${new Date().toISOString()}] Starting analysis for: ${url}`);
   
   const {
-    model = "zai-org/GLM-5",
+    model = "zai-org/GLM-5-FP8",
 
     // Keep raw response JSON? For now: no spam, but can save if you need.
     debugRawToFile = false,

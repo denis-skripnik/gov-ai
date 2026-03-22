@@ -35,11 +35,17 @@ function isFinancialProposal(title, body) {
   const text = `${title} ${body}`.toLowerCase();
   
   const patterns = [
-    /\$\d+[.,]?\d*\s*(m|k|million|billion)?/i,
-    /\b(usdc|eth|dai|weth|aave|ens|btc|wbtc|injective|inj|ATOM|Jun)\b/i,
-    /\b(transfer|allocate|distribute|fund|pay|grant|budget|send)\b/i,
-    /\b(treasury|endowment|safe|timelock|budget|revenue|compensation|bounty|payment)\b/i,
-    /0x[a-fA-F0-9]{40}/, // Ethereum addresses
+    // Dollar/crypto amounts
+    /\$\d+[.,]?\d*\s*(m|k|million|billion|thousand)?/i,
+    /\d+\s*(dollar|usd|usdc|dai)\b/i,
+    // Financial actions
+    /\b(transfer|allocate|distribute|fund|pay|grant|budget|send|disperse|vest|stake|unlock|claim)\b/i,
+    // Treasury/governance terms
+    /\b(treasury|endowment|safe|timelock|budget|revenue|compensation|bounty|payment|rewards|allocation|vesting|token.*distribution)\b/i,
+    // Addresses (contract interactions)
+    /0x[a-fA-F0-9]{40}/,
+    // Vote/governance with amounts
+    /\b(vote|proposal).*\d+\s*(yes|no|for|against)/i,
   ];
   
   let matches = 0;

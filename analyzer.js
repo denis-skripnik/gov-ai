@@ -53,7 +53,7 @@ function isFinancialProposal(title, body) {
     if (pattern.test(text)) matches++;
   }
   
-  return matches >= 2; // минимум 2 совпадения
+  return matches >= 1; // минимум 1 совпадение
 }
 
 // ========== Week 8: Multi-node Analysis ==========
@@ -98,7 +98,7 @@ function findConsensusIndex(results) {
   return bestCount >= 2 ? bestIndex : 0;
 }
 
-async function multiNodeAnalysis(url, extracted, principles, maxAttempts = 3) {
+async function multiNodeAnalysis(url, extracted, principles, maxAttempts = 3, isRecursive = false) {
   const results = [];
   const tempDir = './temp/multi-node';
   
@@ -110,7 +110,7 @@ async function multiNodeAnalysis(url, extracted, principles, maxAttempts = 3) {
   for (let i = 1; i <= maxAttempts; i++) {
     try {
       const startTime = Date.now();
-      const result = await analyzeWithLLM(url, extracted, principles);
+      const result = await analyzeWithLLM(url, extracted, principles, { skipFinancialCheck: true });
       const latency = Date.now() - startTime;
       latencyTracker.add(latency);
       
@@ -321,7 +321,7 @@ export async function analyzeWithLLM(url, extracted, principles, opts = {}) {
   
   // Week 8: Multi-node analysis for financial proposals (default: enabled)
   const MULTI_NODE_ENABLED = process.env.MULTI_NODE_ENABLED === 'true' || process.env.MULTI_NODE_ENABLED === undefined;
-  if (isFinancial && MULTI_NODE_ENABLED) {
+  if (isFinancial && MULTI_NODE_ENABLED && !opts.skipFinancialCheck) {
     console.log(`[${new Date().toISOString()}] Financial proposal detected - running multi-node analysis...`);
     const report = await multiNodeAnalysis(url, extracted, principles);
     // Attach financial proposal flag to report

@@ -36,7 +36,7 @@ function isFinancialProposal(title, body) {
   
   const patterns = [
     /\$\d+[.,]?\d*\s*(m|k|million|billion)?/i,
-    /\b(usdc|eth|dai|weth|aave|ens|btc|wbtc|DAI|Jun|ATOM)\b/i,
+    /\b(usdc|eth|dai|weth|aave|ens|btc|wbtc|injective|inj|ATOM|Jun)\b/i,
     /\b(transfer|allocate|distribute|fund|pay|grant|budget|send)\b/i,
     /\b(treasury|endowment|safe|timelock|budget|revenue|compensation|bounty|payment)\b/i,
     /0x[a-fA-F0-9]{40}/, // Ethereum addresses

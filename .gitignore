@@ -3,6 +3,8 @@ node_modules/
 temp/
 reports/*.json
 !reports/examples/
+routes/*.json
+reviews/*.json
 prod-reports/*.json
 bench-results/*
 !bench-results/examples/

@@ -4,6 +4,7 @@ AI assistant for DAO governance proposals.
 
 ## Table of Contents
 
+- [Week 9 - Proof Over Vibes (Web2)](#week-9---proof-over-vibes-web2)
 - [Week 8 - Design for Many Small Miners (Web2)](#week-8---design-for-many-small-miners-web2)
 - [Week 7 - System Identity (Web2)](#week-7---system-identity-web2)
 - [Week 6 - Refusal handling (Web2)](#week-6---refusal-handling-web2)
@@ -29,6 +30,7 @@ It now also documents and ships:
 - Week 6 refusal handling (Web2): deterministic refusal detection plus routing and human review tickets
 - Week 7 system identity (Web2): exposes system identity, verification boundaries, and refusal handling in the UI
 - Week 8 design for many small miners (Web2): dynamic timeout, financial proposal detection, multi-node consensus analysis
+- Week 9 proof over vibes (Web2): deterministic / probabilistic / unverifiable verification hooks with optional strict routing
 
 It takes a proposal URL (Snapshot, Tally, DAO DAO), extracts available data, and produces a structured analysis:
 - summary of the proposal
@@ -45,6 +47,49 @@ The design goal is **honesty and conservatism**:
 - the output is meant to **assist** human decision-making, not replace it
 
 ---
+
+
+## Week 9 - Proof Over Vibes (Web2)
+
+Week 9 adds a second post-processing layer: `verification_hooks`.
+
+It classifies report fragments into:
+- `deterministic` - directly anchored to extracted title/body/options, evidence quotes, or hard literals
+- `probabilistic` - inference-heavy or recommendation-oriented statements (risks, benefits, confidence, likely outcomes)
+- `unverifiable` - vague or weakly grounded statements without a clear anchor
+
+Additional Week 9 signals:
+- `mixed_categories_detected` - one report field contains multiple categories across its sentence-level segments
+- `requires_separation` - mixed content should be split more explicitly
+- `strict_rejection_triggered` - enabled when `STRICT_VERIFICATION_HOOKS=true` and mixed categories are found
+- `routing_action` - `ALLOW`, `WARN`, or `HUMAN_REVIEW`
+
+### Strict mode
+
+Set in `.env` or shell:
+
+```env
+STRICT_VERIFICATION_HOOKS=true
+```
+
+Behavior:
+- `false` (default): mixed or unverifiable content is surfaced as a warning in the report/UI
+- `true`: mixed-category output is escalated to human review and included in the routing ticket
+
+### Limits
+
+- This is still heuristic classification, not cryptographic proof of truth.
+- A deterministic label means the text is mechanically anchorable, not that the source itself is trustworthy.
+- Sentence splitting is intentionally conservative to avoid destabilizing earlier Week 5-8 flows.
+
+### Week 9 example artifacts
+
+A full Week 9-style example generated from a live run is included in:
+- `examples/reports/report-2026-03-27T18-42-51-048Z.json`
+- `examples/routes/route-2026-03-27T18-42-51-049Z.json`
+- `examples/reviews/ticket-2026-03-27T18-42-51-049Z.json`
+
+This example shows `verification_hooks` in the report plus the downstream routing/review artifacts.
 
 ## Week 8 - Design for Many Small Miners (Web2)
 
@@ -384,7 +429,9 @@ The tool produces a structured JSON report with these main blocks:
 - `recommendation` - suggested action + reasoning
 - `limitations` - explicit list of caveats
 - `verification_boundary` - Week 5 deterministic vs interpretive split
+- `verification_hooks` - Week 9 deterministic / probabilistic / unverifiable hooks plus strict-mode state
 - `refusal_handling` - Week 6 refusal decision and deterministic signals
+- `routing` - final downstream routing decision after refusal + strict verification checks
 - `week6_evaluation` - manual evaluation placeholder (`agree_with_refusal`)
 
 Key analysis fields:
@@ -440,10 +487,13 @@ Report examples:
 - [report-snapshot-0xe5435766bae1f44d1ce354cea93acf4f38216f4e7ca071ccbb0ad0e856b34363.json](examples/reports/report-snapshot-0xe5435766bae1f44d1ce354cea93acf4f38216f4e7ca071ccbb0ad0e856b34363.json)
 - [report-tally-ens-107313977323541760723614084561841045035159333942448750767795024713131429640046.json](examples/reports/report-tally-ens-107313977323541760723614084561841045035159333942448750767795024713131429640046.json)
 - [report-2026-02-26T06-07-34-157Z.json](examples/reports/report-2026-02-26T06-07-34-157Z.json)
+- [report-2026-03-27T18-42-51-048Z.json](examples/reports/report-2026-03-27T18-42-51-048Z.json) — Week 9 example with `verification_hooks`
 
 Routing and review examples:
 - [route-2026-02-26T06-07-34-158Z.json](examples/routes/route-2026-02-26T06-07-34-158Z.json)
+- [route-2026-03-27T18-42-51-049Z.json](examples/routes/route-2026-03-27T18-42-51-049Z.json) — Week 9 routing example
 - [ticket-2026-02-26T06-07-34-158Z.json](examples/reviews/ticket-2026-02-26T06-07-34-158Z.json)
+- [ticket-2026-03-27T18-42-51-049Z.json](examples/reviews/ticket-2026-03-27T18-42-51-049Z.json) — Week 9 review example
 
 Examples are documentation-only fixtures. Runtime outputs are written to `reports/`, `routes/`, and `reviews/`.
 

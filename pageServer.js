@@ -69,7 +69,19 @@ const I18N = {
     bidder: 'Bidder',
     verificationBoundary: 'Verification Boundary',
     deterministic: 'Deterministic (verifiable)',
+    probabilistic: 'Probabilistic (inference-based)',
+    unverifiable: 'Unverifiable',
     interpretive: 'Interpretive (requires review)',
+    verificationHooks: 'Week 9 - Verification Hooks',
+    mixedCategoriesDetected: 'Mixed categories detected',
+    requiresSeparation: 'Requires separation',
+    strictMode: 'Strict mode',
+    strictRejectionTriggered: 'Strict rejection triggered',
+    routingAction: 'Routing action',
+    category: 'Category',
+    reasons: 'Reasons',
+    segments: 'Segments',
+    mixedSegments: 'Mixed segments',
     uncertaintyFlags: 'Uncertainty Flags',
     method: 'Method',
     refusalHandling: 'Refusal Handling',
@@ -137,7 +149,19 @@ const I18N = {
     bidder: 'Участник',
     verificationBoundary: 'Граница верификации',
     deterministic: 'Детерминистическое (проверяемое)',
+    probabilistic: 'Вероятностное (вывод по данным)',
+    unverifiable: 'Непроверяемое',
     interpretive: 'Интерпретативное (требует проверки)',
+    verificationHooks: 'Неделя 9 - Verification Hooks',
+    mixedCategoriesDetected: 'Обнаружены смешанные категории',
+    requiresSeparation: 'Требуется разделение',
+    strictMode: 'Строгий режим',
+    strictRejectionTriggered: 'Сработало строгое отклонение',
+    routingAction: 'Действие маршрутизации',
+    category: 'Категория',
+    reasons: 'Причины',
+    segments: 'Сегменты',
+    mixedSegments: 'Смешанные сегменты',
     uncertaintyFlags: 'Флаги неопределённости',
     method: 'Метод',
     refusalHandling: 'Обработка отказов',
@@ -596,6 +620,59 @@ function formatVerificationBoundary(boundary, t) {
   
   html += '</div>';
   html += '</div>';
+  return html;
+}
+
+
+function formatVerificationHooks(hooks, t) {
+  if (!hooks) return '';
+
+  let html = '<div class="section verification-hooks collapsible">';
+  html += `<h2>${t.verificationHooks}</h2>`;
+  html += `<button class="collapsible-btn" onclick="this.nextElementSibling.classList.toggle('expanded')">${t.showDetails}</button>`;
+  html += '<div class="collapsible-content">';
+
+  html += `<p><strong>${t.mixedCategoriesDetected}:</strong> <code>${String(Boolean(hooks.mixed_categories_detected))}</code></p>`;
+  html += `<p><strong>${t.requiresSeparation}:</strong> <code>${String(Boolean(hooks.requires_separation))}</code></p>`;
+  html += `<p><strong>${t.strictMode}:</strong> <code>${String(Boolean(hooks.strict_mode))}</code></p>`;
+  html += `<p><strong>${t.strictRejectionTriggered}:</strong> <code>${String(Boolean(hooks.strict_rejection_triggered))}</code></p>`;
+  if (hooks.routing_action) html += `<p><strong>${t.routingAction}:</strong> <code>${hooks.routing_action}</code></p>`;
+
+  if (Array.isArray(hooks.segments) && hooks.segments.length) {
+    html += `<h3>${t.segments}</h3>`;
+    html += '<ul class="verification-hooks-list">';
+    for (const segment of hooks.segments) {
+      html += `<li><code>${segment.path}</code> <span class="hook-category ${segment.category}">${segment.category}</span>`;
+      if (segment.text) html += ` <span class="hook-text">${formatMarkdown(segment.text)}</span>`;
+      if (Array.isArray(segment.reasons) && segment.reasons.length) {
+        html += `<div class="hook-reasons"><strong>${t.reasons}:</strong> ${segment.reasons.map((reason) => `<code>${reason}</code>`).join(' ')}</div>`;
+      }
+      html += '</li>';
+    }
+    html += '</ul>';
+  }
+
+  if (Array.isArray(hooks.mixed_segments) && hooks.mixed_segments.length) {
+    html += `<h3>${t.mixedSegments}</h3>`;
+    html += '<ul class="verification-hooks-mixed">';
+    for (const segment of hooks.mixed_segments) {
+      html += `<li><code>${segment.path}</code>: ${segment.categories.map((category) => `<span class="hook-category ${category}">${category}</span>`).join(' ')}</li>`;
+    }
+    html += '</ul>';
+  }
+
+  if (hooks.method) {
+    html += `<h3>${t.method}</h3>`;
+    if (hooks.method.kind) html += `<p><strong>Kind:</strong> ${hooks.method.kind}</p>`;
+    if (hooks.method.version) html += `<p><strong>Version:</strong> ${hooks.method.version}</p>`;
+    if (Array.isArray(hooks.method.notes) && hooks.method.notes.length) {
+      html += '<ul class="method-notes">';
+      for (const note of hooks.method.notes) html += `<li>${note}</li>`;
+      html += '</ul>';
+    }
+  }
+
+  html += '</div></div>';
   return html;
 }
 
@@ -1193,6 +1270,15 @@ function getStyles() {
     .prompt-excerpt { background: #f8f9fa; padding: 10px; border-radius: 4px; overflow-x: auto; font-size: 0.85em; }
     .week7-evaluation { background: #e7f3ff; border-left: 4px solid #007bff; }
     .verification-boundary { background: #fff3cd; border-left: 4px solid #ffc107; }
+    .verification-hooks { background: #eef7ff; border-left: 4px solid #17a2b8; }
+    .verification-hooks-list, .verification-hooks-mixed { list-style: none; padding-left: 0; }
+    .verification-hooks-list li, .verification-hooks-mixed li { margin: 10px 0; padding: 10px; background: #fff; border-radius: 6px; }
+    .hook-category { display: inline-block; padding: 2px 8px; border-radius: 999px; font-size: 0.85em; font-weight: 700; margin-left: 8px; }
+    .hook-category.deterministic { background: #d4edda; color: #155724; }
+    .hook-category.probabilistic { background: #fff3cd; color: #856404; }
+    .hook-category.unverifiable { background: #f8d7da; color: #721c24; }
+    .hook-text p { display: inline; }
+    .hook-reasons { margin-top: 6px; }
     .refusal-handling { background: #f8d7da; border-left: 4px solid #dc3545; }
     .prompt-used { background: #d1e7dd; border-left: 4px solid #198754; }
   `;
@@ -1293,6 +1379,7 @@ function generateReportPage(report, filename, lang, currentUrl) {
           ${formatLimitations(report.limitations, t)}
           ${formatVerification(report.__ambient, t)}
           ${formatVerificationBoundary(report.verification_boundary, t)}
+          ${formatVerificationHooks(report.verification_hooks, t)}
           ${formatRefusalHandling(report.refusal_handling, t)}
           ${formatWeek7Evaluation(report.week7_evaluation, t)}
           ${formatPromptUsed(report.input.prompt_used, t)}

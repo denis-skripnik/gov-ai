@@ -1,0 +1,14 @@
+{
+  "refusal_detected": true,
+  "strict_verification_triggered": false,
+  "verification_routing_action": "WARN",
+  "routed_to": "HUMAN_REVIEW:reviews/ticket-2026-03-27T18-42-51-049Z.json",
+  "at": "2026-03-27T18:42:51.049Z",
+  "signals": [
+    "suggested_option_unknown",
+    "confidence_low",
+    "unknowns_present:5",
+    "missing_extracted_options"
+  ],
+  "report_path": "./reports/report-2026-03-27T18-42-51-048Z.json"
+}

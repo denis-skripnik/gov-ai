@@ -4,6 +4,7 @@ import crypto from "crypto";
 
 const API_URL = "https://api.ambient.xyz/v1/chat/completions";
 const API_KEY = process.env.AMBIENT_API_KEY;
+const STRICT_VERIFICATION_HOOKS = String(process.env.STRICT_VERIFICATION_HOOKS || "").toLowerCase() === "true";
 
 // ========== Week 8: Dynamic Timeout ==========
 class LatencyTracker {
@@ -89,9 +90,22 @@ function findConsensusIndex(results) {
   return { index: bestIndex, reason };
 }
 
-async function multiNodeAnalysis(url, extracted, principles, maxAttempts = 3, isRecursive = false) {
+function isAmbientMultiNodeCapacityError(error) {
+  const message = String(error?.message || error || '').toLowerCase();
+  return (
+    message.includes('http 429') ||
+    message.includes('too many requests') ||
+    message.includes('there were no bidders for this auction') ||
+    message.includes('no bidders for this auction')
+  );
+}
+
+async function multiNodeAnalysis(url, extracted, principles, maxAttempts = 3, isRecursive = false, runtime = {}) {
   const results = [];
-  const tempDir = './temp/multi-node';
+  const tempDir = runtime.tempDir || './temp/multi-node';
+  const runAnalysis = runtime.runAnalysis || analyzeWithLLM;
+  const sleepFn = runtime.sleep || sleep;
+  const fallbackBackoffsMs = runtime.multiNodeFallbackBackoffsMs || [10000, 30000, 60000];
   
   // Create temp directory if not exists
   if (!fs.existsSync(tempDir)) {
@@ -101,7 +115,7 @@ async function multiNodeAnalysis(url, extracted, principles, maxAttempts = 3, is
   for (let i = 1; i <= maxAttempts; i++) {
     try {
       const startTime = Date.now();
-      const result = await analyzeWithLLM(url, extracted, principles, { skipFinancialCheck: true });
+      const result = await runAnalysis(url, extracted, principles, { skipFinancialCheck: true });
       const latency = Date.now() - startTime;
       latencyTracker.add(latency);
       
@@ -118,6 +132,39 @@ async function multiNodeAnalysis(url, extracted, principles, maxAttempts = 3, is
   // Compare results
   const successful = results.filter(r => r.success);
   if (successful.length === 0) {
+    const retryableErrors = results.filter((r) => !r.success && isAmbientMultiNodeCapacityError(r.error));
+    if (retryableErrors.length === maxAttempts) {
+      if (!isRecursive) {
+        console.warn(`[${new Date().toISOString()}] Ambient multi-node capacity issue detected. Retrying multi-node stage with backoff...`);
+
+        for (let retryIndex = 0; retryIndex < fallbackBackoffsMs.length; retryIndex++) {
+          const delayMs = fallbackBackoffsMs[retryIndex];
+          console.warn(`[${new Date().toISOString()}] Multi-node retry ${retryIndex + 1}/${fallbackBackoffsMs.length} in ${Math.round(delayMs / 1000)}s`);
+          await sleepFn(delayMs);
+
+          try {
+            return await multiNodeAnalysis(url, extracted, principles, maxAttempts, true, runtime);
+          } catch (retryError) {
+            if (!isAmbientMultiNodeCapacityError(retryError)) throw retryError;
+          }
+        }
+
+        console.warn(`[${new Date().toISOString()}] Multi-node retries exhausted due to Ambient capacity issue. Falling back to single-node analysis.`);
+        const fallbackReport = await runAnalysis(url, extracted, principles, { skipFinancialCheck: true, multiNodeFallbackActive: true });
+        if (fallbackReport && fallbackReport.input) {
+          fallbackReport.input.multiNodeFallback = {
+            activated: true,
+            reason: 'ambient_multi_node_capacity',
+            retries: fallbackBackoffsMs.map((delayMs) => Math.round(delayMs / 1000)),
+            fallback_mode: 'single-node',
+          };
+        }
+        return fallbackReport;
+      }
+
+      throw new Error(retryableErrors[retryableErrors.length - 1].error);
+    }
+
     throw new Error('All attempts failed');
   }
   
@@ -149,9 +196,6 @@ async function multiNodeAnalysis(url, extracted, principles, maxAttempts = 3, is
   return chosen;
 }
 
-if (!API_KEY) {
-  throw new Error("Set AMBIENT_API_KEY env variable");
-}
 
 function isoSafeFileName(d = new Date()) {
   return d.toISOString().replace(/[:.]/g, "-");
@@ -205,7 +249,7 @@ async function withRetry(fn, { tries = 3, baseDelayMs = 600 } = {}) {
 }
 
 // Export for external use
-export { latencyTracker, isFinancialProposal, multiNodeAnalysis };
+export { latencyTracker, isFinancialProposal, isAmbientMultiNodeCapacityError, multiNodeAnalysis };
 
 // Minimal base58 encoder (no deps)
 const B58_ALPHABET = "123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz";
@@ -292,7 +336,202 @@ function pickBidder(lifecycle) {
   return lifecycle?.auctionEnded?.winning_bid || lifecycle?.auctionStarted?.winning_bid || null;
 }
 
+export function classifyVerificationHooks(report, extracted, opts = {}) {
+  const strictMode = typeof opts.strictMode === "boolean" ? opts.strictMode : STRICT_VERIFICATION_HOOKS;
+  const evidenceQuotes = Array.isArray(report?.analysis?.evidence_quotes)
+    ? report.analysis.evidence_quotes.filter((x) => typeof x === "string" && x.trim())
+    : [];
+  const extractedTitle = normalizeText(extracted?.title);
+  const extractedBody = normalizeText(extracted?.body);
+  const extractedOptions = Array.isArray(extracted?.options)
+    ? extracted.options.map((x) => normalizeText(x)).filter(Boolean)
+    : [];
+
+  const candidates = [];
+  collectCandidateSegments(candidates, report?.analysis?.summary, "analysis.summary");
+  collectCandidateArray(candidates, report?.analysis?.key_changes, "analysis.key_changes");
+  collectCandidateArray(candidates, report?.analysis?.risks, "analysis.risks");
+  collectCandidateArray(candidates, report?.analysis?.benefits, "analysis.benefits");
+  collectCandidateArray(candidates, report?.analysis?.unknowns, "analysis.unknowns");
+  collectCandidateSegments(candidates, report?.recommendation?.reasoning, "recommendation.reasoning");
+  collectCandidateArray(candidates, report?.recommendation?.conflicts_with_user_principles, "recommendation.conflicts_with_user_principles");
+
+  const segments = [];
+  const pathCategories = new Map();
+
+  for (const candidate of candidates) {
+    const category = classifySegment(candidate.text, {
+      path: candidate.path,
+      evidenceQuotes,
+      extractedTitle,
+      extractedBody,
+      extractedOptions,
+    });
+    segments.push({
+      path: candidate.path,
+      text: candidate.text,
+      category: category.category,
+      reasons: category.reasons,
+    });
+
+    if (!pathCategories.has(candidate.path)) pathCategories.set(candidate.path, new Set());
+    pathCategories.get(candidate.path).add(category.category);
+  }
+
+  const mixedSegments = [];
+  for (const [path, categories] of pathCategories.entries()) {
+    if (categories.size > 1) mixedSegments.push({ path, categories: Array.from(categories) });
+  }
+
+  const mixedCategoriesDetected = mixedSegments.length > 0;
+  const strictRejectionTriggered = strictMode && mixedCategoriesDetected;
+  const hasUnverifiable = segments.some((segment) => segment.category === "unverifiable");
+  const routingAction = strictRejectionTriggered
+    ? "HUMAN_REVIEW"
+    : mixedCategoriesDetected
+      ? "WARN"
+      : hasUnverifiable
+        ? "WARN"
+        : "ALLOW";
+
+  return {
+    segments,
+    mixed_segments: mixedSegments,
+    mixed_categories_detected: mixedCategoriesDetected,
+    requires_separation: mixedCategoriesDetected,
+    strict_mode: strictMode,
+    strict_rejection_triggered: strictRejectionTriggered,
+    routing_action: routingAction,
+    method: {
+      kind: "heuristic",
+      version: 1,
+      notes: [
+        "Deterministic segments are anchored to extracted title/body/options, evidence quotes, or hard literals.",
+        "Probabilistic segments include recommendation, risk, benefit, and uncertainty language.",
+        "Unverifiable segments are vague or unsupported without clear anchors.",
+      ],
+    },
+  };
+}
+
+function collectCandidateArray(out, arr, basePath) {
+  if (!Array.isArray(arr)) return;
+  for (let i = 0; i < arr.length; i++) {
+    collectCandidateSegments(out, arr[i], `${basePath}[${i}]`);
+  }
+}
+
+function collectCandidateSegments(out, text, path) {
+  if (typeof text !== "string" || !text.trim()) return;
+  const parts = splitIntoSegments(text);
+  if (parts.length <= 1) {
+    out.push({ path, text: text.trim() });
+    return;
+  }
+  for (let i = 0; i < parts.length; i++) {
+    out.push({ path, text: parts[i] });
+  }
+}
+
+function splitIntoSegments(text) {
+  return String(text)
+    .split(/(?<=[.!?])\s+|\s*[;•]\s+/)
+    .map((part) => part.trim())
+    .filter(Boolean);
+}
+
+function classifySegment(text, context) {
+  const normalized = normalizeText(text);
+  const lower = normalized.toLowerCase();
+  const reasons = [];
+
+  const deterministic = matchesDeterministic(lower, context, reasons);
+  const probabilistic = matchesProbabilistic(lower, context, reasons);
+  const path = String(context.path || "");
+
+  if (probabilistic && (path.startsWith("recommendation.") || path.startsWith("analysis.risks") || path.startsWith("analysis.benefits"))) {
+    return { category: "probabilistic", reasons };
+  }
+  if (deterministic) return { category: "deterministic", reasons };
+  if (probabilistic) return { category: "probabilistic", reasons };
+
+  if (looksVague(lower)) reasons.push("vague_or_unsupported");
+  else reasons.push("not_anchored_to_source_material");
+  return { category: "unverifiable", reasons };
+}
+
+function matchesDeterministic(lower, context, reasons) {
+  let matched = false;
+  if (context.evidenceQuotes.some((quote) => {
+    const q = normalizeText(quote).toLowerCase();
+    return q && (lower.includes(q) || q.includes(lower));
+  })) {
+    reasons.push("matches_evidence_quote");
+    matched = true;
+  }
+  if (context.extractedTitle && context.extractedTitle.toLowerCase().length >= 8) {
+    const titleFragment = context.extractedTitle.toLowerCase().slice(0, 24);
+    if (lower.includes(titleFragment)) {
+      reasons.push("matches_extracted_title");
+      matched = true;
+    }
+  }
+  if (context.extractedBody && context.extractedBody.toLowerCase().length >= 60) {
+    const bodyFragment = context.extractedBody.toLowerCase().slice(0, 60);
+    if (lower.includes(bodyFragment)) {
+      reasons.push("matches_extracted_body_fragment");
+      matched = true;
+    }
+  }
+  if (context.extractedOptions.some((option) => containsWholeOption(lower, option))) {
+    reasons.push("mentions_extracted_option");
+    matched = true;
+  }
+  if (/\b\d+([.,]\d+)?\b/.test(lower) || /\b0x[a-f0-9]{8,}\b/.test(lower) || /\b[a-z]{2,6}-\d+\b/i.test(lower)) {
+    reasons.push("contains_hard_literal");
+    matched = true;
+  }
+  return matched;
+}
+
+function matchesProbabilistic(lower, context, reasons) {
+  let matched = false;
+  const path = String(context.path || "");
+  if (/\b(likely|unlikely|probably|possible|possibly|may|might|could|appears|suggests|risk|benefit|recommend|confidence|should|prefer|best)\b/.test(lower)) {
+    reasons.push("contains_inference_language");
+    matched = true;
+  }
+  if (path.startsWith("analysis.risks") || path.startsWith("analysis.benefits") || path.startsWith("recommendation.")) {
+    reasons.push("interpretive_field");
+    matched = true;
+  }
+  if (/\b(unknown|unclear|insufficient|not enough|cannot determine|can't determine|missing information)\b/.test(lower)) {
+    reasons.push("uncertainty_language");
+    matched = true;
+  }
+  return matched;
+}
+
+function looksVague(lower) {
+  return /\b(good|bad|strong|weak|important|positive|negative|reasonable|concerning|interesting)\b/.test(lower);
+}
+
+function containsWholeOption(lower, option) {
+  const normalizedOption = normalizeText(option).toLowerCase();
+  if (!normalizedOption) return false;
+  const escaped = normalizedOption.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+  if (normalizedOption.length <= 3) {
+    return new RegExp(`(?:option|vote|choose|support|oppose|recommend)\\s+${escaped}\\b|["'“”]${escaped}["'“”]|\\b${escaped}\\b\s*[:)]`, "i").test(lower);
+  }
+  return new RegExp(`(^|[^a-z0-9])${escaped}([^a-z0-9]|$)`, "i").test(lower);
+}
+
+function normalizeText(value) {
+  return typeof value === "string" ? value.trim() : "";
+}
+
 export async function analyzeWithLLM(url, extracted, principles, opts = {}) {
+  if (!API_KEY) throw new Error("Set AMBIENT_API_KEY env variable");
   // Week 8: Progress logging
   console.log(`[${new Date().toISOString()}] Starting analysis for: ${url}`);
   

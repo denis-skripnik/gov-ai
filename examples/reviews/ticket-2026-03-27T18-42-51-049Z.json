@@ -1,0 +1,14 @@
+{
+  "status": "PENDING_REVIEW",
+  "created_at": "2026-03-27T18:42:51.049Z",
+  "report_path": "./reports/report-2026-03-27T18-42-51-048Z.json",
+  "refusal_signals": [
+    "suggested_option_unknown",
+    "confidence_low",
+    "unknowns_present:5",
+    "missing_extracted_options"
+  ],
+  "verification_mixed_segments": [],
+  "verification_routing_action": "WARN",
+  "note": "Refusal detected. Escalated to human review queue."
+}

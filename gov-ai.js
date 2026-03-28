@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 import fs from "fs";
 import { fetchAndExtract } from "./fetcher.js";
-import { analyzeWithLLM } from "./analyzer.js";
+import { analyzeWithLLM, classifyVerificationHooks } from "./analyzer.js";
 import "dotenv/config";
 
 const cmd = process.argv[2];
@@ -72,6 +72,11 @@ const report = await analyzeWithLLM(url, extracted, principles);
 // Week 5: programmatically split into deterministic vs interpretive layers
 addVerificationBoundary(report, extracted);
 
+// Week 9: proof-over-vibes classification and strict routing hooks
+report.verification_hooks = classifyVerificationHooks(report, extracted, {
+  strictMode: String(process.env.STRICT_VERIFICATION_HOOKS || "").toLowerCase() === "true",
+});
+
 // Week 6: detect refusal + route differently (escalate to human review)
 const refusal = detectRefusal(report, extracted);
 report.refusal_handling = refusal;
@@ -82,8 +87,8 @@ report.week6_evaluation = {
 
 const filename = buildReportFilename(url, extracted);
 
-// Route based on refusal state (needs report filename for review ticket)
-routeByRefusal(report, refusal, `./reports/${filename}`);
+// Route based on refusal + Week 9 strict verification hooks
+routeReport(report, refusal, report.verification_hooks, `./reports/${filename}`);
 
 // Ensure reports folder exists
 if (!fs.existsSync("reports")) fs.mkdirSync("reports", { recursive: true });
@@ -374,26 +379,29 @@ function detectRefusal(report, extracted) {
   };
 }
 
-function routeByRefusal(report, refusal, reportPath) {
-  // Always write routing decision (makes downstream handling explicit)
+function routeReport(report, refusal, verificationHooks, reportPath) {
   if (!fs.existsSync("routes")) fs.mkdirSync("routes", { recursive: true });
 
   const ts = new Date().toISOString().replace(/[:.]/g, "-");
   const routeFile = `routes/route-${ts}.json`;
+  const strictVerificationTriggered = Boolean(verificationHooks?.strict_rejection_triggered);
+  const refusalDetected = Boolean(refusal?.refusal_detected);
 
-  if (!refusal?.refusal_detected) {
+  if (!refusalDetected && !strictVerificationTriggered) {
     const out = {
       refusal_detected: false,
+      strict_verification_triggered: false,
+      verification_routing_action: verificationHooks?.routing_action || "ALLOW",
       routed_to: "NORMAL_PIPELINE",
       at: new Date().toISOString(),
       report_path: reportPath,
     };
+    report.routing = out;
     fs.writeFileSync(routeFile, JSON.stringify(out, null, 2));
-    console.log(`No refusal -> routed to NORMAL_PIPELINE (${routeFile})`);
+    console.log(`No refusal / no strict verification issue -> routed to NORMAL_PIPELINE (${routeFile})`);
     return;
   }
 
-  // Create a review ticket instead of duplicating the whole report
   if (!fs.existsSync("reviews")) fs.mkdirSync("reviews", { recursive: true });
 
   const ticketName = `ticket-${ts}.json`;
@@ -404,20 +412,27 @@ function routeByRefusal(report, refusal, reportPath) {
     created_at: new Date().toISOString(),
     report_path: reportPath,
     refusal_signals: refusal?.signals || [],
-    note: "Refusal detected. Escalated to human review queue.",
+    verification_mixed_segments: verificationHooks?.mixed_segments || [],
+    verification_routing_action: verificationHooks?.routing_action || null,
+    note: strictVerificationTriggered
+      ? "Strict verification hooks detected mixed categories. Escalated to human review queue."
+      : "Refusal detected. Escalated to human review queue.",
   };
 
   fs.writeFileSync(ticketPath, JSON.stringify(ticket, null, 2));
 
   const out = {
-    refusal_detected: true,
+    refusal_detected: refusalDetected,
+    strict_verification_triggered: strictVerificationTriggered,
+    verification_routing_action: verificationHooks?.routing_action || null,
     routed_to: `HUMAN_REVIEW:${ticketPath}`,
     at: new Date().toISOString(),
     signals: refusal?.signals || [],
     report_path: reportPath,
   };
 
+  report.routing = out;
   fs.writeFileSync(routeFile, JSON.stringify(out, null, 2));
 
-  console.log(`Refusal detected -> escalated to ${ticketPath} (${routeFile})`);
+  console.log(`Escalated to ${ticketPath} (${routeFile})`);
 }

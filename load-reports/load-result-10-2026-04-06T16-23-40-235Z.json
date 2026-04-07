@@ -1,0 +1,402 @@
+{
+  "scenario": {
+    "name": "Ambient Week 10 load test for gov-ai",
+    "mode": "direct-runner",
+    "description": "Parallel inference stress test using the current gov-ai core prompt/extraction pipeline without the API-server layer, in controlled single-node mode."
+  },
+  "config": {
+    "url": "https://snapshot.org/#/s:aavedao.eth/proposal/0x55e85a32828da36122b9c8d50548696d7c748fd41c775f5bf06bdf0f2e32a265",
+    "runs": 10,
+    "concurrency": 10,
+    "model": "zai-org/GLM-5-FP8",
+    "timeout_ms": 5400000,
+    "strict_verification_hooks": false,
+    "stream": true,
+    "shared_extracted_input": true,
+    "extracted_source_type": "snapshot",
+    "week10_mode": "single-node-controlled",
+    "multi_node_bypassed": true
+  },
+  "timing": {
+    "started_at": "2026-04-06T16:03:38.534Z",
+    "finished_at": "2026-04-06T16:23:40.234Z",
+    "total_batch_duration_ms": 1201700
+  },
+  "aggregate": {
+    "runs_requested": 10,
+    "runs_completed_ok": 10,
+    "runs_failed": 0,
+    "runs_timed_out": 0,
+    "success_rate": 1,
+    "first_token_latency_ms": {
+      "min": 49439,
+      "avg": 49442,
+      "median": 49440,
+      "p95": 49447,
+      "max": 49447
+    },
+    "duration_ms": {
+      "min": 1201250,
+      "avg": 1201355,
+      "median": 1201378,
+      "p95": 1201416,
+      "max": 1201416
+    },
+    "ambient_verified_count": 0,
+    "ambient_metadata_present_count": 10,
+    "refusal_count": 10,
+    "strict_rejection_count": 0,
+    "failure_types": {}
+  },
+  "evidence_samples": {
+    "success_runs": [
+      {
+        "run_id": 1,
+        "first_token_latency_ms": 49447,
+        "duration_ms": 1201396,
+        "ambient_request_id": "ca9779600c784ceab85d387ad4003393",
+        "ambient_verified": null,
+        "ambient_model": "zai-org/GLM-5-FP8"
+      },
+      {
+        "run_id": 2,
+        "first_token_latency_ms": 49446,
+        "duration_ms": 1201278,
+        "ambient_request_id": "189457780c1c44409ec39c2a90678429",
+        "ambient_verified": null,
+        "ambient_model": "zai-org/GLM-5-FP8"
+      },
+      {
+        "run_id": 3,
+        "first_token_latency_ms": 49444,
+        "duration_ms": 1201406,
+        "ambient_request_id": "56d556eecd7a4a31837c855562be396b",
+        "ambient_verified": null,
+        "ambient_model": "zai-org/GLM-5-FP8"
+      }
+    ],
+    "error_runs": [],
+    "ambient_samples": [
+      {
+        "run_id": 1,
+        "verified": null,
+        "request_id": "ca9779600c784ceab85d387ad4003393",
+        "merkle_root": "9d8425270aadeefd74b708813b7f4a8e895b976d6fdb3408c3a69efc45a6c347",
+        "verified_by_validators": "Verified by 3 validators",
+        "auction": {
+          "status": "Done",
+          "bids": {
+            "placed": 2,
+            "revealed": 2
+          },
+          "address": "https://explorer.ambient.xyz/address/5t83VEzB5UGwfzsZUPjwZFtWNMXc1bxWc2GwDUXof84A"
+        },
+        "bidder": "https://explorer.ambient.xyz/address/98WKDq5HzneuZycJiCSM5ajuKzscQMop2GsRdxK95q2m"
+      },
+      {
+        "run_id": 2,
+        "verified": null,
+        "request_id": "189457780c1c44409ec39c2a90678429",
+        "merkle_root": "61efce2b63cca16765cc0d9ff83805d65a464cd5fc5cb4653253c19f99ea125c",
+        "verified_by_validators": "Verified by 3 validators",
+        "auction": {
+          "status": "Done",
+          "bids": {
+            "placed": 2,
+            "revealed": 2
+          },
+          "address": "https://explorer.ambient.xyz/address/JBegXdtJ1pB1GwK81a9RfMYPnP9iMU2sUgGzgbxUzxoJ"
+        },
+        "bidder": "https://explorer.ambient.xyz/address/98WKDq5HzneuZycJiCSM5ajuKzscQMop2GsRdxK95q2m"
+      },
+      {
+        "run_id": 3,
+        "verified": null,
+        "request_id": "56d556eecd7a4a31837c855562be396b",
+        "merkle_root": "ed73932627b352b25500e0123fe1597c03e1e5a57862631594e22dc300e3131b",
+        "verified_by_validators": "Verified by 3 validators",
+        "auction": {
+          "status": "Done",
+          "bids": {
+            "placed": 2,
+            "revealed": 2
+          },
+          "address": "https://explorer.ambient.xyz/address/JBegXdtJ1pB1GwK81a9RfMYPnP9iMU2sUgGzgbxUzxoJ"
+        },
+        "bidder": "https://explorer.ambient.xyz/address/98WKDq5HzneuZycJiCSM5ajuKzscQMop2GsRdxK95q2m"
+      }
+    ]
+  },
+  "runs": [
+    {
+      "run_id": 1,
+      "status": "ok",
+      "started_at": "2026-04-06T16:03:38.809Z",
+      "finished_at": "2026-04-06T16:23:40.205Z",
+      "duration_ms": 1201396,
+      "first_token_latency_ms": 49447,
+      "stream_completed_ms": 1201394,
+      "report_json_valid": true,
+      "refusal_detected": true,
+      "refusal_signals": [
+        "unknowns_present:4"
+      ],
+      "strict_rejection_triggered": false,
+      "routing_action": "WARN",
+      "unknowns_count": 4,
+      "ambient_verified": null,
+      "ambient_merkle_root": "9d8425270aadeefd74b708813b7f4a8e895b976d6fdb3408c3a69efc45a6c347",
+      "ambient_request_id": "ca9779600c784ceab85d387ad4003393",
+      "ambient_model": "zai-org/GLM-5-FP8",
+      "ambient_verified_by_validators": "Verified by 3 validators",
+      "ambient_auction_status": "Done",
+      "ambient_auction_bids_placed": 2,
+      "ambient_auction_bids_revealed": 2,
+      "ambient_auction_address": "https://explorer.ambient.xyz/address/5t83VEzB5UGwfzsZUPjwZFtWNMXc1bxWc2GwDUXof84A",
+      "ambient_bidder": "https://explorer.ambient.xyz/address/98WKDq5HzneuZycJiCSM5ajuKzscQMop2GsRdxK95q2m"
+    },
+    {
+      "run_id": 2,
+      "status": "ok",
+      "started_at": "2026-04-06T16:03:38.811Z",
+      "finished_at": "2026-04-06T16:23:40.089Z",
+      "duration_ms": 1201278,
+      "first_token_latency_ms": 49446,
+      "stream_completed_ms": 1201277,
+      "report_json_valid": true,
+      "refusal_detected": true,
+      "refusal_signals": [
+        "unknowns_present:5"
+      ],
+      "strict_rejection_triggered": false,
+      "routing_action": "WARN",
+      "unknowns_count": 5,
+      "ambient_verified": null,
+      "ambient_merkle_root": "61efce2b63cca16765cc0d9ff83805d65a464cd5fc5cb4653253c19f99ea125c",
+      "ambient_request_id": "189457780c1c44409ec39c2a90678429",
+      "ambient_model": "zai-org/GLM-5-FP8",
+      "ambient_verified_by_validators": "Verified by 3 validators",
+      "ambient_auction_status": "Done",
+      "ambient_auction_bids_placed": 2,
+      "ambient_auction_bids_revealed": 2,
+      "ambient_auction_address": "https://explorer.ambient.xyz/address/JBegXdtJ1pB1GwK81a9RfMYPnP9iMU2sUgGzgbxUzxoJ",
+      "ambient_bidder": "https://explorer.ambient.xyz/address/98WKDq5HzneuZycJiCSM5ajuKzscQMop2GsRdxK95q2m"
+    },
+    {
+      "run_id": 3,
+      "status": "ok",
+      "started_at": "2026-04-06T16:03:38.812Z",
+      "finished_at": "2026-04-06T16:23:40.218Z",
+      "duration_ms": 1201406,
+      "first_token_latency_ms": 49444,
+      "stream_completed_ms": 1201404,
+      "report_json_valid": true,
+      "refusal_detected": true,
+      "refusal_signals": [
+        "unknowns_present:4"
+      ],
+      "strict_rejection_triggered": false,
+      "routing_action": "WARN",
+      "unknowns_count": 4,
+      "ambient_verified": null,
+      "ambient_merkle_root": "ed73932627b352b25500e0123fe1597c03e1e5a57862631594e22dc300e3131b",
+      "ambient_request_id": "56d556eecd7a4a31837c855562be396b",
+      "ambient_model": "zai-org/GLM-5-FP8",
+      "ambient_verified_by_validators": "Verified by 3 validators",
+      "ambient_auction_status": "Done",
+      "ambient_auction_bids_placed": 2,
+      "ambient_auction_bids_revealed": 2,
+      "ambient_auction_address": "https://explorer.ambient.xyz/address/JBegXdtJ1pB1GwK81a9RfMYPnP9iMU2sUgGzgbxUzxoJ",
+      "ambient_bidder": "https://explorer.ambient.xyz/address/98WKDq5HzneuZycJiCSM5ajuKzscQMop2GsRdxK95q2m"
+    },
+    {
+      "run_id": 4,
+      "status": "ok",
+      "started_at": "2026-04-06T16:03:38.814Z",
+      "finished_at": "2026-04-06T16:23:40.192Z",
+      "duration_ms": 1201378,
+      "first_token_latency_ms": 49445,
+      "stream_completed_ms": 1201377,
+      "report_json_valid": true,
+      "refusal_detected": true,
+      "refusal_signals": [
+        "unknowns_present:5"
+      ],
+      "strict_rejection_triggered": false,
+      "routing_action": "WARN",
+      "unknowns_count": 5,
+      "ambient_verified": null,
+      "ambient_merkle_root": "17b12e7bd0dac84cd556f61c65bb708242811cf9eeb4a31d8a577adcc0f72cb0",
+      "ambient_request_id": "0acd1c77ece64647bc451f33409cb428",
+      "ambient_model": "zai-org/GLM-5-FP8",
+      "ambient_verified_by_validators": "Verified by 3 validators",
+      "ambient_auction_status": "Done",
+      "ambient_auction_bids_placed": 2,
+      "ambient_auction_bids_revealed": 2,
+      "ambient_auction_address": "https://explorer.ambient.xyz/address/5t83VEzB5UGwfzsZUPjwZFtWNMXc1bxWc2GwDUXof84A",
+      "ambient_bidder": "https://explorer.ambient.xyz/address/98WKDq5HzneuZycJiCSM5ajuKzscQMop2GsRdxK95q2m"
+    },
+    {
+      "run_id": 5,
+      "status": "ok",
+      "started_at": "2026-04-06T16:03:38.814Z",
+      "finished_at": "2026-04-06T16:23:40.226Z",
+      "duration_ms": 1201412,
+      "first_token_latency_ms": 49440,
+      "stream_completed_ms": 1201410,
+      "report_json_valid": true,
+      "refusal_detected": true,
+      "refusal_signals": [
+        "unknowns_present:5"
+      ],
+      "strict_rejection_triggered": false,
+      "routing_action": "WARN",
+      "unknowns_count": 5,
+      "ambient_verified": null,
+      "ambient_merkle_root": "a4c3aa46642be5df5a943de84f955c583d8f85644385c40b050b87f3f2256805",
+      "ambient_request_id": "2b8ef658eadb43759994ae9372b75996",
+      "ambient_model": "zai-org/GLM-5-FP8",
+      "ambient_verified_by_validators": "Verified by 3 validators",
+      "ambient_auction_status": "Done",
+      "ambient_auction_bids_placed": 2,
+      "ambient_auction_bids_revealed": 2,
+      "ambient_auction_address": "https://explorer.ambient.xyz/address/5t83VEzB5UGwfzsZUPjwZFtWNMXc1bxWc2GwDUXof84A",
+      "ambient_bidder": "https://explorer.ambient.xyz/address/98WKDq5HzneuZycJiCSM5ajuKzscQMop2GsRdxK95q2m"
+    },
+    {
+      "run_id": 6,
+      "status": "ok",
+      "started_at": "2026-04-06T16:03:38.815Z",
+      "finished_at": "2026-04-06T16:23:40.231Z",
+      "duration_ms": 1201416,
+      "first_token_latency_ms": 49440,
+      "stream_completed_ms": 1201415,
+      "report_json_valid": true,
+      "refusal_detected": true,
+      "refusal_signals": [
+        "unknowns_present:6"
+      ],
+      "strict_rejection_triggered": false,
+      "routing_action": "WARN",
+      "unknowns_count": 6,
+      "ambient_verified": null,
+      "ambient_merkle_root": "4f2438f5a9a46923b7aad87664cc62607d90e7337731dda15a7e1cb928758042",
+      "ambient_request_id": "a8dc669b95334e6f96aa57991c80cf96",
+      "ambient_model": "zai-org/GLM-5-FP8",
+      "ambient_verified_by_validators": "Verified by 3 validators",
+      "ambient_auction_status": "Done",
+      "ambient_auction_bids_placed": 2,
+      "ambient_auction_bids_revealed": 2,
+      "ambient_auction_address": "https://explorer.ambient.xyz/address/JBegXdtJ1pB1GwK81a9RfMYPnP9iMU2sUgGzgbxUzxoJ",
+      "ambient_bidder": "https://explorer.ambient.xyz/address/98WKDq5HzneuZycJiCSM5ajuKzscQMop2GsRdxK95q2m"
+    },
+    {
+      "run_id": 7,
+      "status": "ok",
+      "started_at": "2026-04-06T16:03:38.816Z",
+      "finished_at": "2026-04-06T16:23:40.196Z",
+      "duration_ms": 1201380,
+      "first_token_latency_ms": 49444,
+      "stream_completed_ms": 1201379,
+      "report_json_valid": true,
+      "refusal_detected": true,
+      "refusal_signals": [
+        "unknowns_present:4"
+      ],
+      "strict_rejection_triggered": false,
+      "routing_action": "WARN",
+      "unknowns_count": 4,
+      "ambient_verified": null,
+      "ambient_merkle_root": "93e60cba4f31a4d63130f2f4df3ac4559db3eef0a1bda323a4adc890d9c1dfbb",
+      "ambient_request_id": "5fe6c2d33d034e96a8e718f79ae41b9b",
+      "ambient_model": "zai-org/GLM-5-FP8",
+      "ambient_verified_by_validators": "Verified by 3 validators",
+      "ambient_auction_status": "Done",
+      "ambient_auction_bids_placed": 2,
+      "ambient_auction_bids_revealed": 2,
+      "ambient_auction_address": "https://explorer.ambient.xyz/address/JBegXdtJ1pB1GwK81a9RfMYPnP9iMU2sUgGzgbxUzxoJ",
+      "ambient_bidder": "https://explorer.ambient.xyz/address/98WKDq5HzneuZycJiCSM5ajuKzscQMop2GsRdxK95q2m"
+    },
+    {
+      "run_id": 8,
+      "status": "ok",
+      "started_at": "2026-04-06T16:03:38.817Z",
+      "finished_at": "2026-04-06T16:23:40.084Z",
+      "duration_ms": 1201267,
+      "first_token_latency_ms": 49439,
+      "stream_completed_ms": 1201266,
+      "report_json_valid": true,
+      "refusal_detected": true,
+      "refusal_signals": [
+        "unknowns_present:6"
+      ],
+      "strict_rejection_triggered": false,
+      "routing_action": "WARN",
+      "unknowns_count": 6,
+      "ambient_verified": null,
+      "ambient_merkle_root": "723444ad19c07e74ca7a1bc37078c2b129b214f5dc763c4f611593d67599c078",
+      "ambient_request_id": "2614e0118f5a4dad82710ee7a5e5394d",
+      "ambient_model": "zai-org/GLM-5-FP8",
+      "ambient_verified_by_validators": "Verified by 3 validators",
+      "ambient_auction_status": "Done",
+      "ambient_auction_bids_placed": 2,
+      "ambient_auction_bids_revealed": 2,
+      "ambient_auction_address": "https://explorer.ambient.xyz/address/5t83VEzB5UGwfzsZUPjwZFtWNMXc1bxWc2GwDUXof84A",
+      "ambient_bidder": "https://explorer.ambient.xyz/address/98WKDq5HzneuZycJiCSM5ajuKzscQMop2GsRdxK95q2m"
+    },
+    {
+      "run_id": 9,
+      "status": "ok",
+      "started_at": "2026-04-06T16:03:38.819Z",
+      "finished_at": "2026-04-06T16:23:40.069Z",
+      "duration_ms": 1201250,
+      "first_token_latency_ms": 49440,
+      "stream_completed_ms": 1201242,
+      "report_json_valid": true,
+      "refusal_detected": true,
+      "refusal_signals": [
+        "unknowns_present:5"
+      ],
+      "strict_rejection_triggered": false,
+      "routing_action": "WARN",
+      "unknowns_count": 5,
+      "ambient_verified": null,
+      "ambient_merkle_root": "b8e729e0baa9cc20aee004da5424dcf4b8a33de6856e151a2d4c791b3ba96c4e",
+      "ambient_request_id": "8169c8f04b324c59a542eaa309df11d8",
+      "ambient_model": "zai-org/GLM-5-FP8",
+      "ambient_verified_by_validators": "Verified by 3 validators",
+      "ambient_auction_status": "Done",
+      "ambient_auction_bids_placed": 2,
+      "ambient_auction_bids_revealed": 2,
+      "ambient_auction_address": "https://explorer.ambient.xyz/address/JBegXdtJ1pB1GwK81a9RfMYPnP9iMU2sUgGzgbxUzxoJ",
+      "ambient_bidder": "https://explorer.ambient.xyz/address/98WKDq5HzneuZycJiCSM5ajuKzscQMop2GsRdxK95q2m"
+    },
+    {
+      "run_id": 10,
+      "status": "ok",
+      "started_at": "2026-04-06T16:03:38.819Z",
+      "finished_at": "2026-04-06T16:23:40.188Z",
+      "duration_ms": 1201369,
+      "first_token_latency_ms": 49439,
+      "stream_completed_ms": 1201368,
+      "report_json_valid": true,
+      "refusal_detected": true,
+      "refusal_signals": [
+        "unknowns_present:4"
+      ],
+      "strict_rejection_triggered": false,
+      "routing_action": "WARN",
+      "unknowns_count": 4,
+      "ambient_verified": null,
+      "ambient_merkle_root": "6387e7bbe5a5f2fd3b7d588eececde338b743cd64e6783497d2b236e1dcff8fa",
+      "ambient_request_id": "15847769f7cd4cb78c2a101a581435b8",
+      "ambient_model": "zai-org/GLM-5-FP8",
+      "ambient_verified_by_validators": "Verified by 3 validators",
+      "ambient_auction_status": "Done",
+      "ambient_auction_bids_placed": 2,
+      "ambient_auction_bids_revealed": 2,
+      "ambient_auction_address": "https://explorer.ambient.xyz/address/5t83VEzB5UGwfzsZUPjwZFtWNMXc1bxWc2GwDUXof84A",
+      "ambient_bidder": "https://explorer.ambient.xyz/address/98WKDq5HzneuZycJiCSM5ajuKzscQMop2GsRdxK95q2m"
+    }
+  ]
+}

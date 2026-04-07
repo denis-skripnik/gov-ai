@@ -1,0 +1,111 @@
+{
+  "scenario": {
+    "name": "Ambient Week 10 load test for gov-ai",
+    "mode": "direct-runner",
+    "description": "Parallel inference stress test using the current gov-ai core prompt/extraction pipeline without the API-server layer, in controlled single-node mode."
+  },
+  "config": {
+    "url": "https://snapshot.org/#/s:aavedao.eth/proposal/0x55e85a32828da36122b9c8d50548696d7c748fd41c775f5bf06bdf0f2e32a265",
+    "runs": 1,
+    "concurrency": 1,
+    "model": "zai-org/GLM-5-FP8",
+    "timeout_ms": 5400000,
+    "strict_verification_hooks": false,
+    "stream": true,
+    "shared_extracted_input": true,
+    "extracted_source_type": "snapshot",
+    "week10_mode": "single-node-controlled",
+    "multi_node_bypassed": true
+  },
+  "timing": {
+    "started_at": "2026-04-06T14:29:30.822Z",
+    "finished_at": "2026-04-06T14:49:33.967Z",
+    "total_batch_duration_ms": 1203145
+  },
+  "aggregate": {
+    "runs_requested": 1,
+    "runs_completed_ok": 1,
+    "runs_failed": 0,
+    "runs_timed_out": 0,
+    "success_rate": 1,
+    "first_token_latency_ms": {
+      "min": 3812,
+      "avg": 3812,
+      "median": 3812,
+      "p95": 3812,
+      "max": 3812
+    },
+    "duration_ms": {
+      "min": 1202847,
+      "avg": 1202847,
+      "median": 1202847,
+      "p95": 1202847,
+      "max": 1202847
+    },
+    "ambient_verified_count": 0,
+    "ambient_metadata_present_count": 1,
+    "refusal_count": 1,
+    "strict_rejection_count": 0,
+    "failure_types": {}
+  },
+  "evidence_samples": {
+    "success_runs": [
+      {
+        "run_id": 1,
+        "first_token_latency_ms": 3812,
+        "duration_ms": 1202847,
+        "ambient_request_id": "f029ccccceda448499f3a944d69695b3",
+        "ambient_verified": null,
+        "ambient_model": "zai-org/GLM-5-FP8"
+      }
+    ],
+    "error_runs": [],
+    "ambient_samples": [
+      {
+        "run_id": 1,
+        "verified": null,
+        "request_id": "f029ccccceda448499f3a944d69695b3",
+        "merkle_root": "ebc63aeba7c716dcbf9b8137cb77a90047b7b4d21d8edea2b68ae5274a4ea3d3",
+        "verified_by_validators": "Verified by 3 validators",
+        "auction": {
+          "status": "Done",
+          "bids": {
+            "placed": 3,
+            "revealed": 3
+          },
+          "address": "https://explorer.ambient.xyz/address/FGAjHeLFkMewFjppvRHTqs66bG6Crwsc387aZ2H7BQ3N"
+        },
+        "bidder": "https://explorer.ambient.xyz/address/98WKDq5HzneuZycJiCSM5ajuKzscQMop2GsRdxK95q2m"
+      }
+    ]
+  },
+  "runs": [
+    {
+      "run_id": 1,
+      "status": "ok",
+      "started_at": "2026-04-06T14:29:31.113Z",
+      "finished_at": "2026-04-06T14:49:33.960Z",
+      "duration_ms": 1202847,
+      "first_token_latency_ms": 3812,
+      "stream_completed_ms": 1202840,
+      "report_json_valid": true,
+      "refusal_detected": true,
+      "refusal_signals": [
+        "unknowns_present:5"
+      ],
+      "strict_rejection_triggered": false,
+      "routing_action": "WARN",
+      "unknowns_count": 5,
+      "ambient_verified": null,
+      "ambient_merkle_root": "ebc63aeba7c716dcbf9b8137cb77a90047b7b4d21d8edea2b68ae5274a4ea3d3",
+      "ambient_request_id": "f029ccccceda448499f3a944d69695b3",
+      "ambient_model": "zai-org/GLM-5-FP8",
+      "ambient_verified_by_validators": "Verified by 3 validators",
+      "ambient_auction_status": "Done",
+      "ambient_auction_bids_placed": 3,
+      "ambient_auction_bids_revealed": 3,
+      "ambient_auction_address": "https://explorer.ambient.xyz/address/FGAjHeLFkMewFjppvRHTqs66bG6Crwsc387aZ2H7BQ3N",
+      "ambient_bidder": "https://explorer.ambient.xyz/address/98WKDq5HzneuZycJiCSM5ajuKzscQMop2GsRdxK95q2m"
+    }
+  ]
+}

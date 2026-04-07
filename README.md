@@ -4,6 +4,7 @@ AI assistant for DAO governance proposals.
 
 ## Table of Contents
 
+- [Week 10 - Load the System (Web2)](#week-10---load-the-system-web2)
 - [Week 9 - Proof Over Vibes (Web2)](#week-9---proof-over-vibes-web2)
 - [Week 8 - Design for Many Small Miners (Web2)](#week-8---design-for-many-small-miners-web2)
 - [Week 7 - System Identity (Web2)](#week-7---system-identity-web2)
@@ -31,6 +32,7 @@ It now also documents and ships:
 - Week 7 system identity (Web2): exposes system identity, verification boundaries, and refusal handling in the UI
 - Week 8 design for many small miners (Web2): dynamic timeout, financial proposal detection, multi-node consensus analysis
 - Week 9 proof over vibes (Web2): deterministic / probabilistic / unverifiable verification hooks with optional strict routing
+- Week 10 load the system (Web2): controlled single-node parallel stress testing with load artifacts and failure-mode tracking
 
 It takes a proposal URL (Snapshot, Tally, DAO DAO), extracts available data, and produces a structured analysis:
 - summary of the proposal
@@ -48,6 +50,93 @@ The design goal is **honesty and conservatism**:
 
 ---
 
+## Week 10 - Load the System (Web2)
+
+Week 10 focused on real parallel load using the real gov-ai workload shape, while intentionally avoiding the full financial multi-node orchestration path.
+
+### Why a separate Week 10 mode exists
+
+The normal financial path in `gov-ai.js` can invoke:
+- financial proposal detection
+- 3-attempt multi-node analysis
+- consensus selection
+- retry / backoff behavior
+- full streaming verification lifecycle
+
+That makes the default production-style path useful for real analysis, but poor as a clean parallel benchmark unit. For Week 10, this repository uses a **controlled single-node mode** instead:
+- same extracted proposal input
+- same governance-analysis prompt shape
+- same JSON report contract
+- streaming enabled for timing + Ambient metadata capture
+- multi-node financial orchestration intentionally bypassed
+
+This keeps the workload meaningful while making the benchmark interpretable.
+
+### Week 10 harness
+
+Week 10 uses a dedicated load harness:
+- script: `week10-load.js`
+- artifact folder: `load-reports/`
+
+The harness records, per run:
+- first token latency
+- full completion time
+- success / failure / timeout status
+- refusal and routing signals
+- Ambient metadata when available (`request_id`, `merkle_root`, validator line, auction, bidder)
+
+The harness writes two artifact types:
+- `load-result-<runs>-<timestamp>.json` — machine-readable raw run data + aggregates
+- `load-summary-<runs>-<timestamp>.md` — human-readable summary
+
+### Retained Week 10 artifact set
+
+The final retained Week 10 checkpoints are:
+- `1 / 1`
+- `5 / 5`
+- `10 / 10`
+- `50 / 50`
+- `100 / 100`
+
+These artifacts are kept in `load-reports/`.
+
+### Workload used
+
+Proposal used for the retained Week 10 runs:
+- Snapshot / Aave DAO proposal
+- URL stored in `.env` as `PROPOSAL_URL`
+
+Test mode used:
+- extracted input reused across runs
+- controlled single-node mode
+- streaming enabled
+- strict verification hooks disabled
+
+### Week 10 results summary
+
+Observed behavior across retained checkpoints:
+- `1 / 1` — stable baseline, first token ~3.8s, completion ~20 min
+- `5 / 5` — still 100% success, first token ~2.5s, completion ~20 min
+- `10 / 10` — 100% success, but first token jumps to ~49s while completion stays ~20 min
+- `50 / 50` — success rate drops to 86%; first real failures appear (`no_stream_content`, `HTTP 429`)
+- `100 / 100` — success rate drops to 36%; dominant failure mode becomes `HTTP 429 Too many concurrent requests`
+
+Important pattern:
+- completion time for accepted runs stayed close to ~20 minutes even at higher load
+- first-token latency did **not** degrade monotonically
+- the clearest system limit showed up first in **reliability / admission failure**, not in total completion time
+
+### How to interpret Week 10 honestly
+
+This Week 10 benchmark does **not** claim to be a full end-to-end benchmark of the default financial multi-node production path.
+
+What it does show:
+- how the real gov-ai workload behaves in controlled single-node parallel execution
+- how first-token responsiveness changes under load
+- where streaming reliability starts to fail
+- where rate limiting becomes the dominant system boundary
+
+This makes Week 10 useful as a practical stress test and failure-mode map, even though the full production financial path remains a separate, longer-running workflow.
 
 ## Week 9 - Proof Over Vibes (Web2)
 

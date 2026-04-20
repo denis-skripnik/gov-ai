@@ -76,6 +76,8 @@ That is much closer to an actual product loop than isolated chat usage.
 
 ### Week 11 bot MVP
 
+Telegram bot: [GovAiAmbientBot](https://t.me/GovAiAmbientBot)
+
 The MVP adds:
 - Telegram bot entry point
 - file-per-job persistence under `jobs/`
@@ -133,6 +135,12 @@ This preserves a layered experience:
 - short summary in Telegram
 - deep detail in web view
 - raw JSON remains an internal artifact
+
+### Example Telegram flow
+
+![Week 11 Telegram bot flow](docs/images/week11-telegram-bot-flow.png)
+
+Telegram bot flow: URL submission, queued analysis, and human-readable result delivery.
 
 ### Architectural rule
 

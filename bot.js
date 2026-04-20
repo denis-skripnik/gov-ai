@@ -2,6 +2,7 @@
 import "dotenv/config";
 import { Bot, InlineKeyboard } from "grammy";
 import { JobQueue } from "./bot/queue.js";
+import { ensurePageServer } from "./bot/page-server.js";
 import { buildJobId, ensureJobsDir, loadJob, countActiveJobsByUser, saveJobFeedback } from "./bot/status-store.js";
 import { extractFirstUrl, validateProposalUrl } from "./bot/url-validate.js";
 
@@ -152,6 +153,15 @@ bot.callbackQuery("analyze_again", async (ctx) => {
 bot.catch((err) => {
   console.error(err.error);
 });
+
+try {
+  queue.pageServer = await ensurePageServer();
+  if (queue.pageServer.mode === "unavailable") {
+    console.warn("gov-ai page server is unavailable at startup; bot will retry on demand.");
+  }
+} catch (error) {
+  console.warn(`gov-ai page server startup check failed: ${String(error.message || error)}`);
+}
 
 bot.start();
 console.log("gov-ai Telegram bot started");

@@ -107,20 +107,48 @@ function sanitize(str) {
 }
 
 function buildReportFilename(url, extracted) {
-  if (extracted?.source_type === "snapshot" && extracted?.metadata?.proposal_id) {
-    const id = sanitize(extracted.metadata.proposal_id);
-    return `report-snapshot-${id}.json`;
+  const inputUrl = String(url || "");
+
+  if (extracted?.source_type === "snapshot") {
+    const proposalId =
+      sanitize(extracted?.metadata?.proposal_id) ||
+      sanitize(inputUrl.match(/#\/s:[^/]+\/proposal\/(0x[a-f0-9]+)/i)?.[1]);
+
+    if (proposalId) {
+      return `report-snapshot-${proposalId}.json`;
+    }
   }
 
   if (extracted?.source_type === "tally") {
     const org =
       sanitize(extracted?.metadata?.organization_slug) ||
       sanitize(extracted?.metadata?.governor_slug) ||
+      sanitize(inputUrl.match(/\/gov\/([^/]+)\/proposal\//i)?.[1]) ||
       "unknown";
 
-    const onchain = sanitize(extracted?.metadata?.onchain_id) || "unknown";
+    const onchain =
+      sanitize(extracted?.metadata?.onchain_id) ||
+      sanitize(extracted?.metadata?.proposal_id) ||
+      sanitize(inputUrl.match(/\/proposal\/([^/?#]+)/i)?.[1]) ||
+      "unknown";
 
     return `report-tally-${org}-${onchain}.json`;
+  }
+
+  if (extracted?.source_type === "daodao") {
+    const daoSlug =
+      sanitize(extracted?.metadata?.dao_slug) ||
+      sanitize(extracted?.metadata?.organization_slug) ||
+      sanitize(inputUrl.match(/\/dao\/([^/]+)\/proposals\//i)?.[1]) ||
+      "unknown";
+
+    const proposalId =
+      sanitize(extracted?.metadata?.proposal_id) ||
+      sanitize(extracted?.metadata?.id) ||
+      sanitize(inputUrl.match(/\/proposals\/([^/?#]+)/i)?.[1]) ||
+      "unknown";
+
+    return `report-daodao-${daoSlug}-${proposalId}.json`;
   }
 
   const ts = new Date().toISOString().replace(/[:.]/g, "-");

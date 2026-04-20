@@ -9,3 +9,4 @@ prod-reports/*.json
 bench-results/*
 !bench-results/examples/
 !bench-results/examples/**
+jobs/

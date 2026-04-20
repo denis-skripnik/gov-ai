@@ -6,6 +6,7 @@
     "gov-ai": "./gov-ai.js"
   },
   "dependencies": {
-    "dotenv": "^17.2.3"
+    "dotenv": "^17.2.3",
+    "grammy": "^1.38.0"
   }
 }

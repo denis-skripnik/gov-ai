@@ -4,6 +4,7 @@ AI assistant for DAO governance proposals.
 
 ## Table of Contents
 
+- [Week 11 - Agents and Composability (Web2)](#week-11---agents-and-composability-web2)
 - [Week 10 - Load the System (Web2)](#week-10---load-the-system-web2)
 - [Week 9 - Proof Over Vibes (Web2)](#week-9---proof-over-vibes-web2)
 - [Week 8 - Design for Many Small Miners (Web2)](#week-8---design-for-many-small-miners-web2)
@@ -33,6 +34,7 @@ It now also documents and ships:
 - Week 8 design for many small miners (Web2): dynamic timeout, financial proposal detection, multi-node consensus analysis
 - Week 9 proof over vibes (Web2): deterministic / probabilistic / unverifiable verification hooks with optional strict routing
 - Week 10 load the system (Web2): controlled single-node parallel stress testing with load artifacts and failure-mode tracking
+- Week 11 agents and composability (Web2): Telegram bot layer, queueing, human-readable summaries, and optional detailed web view on top of the existing gov-ai pipeline
 
 It takes a proposal URL (Snapshot, Tally, DAO DAO), extracts available data, and produces a structured analysis:
 - summary of the proposal
@@ -49,6 +51,96 @@ The design goal is **honesty and conservatism**:
 - the output is meant to **assist** human decision-making, not replace it
 
 ---
+
+## Week 11 - Agents and Composability (Web2)
+
+Week 11 adds a user-facing orchestration layer on top of the existing gov-ai analysis engine.
+
+The key design choice is composability without rewriting the core:
+- `gov-ai.js` remains the source-of-truth analysis engine
+- `pageServer.js` remains the detailed report surface
+- a new Telegram bot layer sits on top as transport and orchestration
+- the bot runs analysis jobs, tracks state, and returns human-readable output instead of raw JSON
+
+### Why this matters
+
+This turns Ambient from a one-off model call into infrastructure inside a small real system:
+- input validation
+- queueing
+- job execution
+- structured analysis
+- human-readable summary
+- detailed page view
+
+That is much closer to an actual product loop than isolated chat usage.
+
+### Week 11 bot MVP
+
+The MVP adds:
+- Telegram bot entry point
+- file-per-job persistence under `jobs/`
+- FIFO queue with one active analysis at a time
+- per-user active job limit (maximum 2 in `queued` or `running`)
+- supported-source URL validation before analysis starts
+- child-process execution of the existing `gov-ai.js`
+- report discovery from `reports/`
+- short Telegram summaries from report JSON
+- optional detailed page link when the page server is available
+
+### User experience
+
+The bot is designed for long-running governance analysis rather than instant replies.
+
+Behavior:
+- user sends a supported proposal URL
+- bot validates the URL before using paid inference
+- job is queued and persisted
+- bot sends queue position and job id
+- bot later sends a "started" message when execution begins
+- bot automatically sends a final human-readable summary on completion
+- inline buttons support status checks and recent-job listing
+
+Primary status model:
+- `queued`
+- `running`
+- `completed`
+- `failed`
+
+### Summary shape
+
+The Telegram result is intentionally human-readable and concise.
+
+It includes:
+- proposal label
+- recommendation
+- confidence
+- key changes
+- risks
+- unknowns
+- warnings
+- optional detailed page link
+
+For supported sources, proposal labels are shortened for readability:
+- Snapshot, `<space>`, `<proposal id short>`
+- Tally, `<organization>`, `<proposal id short>`
+- DAO DAO, `<dao slug>`, `<proposal id short>`
+
+### Detailed page view
+
+If a detailed page base URL is configured, or if the local page server can be started automatically, the bot includes a detailed page link instead of forcing users to inspect raw JSON.
+
+This preserves a layered experience:
+- short summary in Telegram
+- deep detail in web view
+- raw JSON remains an internal artifact
+
+### Architectural rule
+
+Week 11 intentionally does **not** rewrite the existing analysis engine.
+
+The bot layer composes with the current system instead of replacing it.
+This keeps the project maintainable and makes the composability story stronger:
+Ambient is embedded into a workflow, not rebuilt as a separate parallel stack.
 
 ## Week 10 - Load the System (Web2)
 

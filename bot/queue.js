@@ -1,4 +1,5 @@
 import { buildTelegramSummary } from "./summary.js";
+import { formatUserFacingAnalysisError } from "./error-format.js";
 import { runGovAiAnalysis } from "./run-analysis.js";
 import { saveJob, updateJob, listJobsByUser } from "./status-store.js";
 import { ensurePageServer } from "./page-server.js";
@@ -41,7 +42,7 @@ export class JobQueue {
 
   async runJob(job) {
     updateJob(job.jobId, { status: "running", startedAt: new Date().toISOString(), queuePosition: 0 });
-    await this.bot.api.sendMessage(job.chatId, "Analysis started. This is a long-running workflow and may take up to about 1 hour.", {
+    await this.bot.api.sendMessage(job.chatId, "Analysis started. This proposal is now being processed and may take up to about 1 hour.", {
       reply_markup: {
         inline_keyboard: [[
           { text: "Check status", callback_data: `check_status:${job.jobId}` },
@@ -66,27 +67,36 @@ export class JobQueue {
       });
 
       const buttons = [
+        [
+          { text: "👍 Helpful", callback_data: `feedback:${job.jobId}:helpful` },
+          { text: "👎 Needs review", callback_data: `feedback:${job.jobId}:needs_review` },
+        ],
         [{ text: "My jobs", callback_data: "my_jobs" }, { text: "Analyze another", callback_data: "analyze_again" }],
       ];
-      if (summary.detailUrl) buttons.unshift([{ text: "Open details", url: summary.detailUrl }]);
+      if (summary.detailUrl) buttons.unshift([{ text: "Details and verification", url: summary.detailUrl }]);
 
       await this.bot.api.sendMessage(job.chatId, summary.text, {
         parse_mode: "HTML",
         reply_markup: { inline_keyboard: buttons },
       });
     } catch (error) {
+      const userError = formatUserFacingAnalysisError(error);
+
       updateJob(job.jobId, {
         status: "failed",
         finishedAt: new Date().toISOString(),
         error: String(error.message || error),
       });
 
-      await this.bot.api.sendMessage(job.chatId, `Analysis failed: ${String(error.message || error)}`, {
+      await this.bot.api.sendMessage(job.chatId, `${userError.summary}\n${userError.detail}`, {
         reply_markup: {
-          inline_keyboard: [[
-            { text: "Check status", callback_data: `check_status:${job.jobId}` },
-            { text: "My jobs", callback_data: "my_jobs" },
-          ]],
+          inline_keyboard: [
+            [
+              { text: "Check status", callback_data: `check_status:${job.jobId}` },
+              { text: "My jobs", callback_data: "my_jobs" },
+            ],
+            [{ text: "Analyze another", callback_data: "analyze_again" }],
+          ],
         },
       });
     }

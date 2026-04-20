@@ -2,7 +2,7 @@
 import "dotenv/config";
 import { Bot, InlineKeyboard } from "grammy";
 import { JobQueue } from "./bot/queue.js";
-import { buildJobId, ensureJobsDir, loadJob, countActiveJobsByUser } from "./bot/status-store.js";
+import { buildJobId, ensureJobsDir, loadJob, countActiveJobsByUser, saveJobFeedback } from "./bot/status-store.js";
 import { extractFirstUrl, validateProposalUrl } from "./bot/url-validate.js";
 
 if (!process.env.TELEGRAM_BOT_TOKEN) {
@@ -14,6 +14,18 @@ ensureJobsDir();
 
 const bot = new Bot(process.env.TELEGRAM_BOT_TOKEN);
 const queue = new JobQueue(bot);
+
+function summarizeError(errorText, maxLength = 280) {
+  const value = String(errorText || "").replace(/\s+/g, " ").trim();
+  if (!value) return null;
+
+  if (value.includes("Model returned non-JSON")) {
+    return "analysis service returned invalid structured output";
+  }
+
+  if (value.length <= maxLength) return value;
+  return `${value.slice(0, maxLength - 1)}…`;
+}
 
 bot.command("start", async (ctx) => {
   await ctx.reply(
@@ -81,14 +93,22 @@ bot.callbackQuery(/^check_status:(.+)$/, async (ctx) => {
   if (job.status === "queued") text += `\nQueue position: ${queue.getPosition(jobId) ?? "pending"}`;
   if (job.startedAt) text += `\nStarted: ${job.startedAt}`;
   if (job.finishedAt) text += `\nFinished: ${job.finishedAt}`;
-  if (job.error) text += `\nError: ${job.error}`;
+  if (job.error) {
+    const shortError = summarizeError(job.error);
+    if (shortError) text += `\nError: ${shortError}`;
+  }
   if (job.status === "completed" && job.summary?.recommendation) {
     text += `\nRecommendation: ${job.summary.recommendation}`;
     text += `\nConfidence: ${job.summary.confidence}`;
   }
 
   const keyboard = new InlineKeyboard().text("My jobs", "my_jobs");
-  if (job.summary?.detailUrl) keyboard.row().url("Open details", job.summary.detailUrl);
+  if (job.summary?.detailUrl) keyboard.row().url("Details and verification", job.summary.detailUrl);
+
+  const feedbackEntry = job.feedback?.votes?.[String(ctx.from.id)];
+  if (feedbackEntry?.value) {
+    text += `\nYour feedback: ${feedbackEntry.value === "helpful" ? "Helpful" : "Needs review"}`;
+  }
 
   await ctx.reply(text, { reply_markup: keyboard });
   await ctx.answerCallbackQuery();
@@ -99,6 +119,29 @@ bot.callbackQuery("my_jobs", async (ctx) => {
   const replyMarkup = buttons.length ? { inline_keyboard: buttons } : undefined;
   await ctx.reply(text, replyMarkup ? { reply_markup: replyMarkup } : undefined);
   await ctx.answerCallbackQuery();
+});
+
+bot.callbackQuery(/^feedback:([^:]+):(helpful|needs_review)$/, async (ctx) => {
+  const [, jobId, value] = ctx.match;
+  const result = saveJobFeedback(jobId, String(ctx.from.id), value);
+
+  if (!result.ok) {
+    const errorText = result.code === "job_not_found"
+      ? "Job not found."
+      : result.code === "job_not_completed"
+        ? "Feedback is available after the analysis is completed."
+        : "Feedback could not be saved.";
+    await ctx.answerCallbackQuery({ text: errorText, show_alert: result.code === "job_not_found" });
+    return;
+  }
+
+  const ackText = result.code === "unchanged"
+    ? "Feedback already saved."
+    : value === "helpful"
+      ? "Thanks, marked as helpful."
+      : "Thanks, marked for review.";
+
+  await ctx.answerCallbackQuery({ text: ackText });
 });
 
 bot.callbackQuery("analyze_again", async (ctx) => {

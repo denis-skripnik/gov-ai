@@ -101,35 +101,48 @@ function isAmbientMultiNodeCapacityError(error) {
 }
 
 async function multiNodeAnalysis(url, extracted, principles, maxAttempts = 3, isRecursive = false, runtime = {}) {
-  const results = [];
   const tempDir = runtime.tempDir || './temp/multi-node';
   const runAnalysis = runtime.runAnalysis || analyzeWithLLM;
   const sleepFn = runtime.sleep || sleep;
   const fallbackBackoffsMs = runtime.multiNodeFallbackBackoffsMs || [10000, 30000, 60000];
-  
+
   // Create temp directory if not exists
   if (!fs.existsSync(tempDir)) {
     fs.mkdirSync(tempDir, { recursive: true });
   }
-  
-  for (let i = 1; i <= maxAttempts; i++) {
-    try {
-      const startTime = Date.now();
-      const result = await runAnalysis(url, extracted, principles, { skipFinancialCheck: true });
-      const latency = Date.now() - startTime;
-      latencyTracker.add(latency);
-      
-      const filename = `${tempDir}/analysis-${Date.now()}-attempt-${i}.json`;
-      fs.writeFileSync(filename, JSON.stringify(result, null, 2));
-      results.push({ attempt: i, result, filename, success: true, latencyMs: latency });
-    } catch (e) {
-      const filename = `${tempDir}/analysis-${Date.now()}-attempt-${i}-error.json`;
-      fs.writeFileSync(filename, JSON.stringify({ error: e.message }, null, 2));
-      results.push({ attempt: i, error: e.message, filename, success: false });
-    }
-  }
-  
-  // Compare results
+
+  const attemptTasks = Array.from({ length: maxAttempts }, (_, index) => {
+    const attempt = index + 1;
+    return (async () => {
+      try {
+        const startTime = Date.now();
+        const result = await runAnalysis(url, extracted, principles, { skipFinancialCheck: true });
+        const latency = Date.now() - startTime;
+        latencyTracker.add(latency);
+
+        const filename = `${tempDir}/analysis-${Date.now()}-attempt-${attempt}.json`;
+        fs.writeFileSync(filename, JSON.stringify(result, null, 2));
+        return { attempt, result, filename, success: true, latencyMs: latency };
+      } catch (e) {
+        const filename = `${tempDir}/analysis-${Date.now()}-attempt-${attempt}-error.json`;
+        const error = e?.message || String(e);
+        fs.writeFileSync(filename, JSON.stringify({ error }, null, 2));
+        return { attempt, error, filename, success: false };
+      }
+    })();
+  });
+
+  const settledAttempts = await Promise.allSettled(attemptTasks);
+  const results = settledAttempts.map((settled, index) => {
+    if (settled.status === 'fulfilled') return settled.value;
+
+    const attempt = index + 1;
+    const error = settled.reason?.message || String(settled.reason);
+    const filename = `${tempDir}/analysis-${Date.now()}-attempt-${attempt}-error.json`;
+    fs.writeFileSync(filename, JSON.stringify({ error }, null, 2));
+    return { attempt, error, filename, success: false };
+  });
+
   const successful = results.filter(r => r.success);
   if (successful.length === 0) {
     const retryableErrors = results.filter((r) => !r.success && isAmbientMultiNodeCapacityError(r.error));
@@ -167,24 +180,41 @@ async function multiNodeAnalysis(url, extracted, principles, maxAttempts = 3, is
 
     throw new Error('All attempts failed');
   }
-  
+
+  if (successful.length === 1) {
+    const chosen = successful[0].result;
+    const summaryFile = `${tempDir}/analysis-${Date.now()}-chosen.json`;
+    fs.writeFileSync(summaryFile, JSON.stringify({
+      chosenFrom: successful.map(r => r.filename),
+      chosenIndex: 0,
+      recommendationKeys: successful.map(r => {
+        const rec = r.result?.recommendation || {};
+        return [rec.suggested_option || 'UNKNOWN', rec.confidence || 'unknown'].join('|');
+      }),
+      final: chosen,
+      reason: 'single-success',
+      attempts: results,
+    }, null, 2));
+    return chosen;
+  }
+
   // Compare recommendations for consensus
   const consensusResult = findConsensusIndex(successful);
   const chosenIndex = consensusResult.index;
   const chosen = successful[chosenIndex].result;
-  
+
   // For debugging: collect recommendation keys
   const recommendationKeys = successful.map(r => {
     const rec = r.result?.recommendation || {};
     return [rec.suggested_option || 'UNKNOWN', rec.confidence || 'unknown'].join('|');
   });
-  
+
   // Log why this choice was made
   console.log(`[${new Date().toISOString()}] Multi-node comparison: ${successful.length} successful, consensus index: ${chosenIndex}, reason: ${consensusResult.reason}`);
-  
+
   // Save final choice with reason
   const summaryFile = `${tempDir}/analysis-${Date.now()}-chosen.json`;
-  fs.writeFileSync(summaryFile, JSON.stringify({ 
+  fs.writeFileSync(summaryFile, JSON.stringify({
     chosenFrom: successful.map(r => r.filename),
     chosenIndex,
     recommendationKeys,
@@ -192,7 +222,7 @@ async function multiNodeAnalysis(url, extracted, principles, maxAttempts = 3, is
     reason: consensusResult.reason,
     attempts: results
   }, null, 2));
-  
+
   return chosen;
 }
 

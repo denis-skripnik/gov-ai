@@ -98,7 +98,10 @@ export function buildTelegramSummary(report, reportPath, pageBaseUrl = null) {
   }
 
   const detailUrl = buildDetailLink(reportPath, pageBaseUrl);
-  if (detailUrl) lines.push(`<a href="${escapeHtml(detailUrl)}">Detailed view</a>`);
+  if (detailUrl) {
+    lines.push(`Review the full report and verification details:`);
+    lines.push(`<a href="${escapeHtml(detailUrl)}">Details and verification</a>`);
+  }
 
   return {
     text: lines.join("\n"),

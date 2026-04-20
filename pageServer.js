@@ -314,11 +314,14 @@ function formatVoteResults(results, t) {
   return html;
 }
 
+function openSection(className, anchorId, title) {
+  return `<div id="${anchorId}" class="section ${className}"><h2>${title}</h2>`;
+}
+
 function formatInput(input, t) {
   if (!input) return '';
   
-  let html = '<div class="section input-section">';
-  html += `<h2>${t.sourceInfo}</h2>`;
+  let html = openSection('input-section', 'source-info', t.sourceInfo);
   
   if (input.url) {
     html += `<p><strong>${t.url}:</strong> <a href="${input.url}" target="_blank">${input.url}</a></p>`;
@@ -340,8 +343,7 @@ function formatInput(input, t) {
 function formatExtracted(extracted, t) {
   if (!extracted) return '';
   
-  let html = '<div class="section extracted-section">';
-  html += `<h2>${t.extractedData}</h2>`;
+  let html = openSection('extracted-section', 'extracted-data', t.extractedData);
   
   if (extracted.title) {
     html += `<h3>${extracted.title}</h3>`;
@@ -380,8 +382,7 @@ function formatExtracted(extracted, t) {
 function formatAnalysis(analysis, t) {
   if (!analysis) return '';
   
-  let html = '<div class="section analysis-section">';
-  html += `<h2>${t.analysis}</h2>`;
+  let html = openSection('analysis-section', 'analysis', t.analysis);
   
   if (analysis.summary) {
     html += '<div class="summary">';
@@ -450,8 +451,7 @@ function formatAnalysis(analysis, t) {
 function formatRecommendation(recommendation, t) {
   if (!recommendation) return '';
   
-  let html = '<div class="section recommendation-section">';
-  html += `<h2>${t.recommendation}</h2>`;
+  let html = openSection('recommendation-section', 'recommendation', t.recommendation);
   
   if (recommendation.suggested_option) {
     html += `<div class="suggested-option">`;
@@ -491,8 +491,7 @@ function formatRecommendation(recommendation, t) {
 function formatLimitations(limitations, t) {
   if (!limitations || !Array.isArray(limitations) || limitations.length === 0) return '';
   
-  let html = '<div class="section limitations-section">';
-  html += `<h2>⚠️ ${t.limitations}</h2>`;
+  let html = openSection('limitations-section', 'limitations', `⚠️ ${t.limitations}`);
   html += '<ul class="limitations-list">';
   for (const limitation of limitations) {
     html += `<li>${formatMarkdown(limitation)}</li>`;
@@ -505,8 +504,7 @@ function formatLimitations(limitations, t) {
 function formatVerification(ambient, t) {
   if (!ambient) return '';
   
-  let html = '<div class="section verification">';
-  html += `<h2>${t.verification}</h2>`;
+  let html = openSection('verification', 'verification', t.verification);
   
   if (typeof ambient.verified !== 'undefined') {
     const verifiedClass = ambient.verified ? '' : 'false';
@@ -562,7 +560,7 @@ function formatVerification(ambient, t) {
 function formatVerificationBoundary(boundary, t) {
   if (!boundary) return '';
   
-  let html = '<div class="section verification-boundary collapsible">';
+  let html = '<div id="verification-boundary" class="section verification-boundary collapsible">';
   html += `<h2>${t.verificationBoundary}</h2>`;
   html += `<button class="collapsible-btn" onclick="this.nextElementSibling.classList.toggle('expanded')">${t.showDetails}</button>`;
   html += '<div class="collapsible-content">';
@@ -627,7 +625,7 @@ function formatVerificationBoundary(boundary, t) {
 function formatVerificationHooks(hooks, t) {
   if (!hooks) return '';
 
-  let html = '<div class="section verification-hooks collapsible">';
+  let html = '<div id="verification-hooks" class="section verification-hooks collapsible">';
   html += `<h2>${t.verificationHooks}</h2>`;
   html += `<button class="collapsible-btn" onclick="this.nextElementSibling.classList.toggle('expanded')">${t.showDetails}</button>`;
   html += '<div class="collapsible-content">';
@@ -679,7 +677,7 @@ function formatVerificationHooks(hooks, t) {
 function formatRefusalHandling(refusal, t) {
   if (!refusal) return '';
   
-  let html = '<div class="section refusal-handling collapsible">';
+  let html = '<div id="refusal-handling" class="section refusal-handling collapsible">';
   html += `<h2>${t.refusalHandling}</h2>`;
   html += `<button class="collapsible-btn" onclick="this.nextElementSibling.classList.toggle('expanded')">${t.showDetails}</button>`;
   html += '<div class="collapsible-content">';
@@ -887,6 +885,7 @@ function getStyles() {
       padding: 20px;
       background: #f8f9fa;
       border-radius: 6px;
+      scroll-margin-top: 20px;
     }
     
     .badge {

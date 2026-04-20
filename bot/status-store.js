@@ -2,6 +2,7 @@ import fs from "fs";
 import path from "path";
 
 const JOBS_DIR = path.join(process.cwd(), "jobs");
+const FEEDBACK_VALUES = new Set(["helpful", "needs_review"]);
 
 export function ensureJobsDir() {
   fs.mkdirSync(JOBS_DIR, { recursive: true });
@@ -67,4 +68,35 @@ export function countActiveJobsByUser(userId) {
   return readAllJobs().filter(
     (job) => String(job.userId) === String(userId) && (job.status === "queued" || job.status === "running")
   ).length;
+}
+
+export function saveJobFeedback(jobId, userId, value) {
+  if (!FEEDBACK_VALUES.has(value)) return { ok: false, code: "invalid_feedback" };
+
+  const job = loadJob(jobId);
+  if (!job) return { ok: false, code: "job_not_found" };
+  if (job.status !== "completed") return { ok: false, code: "job_not_completed" };
+
+  const normalizedUserId = String(userId);
+  const feedback = { ...(job.feedback || {}) };
+  const votes = { ...(feedback.votes || {}) };
+  const previous = votes[normalizedUserId] || null;
+
+  if (previous?.value === value) {
+    return { ok: true, code: "unchanged", feedback: previous, job };
+  }
+
+  const nextEntry = {
+    value,
+    updatedAt: new Date().toISOString(),
+  };
+
+  votes[normalizedUserId] = nextEntry;
+  const nextFeedback = {
+    votes,
+    updatedAt: nextEntry.updatedAt,
+  };
+
+  const nextJob = updateJob(jobId, { feedback: nextFeedback });
+  return { ok: true, code: previous ? "updated" : "created", feedback: nextEntry, job: nextJob };
 }

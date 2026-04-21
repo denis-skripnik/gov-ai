@@ -30,12 +30,12 @@ function summarizeError(errorText, maxLength = 280) {
 
 bot.command("start", async (ctx) => {
   await ctx.reply(
-    "Send me a supported governance proposal URL and I will queue an analysis. Supported sources: Snapshot, DAO DAO, and Tally. Analysis is long-running by design. A single request may take up to about 1 hour, and if the queue is busy, total waiting time may be several hours."
+    "Send me a supported governance proposal URL and I will queue an analysis. Supported sources: Snapshot, DAO DAO, Tally, and Mintscan. Analysis is long-running by design. A single request may take up to about 1 hour, and if the queue is busy, total waiting time may be several hours."
   );
 });
 
 bot.command("help", async (ctx) => {
-  await ctx.reply("Send a Snapshot, DAO DAO, or Tally proposal URL. I will validate it, queue it, and send the result when analysis finishes.");
+  await ctx.reply("Send a Snapshot, DAO DAO, Tally, or Mintscan proposal URL. I will validate it, queue it, and send the result when analysis finishes.");
 });
 
 bot.on("message:text", async (ctx) => {

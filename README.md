@@ -36,7 +36,7 @@ It now also documents and ships:
 - Week 10 load the system (Web2): controlled single-node parallel stress testing with load artifacts and failure-mode tracking
 - Week 11 agents and composability (Web2): Telegram bot layer, queueing, human-readable summaries, and optional detailed web view on top of the existing gov-ai pipeline
 
-It takes a proposal URL (Snapshot, Tally, DAO DAO), extracts available data, and produces a structured analysis:
+It takes a proposal URL (Snapshot, Tally, DAO DAO, Mintscan), extracts available data, and produces a structured analysis:
 - summary of the proposal
 - key changes
 - benefits
@@ -126,6 +126,7 @@ For supported sources, proposal labels are shortened for readability:
 - Snapshot, `<space>`, `<proposal id short>`
 - Tally, `<organization>`, `<proposal id short>`
 - DAO DAO, `<dao slug>`, `<proposal id short>`
+- Mintscan, `<chain>`, `<proposal id short>`
 
 ### Detailed page view
 
@@ -426,6 +427,7 @@ This keeps refusal behavior observable and auditable across report, route, and r
 - Snapshot (via official GraphQL API)
 - Tally (via official GraphQL API, requires API key)
 - DAO DAO (via Next.js `__NEXT_DATA__` fallback extraction)
+- Mintscan (via Mintscan proposal API field mapping)
 - Any other site: generic HTML text fallback (best-effort)
 
 **Note on Tally URLs:** Tally URLs may use organization slug in the format `/gov/<slug>/...`. The tool resolves the governor address via the Tally API.

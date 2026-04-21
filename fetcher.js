@@ -2,6 +2,14 @@ import { extractFromHtml } from "./extractor.js";
 
 const SNAPSHOT_GQL = "https://hub.snapshot.org/graphql";
 const TALLY_GQL = "https://api.tally.xyz/query";
+const MINTSCAN_API_BASE = "https://front.api.mintscan.io";
+const MINTSCAN_HEADERS = {
+  "Content-Type": "application/json",
+  Accept: "application/json",
+  Referer: "https://www.mintscan.io/",
+  "x-accept-hub": "8fb73b192852860f4e3e048beeaccaa4",
+  "User-Agent": "Mozilla/5.0",
+};
 
 // -------------------- Snapshot helpers --------------------
 function parseSnapshotUrl(url) {
@@ -287,6 +295,105 @@ function normalizeTallyToExtracted(tallyGovernor, tallyProposal) {
   };
 }
 
+function parseMintscanUrl(url) {
+  const u = new URL(url);
+  const hostOk = u.hostname === "www.mintscan.io" || u.hostname === "mintscan.io";
+  if (!hostOk) return null;
+
+  const parts = u.pathname.split("/").filter(Boolean);
+  if (parts.length < 3) return null;
+  if (parts[1] !== "proposals") return null;
+
+  const chain = parts[0];
+  const proposalId = parts[2];
+  if (!chain || !proposalId) return null;
+
+  return { chain, proposalId };
+}
+
+async function fetchMintscanProposal(chain, proposalId) {
+  const res = await fetch(`${MINTSCAN_API_BASE}/v11/${encodeURIComponent(chain)}/proposals/${encodeURIComponent(proposalId)}`, {
+    headers: MINTSCAN_HEADERS,
+  });
+
+  if (!res.ok) {
+    throw new Error(`Mintscan proposal fetch failed: HTTP ${res.status}`);
+  }
+
+  return res.json();
+}
+
+function inferStandardGovernanceOptions({ text = "", voteMeta = null } = {}) {
+  const found = [];
+  const push = (value) => {
+    if (!found.includes(value)) found.push(value);
+  };
+
+  const upper = String(text || "").toUpperCase();
+
+  if (voteMeta && typeof voteMeta === "object") {
+    if ("yes" in voteMeta || upper.includes("VOTE YES")) push("YES");
+    if ("no" in voteMeta || upper.includes("VOTE NO")) push("NO");
+    if ("no_with_veto" in voteMeta || upper.includes("NO WITH VETO")) push("NO_WITH_VETO");
+    if ("abstain" in voteMeta || upper.includes("ABSTAIN")) push("ABSTAIN");
+  } else {
+    if (upper.includes("VOTE YES")) push("YES");
+    if (upper.includes("VOTE NO")) push("NO");
+    if (upper.includes("NO WITH VETO")) push("NO_WITH_VETO");
+    if (upper.includes("ABSTAIN")) push("ABSTAIN");
+  }
+
+  return found;
+}
+
+function normalizeMintscanToExtracted(mintscanProposal, { chain, proposalId }) {
+  const voteMeta = mintscanProposal?.voteMeta && typeof mintscanProposal.voteMeta === "object"
+    ? mintscanProposal.voteMeta
+    : null;
+
+  const description = mintscanProposal?.description || mintscanProposal?.summary || "";
+  const options = inferStandardGovernanceOptions({ text: description, voteMeta });
+
+  const currentResults = voteMeta || mintscanProposal?.proposal_status
+    ? {
+        status: mintscanProposal?.proposal_status ?? null,
+        voteMeta: voteMeta || null,
+      }
+    : null;
+
+  return {
+    source_type: "mintscan",
+    fetched_at: new Date().toISOString(),
+    title: mintscanProposal?.title || "UNKNOWN",
+    body: description,
+    options,
+    current_results: currentResults,
+    metadata: {
+      mintscan_api: "v11",
+      mintscan_chain: chain,
+      proposal_id: mintscanProposal?.id ?? proposalId ?? null,
+      proposal_type: mintscanProposal?.proposal_type ?? null,
+      proposal_status: mintscanProposal?.proposal_status ?? null,
+      submit_time: mintscanProposal?.submit_time ?? null,
+      deposit_end_time: mintscanProposal?.deposit_end_time ?? null,
+      voting_start_time: mintscanProposal?.voting_start_time ?? null,
+      voting_end_time: mintscanProposal?.voting_end_time ?? null,
+      gov_rest_path: mintscanProposal?.gov_rest_path ?? null,
+      txhash: mintscanProposal?.txhash ?? null,
+      proposer: mintscanProposal?.proposer ?? null,
+      tx_height: mintscanProposal?.tx_height ?? null,
+      timestamp: mintscanProposal?.timestamp ?? null,
+      moniker: mintscanProposal?.moniker ?? null,
+      is_expedited: mintscanProposal?.is_expedited ?? null,
+      is_expedited_start: mintscanProposal?.is_expedited_start ?? null,
+      total_deposit: Array.isArray(mintscanProposal?.total_deposit) ? mintscanProposal.total_deposit : null,
+      messages: Array.isArray(mintscanProposal?.messages) ? mintscanProposal.messages : null,
+      messages_count: Array.isArray(mintscanProposal?.messages) ? mintscanProposal.messages.length : 0,
+      raw_metadata: mintscanProposal?.metadata ?? null,
+    },
+  };
+}
+
 // -------------------- main --------------------
 export async function fetchAndExtract(url) {
   // 1) Snapshot fast-path via GraphQL (SPA-safe)
@@ -335,14 +442,28 @@ export async function fetchAndExtract(url) {
       const p = await fetchTallyProposal(g.id, parsed.onchainId, apiKey);
       return normalizeTallyToExtracted(g, p);
     }
-} catch (e) {
-  console.error("[tally] fast-path failed:", {
-    message: e?.message || String(e),
-    url,
-  });
-}
+  } catch (e) {
+    console.error("[tally] fast-path failed:", {
+      message: e?.message || String(e),
+      url,
+    });
+  }
 
-  // 3) Generic HTML fallback
+  // 3) Mintscan fast-path via Mintscan proposal API
+  try {
+    const parsed = parseMintscanUrl(url);
+    if (parsed) {
+      const proposal = await fetchMintscanProposal(parsed.chain, parsed.proposalId);
+      return normalizeMintscanToExtracted(proposal, parsed);
+    }
+  } catch (e) {
+    console.error("[mintscan] fast-path failed:", {
+      message: e?.message || String(e),
+      url,
+    });
+  }
+
+  // 4) Generic HTML fallback
   const res = await fetch(url, {
     headers: { "User-Agent": "gov-ai-demo/1.0" },
   });
@@ -360,6 +481,10 @@ let sourceType = "generic";
 // (even though we still use the generic HTML fetch, the extractor may pull __NEXT_DATA__ from the HTML)
 if (u.hostname === "daodao.zone" || u.hostname.endsWith(".daodao.zone")) {
   sourceType = "daodao";
+}
+
+if (u.hostname === "www.mintscan.io" || u.hostname === "mintscan.io") {
+  sourceType = "mintscan";
 }
 
 return {

@@ -394,6 +394,25 @@ Create a practical traceability path without cluttering Telegram.
 - page server should remain the main evidence surface instead of pushing verification detail into Telegram
 - the best MVP tradeoff is one strong link plus better wording, not many Telegram links
 
+## Mintscan support addendum
+
+### Objective
+Add Mintscan proposal URL support through Mintscan's proposal API, with conservative field mapping into the existing extracted shape.
+
+### Constraints
+- Do not scrape Mintscan HTML for proposal content.
+- Use `front.api.mintscan.io/v11/{chain}/proposals/{proposalId}`.
+- Compare mapping against DAO DAO proposal 630 output to avoid degraded analysis inputs.
+- Map only reliable fields and leave the rest empty instead of guessing.
+
+### Tasks
+1. Accept Mintscan proposal URLs in URL validation.
+2. Add a Mintscan fetch fast-path in `fetcher.js`.
+3. Normalize Mintscan proposal JSON into the existing extracted contract.
+4. Reuse or extend option inference so yes/no/abstain/no-with-veto proposals stay legible.
+5. Add stable report filename logic for Mintscan URLs.
+6. Run focused checks against Injective 630 and confirm the output is sane.
+
 ## Definition of done
 
 This plan is complete when:

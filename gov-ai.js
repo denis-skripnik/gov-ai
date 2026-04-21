@@ -151,6 +151,20 @@ function buildReportFilename(url, extracted) {
     return `report-daodao-${daoSlug}-${proposalId}.json`;
   }
 
+  if (extracted?.source_type === "mintscan") {
+    const chain =
+      sanitize(extracted?.metadata?.mintscan_chain) ||
+      sanitize(inputUrl.match(/mintscan\.io\/([^/]+)\/proposals\//i)?.[1]) ||
+      "unknown";
+
+    const proposalId =
+      sanitize(extracted?.metadata?.proposal_id) ||
+      sanitize(inputUrl.match(/\/proposals\/([^/?#]+)/i)?.[1]) ||
+      "unknown";
+
+    return `report-mintscan-${chain}-${proposalId}.json`;
+  }
+
   const ts = new Date().toISOString().replace(/[:.]/g, "-");
   return `report-${ts}.json`;
 }

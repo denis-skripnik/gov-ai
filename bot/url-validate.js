@@ -35,8 +35,15 @@ export function validateProposalUrl(input) {
     return { ok: false, reason: "Tally URL format is not recognized as a proposal link." };
   }
 
+  if (host === "www.mintscan.io" || host === "mintscan.io") {
+    if (/^\/[^/]+\/proposals\/[^/]+/i.test(pathname)) {
+      return { ok: true, sourceType: "mintscan", normalizedUrl: parsed.toString() };
+    }
+    return { ok: false, reason: "Mintscan URL format is not recognized as a proposal link." };
+  }
+
   return {
     ok: false,
-    reason: "Unsupported proposal source. Right now I support Snapshot, DAO DAO, and Tally proposal links.",
+    reason: "Unsupported proposal source. Right now I support Snapshot, DAO DAO, Tally, and Mintscan proposal links.",
   };
 }

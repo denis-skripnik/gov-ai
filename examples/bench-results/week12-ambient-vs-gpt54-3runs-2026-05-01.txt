@@ -1,0 +1,24 @@
+Week 12 dev-loop benchmark - output quality + latency + failure modes
+URL: https://snapshot.org/#/s:aavedao.eth/proposal/0x55e85a32828da36122b9c8d50548696d7c748fd41c775f5bf06bdf0f2e32a265
+Runs per provider: 3, retries: 0, timeout: 3000000ms
+
+ambient:
+- ok/fail: 3/0
+- latency (ok runs): min 87536 / avg 141053 / median 165252 / p95 170372 / max 170372 ms
+- total retries: 0
+- quality: json-valid ok runs 3, schema-shaped ok runs 3, avg completeness 1
+- usage: n/a (provider did not return token usage)
+- estimated cost: n/a (missing usage or pricing)
+- failure modes: none observed
+
+gpt5_4_closed_baseline:
+- ok/fail: 3/0
+- latency (ok runs): min 379 / avg 556 / median 532 / p95 758 / max 758 ms
+- total retries: 0
+- quality: json-valid ok runs 3, schema-shaped ok runs 3, avg completeness 1
+- usage total_tokens: 20952 (prompt 9351, completion 11601)
+- pricing: standard (in $2.5/1M, out $15/1M)
+- estimated cost (ok runs): total $0.197392, avg $0.065797 per ok run
+- failure modes: none observed
+
+Full JSON saved: bench-results/bench-result-2026-05-01T06-54-34-564Z.json

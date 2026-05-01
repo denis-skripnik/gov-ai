@@ -1,0 +1,196 @@
+{
+  "bench_version": 3,
+  "created_at": "2026-05-01T06:39:25.153Z",
+  "started_at": "2026-05-01T06:36:32.534Z",
+  "finished_at": "2026-05-01T06:39:25.153Z",
+  "url": "https://snapshot.org/#/s:aavedao.eth/proposal/0x55e85a32828da36122b9c8d50548696d7c748fd41c775f5bf06bdf0f2e32a265",
+  "benchmark_focus": {
+    "week": 12,
+    "loop": "developer",
+    "dimensions": [
+      "output_quality",
+      "latency",
+      "failure_modes"
+    ]
+  },
+  "pricing": {
+    "ambient": {
+      "tier": "standard",
+      "standard": {
+        "input_per_1m": 0.35,
+        "output_per_1m": 1.71
+      },
+      "mini": {
+        "input_per_1m": 0.05,
+        "output_per_1m": 0.5
+      }
+    },
+    "gpt5_4_closed_baseline": {
+      "input_per_1m": 2.5,
+      "output_per_1m": 15,
+      "model": "openai/gpt-5.4",
+      "provider": "openrouter"
+    }
+  },
+  "constraints": {
+    "runs": 1,
+    "retries": 0,
+    "timeout_ms": 3000000,
+    "system_prompt": "You are a governance analysis assistant. You must output ONLY valid JSON.",
+    "max_tokens": {
+      "ambient": 100000,
+      "gpt5_4_closed_baseline": 100000
+    },
+    "models": {
+      "ambient": "not_set",
+      "gpt5_4_closed_baseline": "openai/gpt-5.4"
+    }
+  },
+  "extracted_meta": {
+    "source_type": "snapshot"
+  },
+  "results": {
+    "ambient": [
+      {
+        "ok": true,
+        "latency_ms": 127689,
+        "usage": null,
+        "cost_estimate": null,
+        "attempts": [
+          {
+            "attempt": 1,
+            "ok": true
+          }
+        ],
+        "json_valid": true,
+        "quality": {
+          "json_valid": true,
+          "required_top_level_present": true,
+          "required_nested_fields_present": true,
+          "completeness_score": 1,
+          "missing_fields": []
+        },
+        "failure_type": null,
+        "failure_message": null
+      }
+    ],
+    "gpt5_4_closed_baseline": [
+      {
+        "ok": true,
+        "latency_ms": 682,
+        "usage": {
+          "prompt_tokens": 3117,
+          "completion_tokens": 3981,
+          "total_tokens": 7098,
+          "cost": 0.0675075,
+          "is_byok": false,
+          "prompt_tokens_details": {
+            "cached_tokens": 0,
+            "cache_write_tokens": 0,
+            "audio_tokens": 0,
+            "video_tokens": 0
+          },
+          "cost_details": {
+            "upstream_inference_cost": 0.0675075,
+            "upstream_inference_prompt_cost": 0.0077925,
+            "upstream_inference_completions_cost": 0.059715
+          },
+          "completion_tokens_details": {
+            "reasoning_tokens": 0,
+            "image_tokens": 0,
+            "audio_tokens": 0
+          }
+        },
+        "cost_estimate": {
+          "prompt_tokens": 3117,
+          "completion_tokens": 3981,
+          "input_usd": 0.0077925,
+          "output_usd": 0.059715000000000004,
+          "total_usd": 0.0675075
+        },
+        "attempts": [
+          {
+            "attempt": 1,
+            "ok": true
+          }
+        ],
+        "json_valid": true,
+        "quality": {
+          "json_valid": true,
+          "required_top_level_present": true,
+          "required_nested_fields_present": true,
+          "completeness_score": 1,
+          "missing_fields": []
+        },
+        "failure_type": null,
+        "failure_message": null
+      }
+    ]
+  },
+  "summary": [
+    {
+      "provider": "ambient",
+      "runs_total": 1,
+      "runs_ok": 1,
+      "runs_fail": 0,
+      "avg_latency_ms_ok": 127689,
+      "latency_ms_ok": {
+        "min": 127689,
+        "avg": 127689,
+        "median": 127689,
+        "p95": 127689,
+        "max": 127689
+      },
+      "total_attempts": 1,
+      "total_retries": 0,
+      "usage_aggregate": null,
+      "cost_aggregate_usd": null,
+      "quality": {
+        "json_valid_ok_runs": 1,
+        "schema_shaped_ok_runs": 1,
+        "avg_completeness_score_ok_runs": 1
+      },
+      "failure_modes": {}
+    },
+    {
+      "provider": "gpt5_4_closed_baseline",
+      "runs_total": 1,
+      "runs_ok": 1,
+      "runs_fail": 0,
+      "avg_latency_ms_ok": 682,
+      "latency_ms_ok": {
+        "min": 682,
+        "avg": 682,
+        "median": 682,
+        "p95": 682,
+        "max": 682
+      },
+      "total_attempts": 1,
+      "total_retries": 0,
+      "usage_aggregate": {
+        "prompt_tokens": 3117,
+        "completion_tokens": 3981,
+        "total_tokens": 7098,
+        "has_any": true
+      },
+      "cost_aggregate_usd": {
+        "total_usd": 0.0675075,
+        "input_usd": 0.0077925,
+        "output_usd": 0.059715000000000004,
+        "avg_usd_per_ok_run": 0.0675075
+      },
+      "quality": {
+        "json_valid_ok_runs": 1,
+        "schema_shaped_ok_runs": 1,
+        "avg_completeness_score_ok_runs": 1
+      },
+      "failure_modes": {}
+    }
+  ],
+  "notes": [
+    "Same proposal URL, same extracted data, same prompt structure for both providers.",
+    "This Week 12 comparison is Ambient vs a closed GPT-5.4 baseline through OpenRouter.",
+    "Week 12 benchmark summary emphasizes developer-loop output quality, latency distribution, and failure modes.",
+    "Cost is estimated from usage.prompt_tokens/completion_tokens when provided by the API. If usage is missing, cost is reported as null."
+  ]
+}

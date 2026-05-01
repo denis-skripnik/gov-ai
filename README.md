@@ -4,6 +4,7 @@ AI assistant for DAO governance proposals.
 
 ## Table of Contents
 
+- [Week 12 - Ambient vs Closed Baseline Benchmark (Web2)](#week-12---ambient-vs-closed-baseline-benchmark-web2)
 - [Week 11 - Agents and Composability (Web2)](#week-11---agents-and-composability-web2)
 - [Week 10 - Load the System (Web2)](#week-10---load-the-system-web2)
 - [Week 9 - Proof Over Vibes (Web2)](#week-9---proof-over-vibes-web2)
@@ -28,6 +29,7 @@ AI assistant for DAO governance proposals.
 
 This project started as **Web3 Developer Loop - Experiment #3 (AI for governance or automation)**.
 It now also documents and ships:
+- Week 12 ambient vs closed baseline benchmark (Web2): developer-loop comparison of Ambient against GPT-5.4 via OpenRouter, with output-quality, latency, failure-mode, and benchmark artifact reporting
 - Week 5 verification boundaries (verifiable vs interpretive layers)
 - Week 6 refusal handling (Web2): deterministic refusal detection plus routing and human review tickets
 - Week 7 system identity (Web2): exposes system identity, verification boundaries, and refusal handling in the UI
@@ -49,6 +51,69 @@ The design goal is **honesty and conservatism**:
 - if some data cannot be extracted, it is marked as `UNKNOWN`
 - the tool does not guess voting options or results
 - the output is meant to **assist** human decision-making, not replace it
+
+---
+
+## Week 12 - Ambient vs Closed Baseline Benchmark (Web2)
+
+Week 12 focuses on a cleaner developer-loop benchmark: **Ambient vs one strong closed baseline** instead of comparing Ambient to another open-ish provider.
+
+The current closed baseline is:
+- `openai/gpt-5.4` via OpenRouter
+
+### Why this framing is better
+
+This makes the benchmark easier to interpret:
+- candidate under test: Ambient
+- reference baseline: GPT-5.4
+- same proposal URL
+- same extracted input
+- same prompt contract
+
+That gives a clearer answer to the practical question:
+**how does Ambient compare with a strong closed model on this governance-analysis task?**
+
+### What Week 12 benchmark tracks
+
+The benchmark is aimed at the **developer loop**, not end-user UX.
+
+It tracks three things:
+- output quality - parseable JSON, schema shape, completeness
+- latency - `min`, `avg`, `median`, `p95`, `max`
+- failure modes - deterministic classification of benchmark failures
+
+### Week 12 implementation changes
+
+The benchmark path was updated to:
+- replace the old Nous comparison path with OpenRouter GPT-5.4
+- keep the benchmark to a strict two-model comparison
+- move benchmark-only evaluation logic into `bench-helpers.js`
+- add automated tests in `bench.test.js`
+- keep the main governance-analysis pipeline unchanged
+
+### Week 12 benchmark artifacts in this repository
+
+Reviewers can inspect committed example artifacts here:
+- `examples/bench-results/week12-ambient-vs-gpt54-smoke-2026-05-01.json`
+- `examples/bench-results/week12-ambient-vs-gpt54-smoke-2026-05-01.txt`
+- `examples/bench-results/week12-ambient-vs-gpt54-3runs-2026-05-01.json`
+- `examples/bench-results/week12-ambient-vs-gpt54-3runs-2026-05-01.txt`
+
+These include:
+- one smoke-check run for configuration validation
+- one 3-run benchmark for a more stable latency / reliability snapshot
+
+### Short Week 12 outcome summary
+
+For the retained 3-run artifact on the current proposal URL:
+- both providers returned valid, schema-shaped outputs in all 3/3 runs
+- benchmark quality was effectively a tie under the current deterministic rubric
+- GPT-5.4 via OpenRouter was dramatically faster in this test window
+- Ambient did not return usage data in these runs, so cost comparison remains incomplete on the Ambient side
+
+Important limitation:
+- this benchmark measures practical developer-loop behavior, not semantic correctness of the report content
+- the latency gap is a real observed result for this run window, but should still be treated as workload- and provider-state-dependent
 
 ---
 
@@ -753,8 +818,9 @@ or set `PROPOSAL_URL` in `.env`.
 ### Environment variables (in addition to the main ones)
 
 ```env
-NOUS_API_KEY=...
-NOUS_MODEL=Hermes-4-70B
+OPENROUTER_API_KEY=...
+OPENROUTER_MODEL=openai/gpt-5.4
+OPENROUTER_API_URL=https://openrouter.ai/api/v1/chat/completions
 
 BENCH_RUNS=3
 BENCH_TIMEOUT_MS=30000
@@ -766,8 +832,8 @@ AMBIENT_STANDARD_IN_PER_M=0.35
 AMBIENT_STANDARD_OUT_PER_M=1.71
 AMBIENT_MINI_IN_PER_M=0.05
 AMBIENT_MINI_OUT_PER_M=0.50
-NOUS_IN_PER_M=0.05
-NOUS_OUT_PER_M=0.20
+OPENROUTER_IN_PER_M=2.50
+OPENROUTER_OUT_PER_M=15.00
 ```
 
 ### Output
@@ -785,13 +851,14 @@ This repository includes example benchmark results in:
 examples/bench-results/
 ```
 
-These files demonstrate the output format and contain one real comparison run between Ambient and an alternative provider.
+These files demonstrate the output format and contain one historical comparison run between Ambient and an alternative provider.
 
 ### Notes
 
 - Cost is estimated from `usage.prompt_tokens` and `usage.completion_tokens` if the API returns usage data.
 - If usage is missing, cost is reported as `null`.
 - This benchmark is meant as a **practical reality check**, not as a rigorous scientific performance evaluation.
+- The intended Week 12 comparison is **Ambient vs GPT-5.4 via OpenRouter** as a closed-model baseline.
 
 ## Week 5 - Verification boundaries (Micro-Challenge #5)
 

@@ -1,0 +1,24 @@
+Week 14 Developer Loop — Stateful + SGLANG benchmark
+Mode: live SGLANG
+Runs: 3, parallel: 3, retries: 1, timeout: 180000ms
+
+no_memory:
+- ok/fail: 3/0
+- latency: min 15181 / avg 21907 / median 15569 / p95 34972 / max 34972 ms
+- retries: 0
+- json-valid ok runs: 3
+- stability exact-match rate: 0.333
+- unique output hashes: 3
+- failure modes: {}
+
+with_memory:
+- ok/fail: 3/0
+- latency: min 19411 / avg 23076 / median 24895 / p95 24921 / max 24921 ms
+- retries: 0
+- json-valid ok runs: 3
+- stability exact-match rate: 0.333
+- unique output hashes: 3
+- failure modes: {}
+
+Latency diff: {"with_memory_minus_no_memory_avg_ms":1169,"with_memory_vs_no_memory_ratio":1.053}
+JSON artifact: retrodrops/ambient/week14/week14-sglang-bench-2026-05-14T22-46-55-659Z.json

@@ -4,6 +4,7 @@ AI assistant for DAO governance proposals.
 
 ## Table of Contents
 
+- [Week 14 - State, Memory and Throughput (Web2)](#week-14---state-memory-and-throughput-web2)
 - [Week 12 - Ambient vs Closed Baseline Benchmark (Web2)](#week-12---ambient-vs-closed-baseline-benchmark-web2)
 - [Week 11 - Agents and Composability (Web2)](#week-11---agents-and-composability-web2)
 - [Week 10 - Load the System (Web2)](#week-10---load-the-system-web2)
@@ -29,6 +30,7 @@ AI assistant for DAO governance proposals.
 
 This project started as **Web3 Developer Loop - Experiment #3 (AI for governance or automation)**.
 It now also documents and ships:
+- Week 14 state, memory and throughput (Web2): JSON-backed state layer, bounded prompt-state injection, Ambient API/SGLang live benchmark artifacts, and a separate User Loop chat instruction
 - Week 12 ambient vs closed baseline benchmark (Web2): developer-loop comparison of Ambient against GPT-5.4 via OpenRouter, with output-quality, latency, failure-mode, and benchmark artifact reporting
 - Week 5 verification boundaries (verifiable vs interpretive layers)
 - Week 6 refusal handling (Web2): deterministic refusal detection plus routing and human review tickets
@@ -51,6 +53,68 @@ The design goal is **honesty and conservatism**:
 - if some data cannot be extracted, it is marked as `UNKNOWN`
 - the tool does not guess voting options or results
 - the output is meant to **assist** human decision-making, not replace it
+
+---
+
+## Week 14 - State, Memory and Throughput (Web2)
+
+Week 14 tests whether faster inference is useful when the system also has explicit state.
+
+The weekly frame was:
+- memory without performance is unusable
+- performance without memory is a stateless tool
+
+This repository handles the **Developer Loop** part. The User Loop remains a separate Ambient Chat browser test and is documented as an instruction artifact, not as a `gov-ai` substitute.
+
+### What Week 14 tracks
+
+The developer benchmark tracks:
+- latency - practical response time through Ambient API after the SGLang rollout
+- throughput - repeated and parallel requests
+- consistency - valid JSON structure and exact-output stability
+- state overhead - no-memory prompts vs prompts with bounded prior state
+- failure cases - connection, timeout, HTTP, retry, and invalid-output paths
+
+### Week 14 implementation changes
+
+Added a dedicated prototype folder:
+- `week14-stateful-sglang/memory-store.js` - JSON-backed session memory
+- `week14-stateful-sglang/prompt-state.js` - bounded prior-state prompt injection
+- `week14-stateful-sglang/sglang-bench.js` - OpenAI-compatible live benchmark runner
+- `week14-stateful-sglang/week14.test.js` - local tests for memory, prompt state, stability, and benchmark summary helpers
+
+The main `gov-ai` analysis pipeline is unchanged.
+
+### Week 14 benchmark artifacts in this repository
+
+Reviewers can inspect committed example artifacts here:
+- `examples/week14-stateful-sglang/week14-sglang-bench-2026-05-14T22-45-46-461Z.json`
+- `examples/week14-stateful-sglang/week14-sglang-bench-2026-05-14T22-45-46-461Z.txt`
+- `examples/week14-stateful-sglang/week14-sglang-bench-2026-05-14T22-46-55-659Z.json`
+- `examples/week14-stateful-sglang/week14-sglang-bench-2026-05-14T22-46-55-659Z.txt`
+- `examples/week14-stateful-sglang/week14-sglang-bench-2026-05-14T22-49-25-553Z.json`
+- `examples/week14-stateful-sglang/week14-sglang-bench-2026-05-14T22-49-25-553Z.txt`
+- `examples/week14-stateful-sglang/sglang-live-benchmark-rollup.md`
+- `examples/week14-stateful-sglang/user-loop-manual-instruction.md`
+
+### Short Week 14 outcome summary
+
+The retained live runs used Ambient API with model `zai-org/GLM-5.1-FP8`.
+
+Observed across retained live artifacts:
+- serial 3-run mode completed successfully for both no-memory and with-memory prompts
+- parallel 3-run mode completed successfully for both no-memory and with-memory prompts
+- parallel 5-run mode completed successfully for both no-memory and with-memory prompts
+- aggregate retained benchmark result: 11/0 ok/fail for no-memory and 11/0 ok/fail for with-memory
+- latency was roughly in the 20-28 second range for these small live runs
+- Week 12 Ambient benchmark in this repo averaged about 141 seconds, so Week 14 is a strong directional improvement, but not a strict apples-to-apples before/after test
+- with-memory prompt overhead was small in these runs
+- JSON structure was valid, but exact byte-for-byte output stability was low
+
+Important limitation:
+- this is a developer-loop benchmark through the Ambient API, not the User Loop browser-chat test
+- output stability here means exact output stability, not semantic correctness
+- the benchmark supports a cautious report: faster and usable with explicit state, but still not a substitute for memory design
 
 ---
 

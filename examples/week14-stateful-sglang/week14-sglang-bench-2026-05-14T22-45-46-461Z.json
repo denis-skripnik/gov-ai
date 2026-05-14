@@ -1,0 +1,352 @@
+{
+  "bench_version": 1,
+  "week": 14,
+  "loop": "developer",
+  "focus": "stateful memory + SGLANG performance",
+  "mock": false,
+  "started_at": "2026-05-14T22:43:03.820Z",
+  "finished_at": "2026-05-14T22:45:46.460Z",
+  "endpoint": "https://api.ambient.xyz/v1/chat/completions",
+  "model": "zai-org/GLM-5.1-FP8",
+  "constraints": {
+    "runs": 3,
+    "parallel": 1,
+    "retries": 1,
+    "timeout_ms": 180000
+  },
+  "platform_update_context": [
+    "SGLANG rollout is live; performance improvements expected.",
+    "Auth system now self-hosted; more control, fewer external dependencies.",
+    "Memory without performance = unusable.",
+    "Performance without memory = stateless tool.",
+    "This week tests both together."
+  ],
+  "memory_state": {
+    "session_id": "week14-governance-fixture",
+    "summary": "Prior discussion favored security audits and accessibility work, but required clear funding source and turnout caveats.",
+    "facts": {
+      "domain": "governance proposal analysis",
+      "known_unknowns": [
+        "funding source",
+        "voter turnout"
+      ],
+      "user_preference": "conservative recommendations when execution data is incomplete"
+    },
+    "turns": [
+      {
+        "at": "2026-05-14T22:33:03.763Z",
+        "role": "assistant",
+        "content": "Earlier report marked budget proposals as conditional when missing funding source details.",
+        "meta": {}
+      },
+      {
+        "at": "2026-05-14T22:33:15.631Z",
+        "role": "assistant",
+        "content": "Earlier report marked budget proposals as conditional when missing funding source details.",
+        "meta": {}
+      },
+      {
+        "at": "2026-05-14T22:33:15.955Z",
+        "role": "assistant",
+        "content": "Earlier report marked budget proposals as conditional when missing funding source details.",
+        "meta": {}
+      },
+      {
+        "at": "2026-05-14T22:43:03.819Z",
+        "role": "assistant",
+        "content": "Earlier report marked budget proposals as conditional when missing funding source details.",
+        "meta": {}
+      }
+    ]
+  },
+  "prompt_lengths": {
+    "no_memory_chars": 413,
+    "with_memory_chars": 1262
+  },
+  "results": {
+    "no_memory": [
+      {
+        "mode": "no_memory",
+        "index": 1,
+        "ok": true,
+        "latency_ms": 25686,
+        "attempts": [
+          {
+            "attempt": 1,
+            "ok": true
+          }
+        ],
+        "retries": 0,
+        "usage": {
+          "prompt_tokens": 69,
+          "total_tokens": 611,
+          "completion_tokens": 542,
+          "prompt_tokens_details": null,
+          "completion_tokens_details": {
+            "reasoning_tokens": 553
+          }
+        },
+        "output_hash": "140c6ea29109cac7263692398962c5042f3f05df63f754ec4a7d3b559b5688e0",
+        "parsed": {
+          "summary": "Increase protocol grants budget by 10% for security audits and accessibility improvements.",
+          "recommendation": "Support intent but require funding clarification prior to execution.",
+          "risks": [
+            "Unspecified funding source may strain treasury or cause inflation",
+            "Low voter turnout may undermine proposal legitimacy"
+          ],
+          "unknowns": [
+            "Funding source for the 10% increase",
+            "Voter turnout and quorum achievement"
+          ]
+        },
+        "json_valid": true
+      },
+      {
+        "mode": "no_memory",
+        "index": 2,
+        "ok": true,
+        "latency_ms": 22916,
+        "attempts": [
+          {
+            "attempt": 1,
+            "ok": true
+          }
+        ],
+        "retries": 0,
+        "usage": {
+          "prompt_tokens": 69,
+          "total_tokens": 724,
+          "completion_tokens": 655,
+          "prompt_tokens_details": null,
+          "completion_tokens_details": {
+            "reasoning_tokens": 657
+          }
+        },
+        "output_hash": "5b01b73e4d5437d80e307db92dd8a1f4deb1505d0535a9b14c725d7b306bf8a0",
+        "parsed": {
+          "summary": "Increase protocol grants budget by 10% for security audits and accessibility improvements.",
+          "recommendation": "Conditional Approve - requires funding source clarification",
+          "risks": [
+            "Unspecified funding source could cause budget imbalances or unintended token inflation",
+            "Unknown voter turnout risks governance capture or lack of quorum"
+          ],
+          "unknowns": [
+            "Funding source for the increased budget",
+            "Voter turnout levels",
+            "Total financial impact of the 10% increase"
+          ]
+        },
+        "json_valid": true
+      },
+      {
+        "mode": "no_memory",
+        "index": 3,
+        "ok": true,
+        "latency_ms": 30543,
+        "attempts": [
+          {
+            "attempt": 1,
+            "ok": false,
+            "failure": {
+              "type": "http_500",
+              "message": "HTTP 500: {\"error\":{\"message\":\"Upstream request failed\",\"type\":\"upstream_error\",\"details\":\"Failed to forward request to GPU.\"},\"request_id\":\"16889db69db94dc597edb4041d3694ce\"}"
+            }
+          },
+          {
+            "attempt": 2,
+            "ok": true
+          }
+        ],
+        "retries": 1,
+        "usage": {
+          "prompt_tokens": 69,
+          "total_tokens": 687,
+          "completion_tokens": 618,
+          "prompt_tokens_details": null,
+          "completion_tokens_details": {
+            "reasoning_tokens": 582
+          }
+        },
+        "output_hash": "d35dc80066d6f6a0b59ab9d6174f0a69881caa0fbb7c85e89b3e2e80b54eab46",
+        "parsed": {
+          "summary": "Increase protocol grants budget by 10% to fund security audits and accessibility improvements.",
+          "recommendation": "Approve with conditions; mandate a defined funding source before execution.",
+          "risks": [
+            "Unspecified funding source could lead to treasury depletion, token inflation, or reallocation from critical areas",
+            "Low voter turnout may result in unrepresentative mandate or failure to reach quorum"
+          ],
+          "unknowns": [
+            "Specific funding source for the 10% increase",
+            "Actual voter turnout and quorum status",
+            "Current baseline grants budget to contextualize the 10% increase",
+            "Implementation timeline and criteria for fund allocation"
+          ]
+        },
+        "json_valid": true
+      }
+    ],
+    "with_memory": [
+      {
+        "mode": "with_memory",
+        "index": 1,
+        "ok": true,
+        "latency_ms": 17835,
+        "attempts": [
+          {
+            "attempt": 1,
+            "ok": true
+          }
+        ],
+        "retries": 0,
+        "usage": {
+          "prompt_tokens": 221,
+          "total_tokens": 823,
+          "completion_tokens": 602,
+          "prompt_tokens_details": null,
+          "completion_tokens_details": {
+            "reasoning_tokens": 646
+          }
+        },
+        "output_hash": "56dd9ecd2570edc90aa45ee5f860e903c3c922280b002378ff5544c39394bf43",
+        "parsed": {
+          "summary": "Proposal to increase protocol grants budget by 10% for security audits and accessibility improvements.",
+          "recommendation": "Conditionally approve pending funding source clarification and turnout caveats.",
+          "risks": [
+            "Unfunded mandate",
+            "Low turnout undermining legitimacy",
+            "Execution delays"
+          ],
+          "unknowns": [
+            "funding source",
+            "voter turnout"
+          ]
+        },
+        "json_valid": true
+      },
+      {
+        "mode": "with_memory",
+        "index": 2,
+        "ok": true,
+        "latency_ms": 36514,
+        "attempts": [
+          {
+            "attempt": 1,
+            "ok": true
+          }
+        ],
+        "retries": 0,
+        "usage": {
+          "prompt_tokens": 221,
+          "total_tokens": 934,
+          "completion_tokens": 713,
+          "prompt_tokens_details": null,
+          "completion_tokens_details": {
+            "reasoning_tokens": 734
+          }
+        },
+        "output_hash": "92155f04f8fecc6e5262aa1aa987d73d9207231c3fde58d584643756a14bb5f7",
+        "parsed": {
+          "summary": "10% budget increase for security and accessibility grants.",
+          "recommendation": "Conditional approval; requires defined funding source and turnout data before execution.",
+          "risks": [
+            "Unfunded budget mandate",
+            "Illegitimate mandate from low turnout"
+          ],
+          "unknowns": [
+            "Funding source",
+            "Voter turnout"
+          ]
+        },
+        "json_valid": true
+      },
+      {
+        "mode": "with_memory",
+        "index": 3,
+        "ok": true,
+        "latency_ms": 29142,
+        "attempts": [
+          {
+            "attempt": 1,
+            "ok": true
+          }
+        ],
+        "retries": 0,
+        "usage": {
+          "prompt_tokens": 221,
+          "total_tokens": 752,
+          "completion_tokens": 531,
+          "prompt_tokens_details": null,
+          "completion_tokens_details": {
+            "reasoning_tokens": 552
+          }
+        },
+        "output_hash": "f5ea42370ebfb19583af3de37d118b9d6d1bab272c10c0a0fb2d1c9f07bab425",
+        "parsed": {
+          "summary": "Proposal to increase protocol grants budget by 10% for security audits and accessibility improvements.",
+          "recommendation": "Conditional approval; aligns with favored initiatives but requires conservative stance due to missing execution data.",
+          "risks": [
+            "Budget increase without identified funding source may cause treasury deficit or force unintended reallocations",
+            "Unknown voter turnout could result in an unrepresentative mandate"
+          ],
+          "unknowns": [
+            "funding source",
+            "voter turnout"
+          ]
+        },
+        "json_valid": true
+      }
+    ]
+  },
+  "summary": [
+    {
+      "mode": "no_memory",
+      "runs_total": 3,
+      "runs_ok": 3,
+      "runs_fail": 0,
+      "latency_ms": {
+        "min": 22916,
+        "avg": 26382,
+        "median": 25686,
+        "p95": 30543,
+        "max": 30543
+      },
+      "total_retries": 1,
+      "failure_modes": {},
+      "json_valid_ok_runs": 3,
+      "stability": {
+        "ok_runs": 3,
+        "unique_output_hashes": 3,
+        "exact_match_rate": 0.333,
+        "unique_recommendations": 3,
+        "recommendation_consistency_rate": 0.333
+      }
+    },
+    {
+      "mode": "with_memory",
+      "runs_total": 3,
+      "runs_ok": 3,
+      "runs_fail": 0,
+      "latency_ms": {
+        "min": 17835,
+        "avg": 27830,
+        "median": 29142,
+        "p95": 36514,
+        "max": 36514
+      },
+      "total_retries": 0,
+      "failure_modes": {},
+      "json_valid_ok_runs": 3,
+      "stability": {
+        "ok_runs": 3,
+        "unique_output_hashes": 3,
+        "exact_match_rate": 0.333,
+        "unique_recommendations": 3,
+        "recommendation_consistency_rate": 0.333
+      }
+    }
+  ],
+  "latency_diff": {
+    "with_memory_minus_no_memory_avg_ms": 1448,
+    "with_memory_vs_no_memory_ratio": 1.055
+  }
+}

@@ -1,3 +1,4 @@
+import fs from "fs";
 import { extractFromHtml } from "./extractor.js";
 
 const SNAPSHOT_GQL = "https://hub.snapshot.org/graphql";
@@ -394,8 +395,49 @@ function normalizeMintscanToExtracted(mintscanProposal, { chain, proposalId }) {
   };
 }
 
+function isLocalProposalUrl(url) {
+  const s = String(url || "");
+  if (s.startsWith("file://") || s.startsWith("./") || s.startsWith("../") || s.startsWith("/")) return true;
+  if (/^https?:\/\//i.test(s)) return false;
+  return s.endsWith(".json") && fs.existsSync(s);
+}
+
+function normalizeLocalProposalToExtracted(raw, sourcePath) {
+  if (!raw || typeof raw !== "object") {
+    throw new Error("Local proposal fixture must be a JSON object.");
+  }
+
+  const title = typeof raw.title === "string" && raw.title.trim() ? raw.title : "UNKNOWN";
+  const body = typeof raw.body === "string" ? raw.body : "";
+  const options = Array.isArray(raw.options) ? raw.options.map(String) : [];
+
+  return {
+    source_type: raw.source_type || "local-fixture",
+    fetched_at: new Date().toISOString(),
+    title,
+    body,
+    options,
+    current_results: raw.current_results ?? null,
+    metadata: {
+      ...(raw.metadata && typeof raw.metadata === "object" ? raw.metadata : {}),
+      local_fixture_path: sourcePath,
+    },
+  };
+}
+
+async function fetchLocalProposal(url) {
+  const sourcePath = url.startsWith("file://") ? new URL(url) : url;
+  const text = fs.readFileSync(sourcePath, "utf-8");
+  return normalizeLocalProposalToExtracted(JSON.parse(text), String(sourcePath));
+}
+
 // -------------------- main --------------------
 export async function fetchAndExtract(url) {
+  // 0) Local JSON fixture path for reproducible developer-loop examples.
+  if (isLocalProposalUrl(url)) {
+    return fetchLocalProposal(url);
+  }
+
   // 1) Snapshot fast-path via GraphQL (SPA-safe)
   try {
     const parsed = parseSnapshotUrl(url);

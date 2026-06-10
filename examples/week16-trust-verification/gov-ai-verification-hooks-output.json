@@ -1,0 +1,104 @@
+{
+  "extracted": {
+    "title": "Q2 grants treasury transfer",
+    "body": "Transfer 250,000 USDC from the community treasury to 0x1234567890abcdef1234567890abcdef12345678 for Q2 grants funding. The recipient is described as the grants multisig, but no invoice or multisig signer list is included.",
+    "options": [
+      "For",
+      "Against"
+    ]
+  },
+  "report": {
+    "analysis": {
+      "summary": "Transfer 250,000 USDC from the community treasury to 0x1234567890abcdef1234567890abcdef12345678 for Q2 grants funding.",
+      "risks": [
+        "The recipient is described as the grants multisig, but this identity is not independently proven by the proposal text.",
+        "No invoice or signer list is included, so delegates should not rely on the label before voting."
+      ],
+      "unknowns": [
+        "Whether 0x1234567890abcdef1234567890abcdef12345678 is actually controlled by the grants multisig.",
+        "Whether the 250,000 USDC budget matches approved grant obligations."
+      ],
+      "evidence_quotes": [
+        "Transfer 250,000 USDC from the community treasury to 0x1234567890abcdef1234567890abcdef12345678 for Q2 grants funding.",
+        "The recipient is described as the grants multisig, but no invoice or multisig signer list is included."
+      ]
+    },
+    "recommendation": {
+      "suggested_option": "Against or abstain until evidence is provided",
+      "confidence": "medium",
+      "reasoning": "Verified inference can classify the claim boundaries, but it does not prove the recipient identity or spending justification."
+    }
+  },
+  "verification_hooks": {
+    "segments": [
+      {
+        "path": "analysis.summary",
+        "text": "Transfer 250,000 USDC from the community treasury to 0x1234567890abcdef1234567890abcdef12345678 for Q2 grants funding.",
+        "category": "deterministic",
+        "reasons": [
+          "matches_evidence_quote",
+          "matches_extracted_body_fragment",
+          "contains_hard_literal"
+        ]
+      },
+      {
+        "path": "analysis.risks[0]",
+        "text": "The recipient is described as the grants multisig, but this identity is not independently proven by the proposal text.",
+        "category": "probabilistic",
+        "reasons": [
+          "interpretive_field"
+        ]
+      },
+      {
+        "path": "analysis.risks[1]",
+        "text": "No invoice or signer list is included, so delegates should not rely on the label before voting.",
+        "category": "probabilistic",
+        "reasons": [
+          "contains_inference_language",
+          "interpretive_field"
+        ]
+      },
+      {
+        "path": "analysis.unknowns[0]",
+        "text": "Whether 0x1234567890abcdef1234567890abcdef12345678 is actually controlled by the grants multisig.",
+        "category": "unverifiable",
+        "reasons": [
+          "contains_hard_literal",
+          "unknown_field_requires_external_evidence"
+        ]
+      },
+      {
+        "path": "analysis.unknowns[1]",
+        "text": "Whether the 250,000 USDC budget matches approved grant obligations.",
+        "category": "unverifiable",
+        "reasons": [
+          "contains_hard_literal",
+          "unknown_field_requires_external_evidence"
+        ]
+      },
+      {
+        "path": "recommendation.reasoning",
+        "text": "Verified inference can classify the claim boundaries, but it does not prove the recipient identity or spending justification.",
+        "category": "probabilistic",
+        "reasons": [
+          "interpretive_field"
+        ]
+      }
+    ],
+    "mixed_segments": [],
+    "mixed_categories_detected": false,
+    "requires_separation": false,
+    "strict_mode": true,
+    "strict_rejection_triggered": false,
+    "routing_action": "WARN",
+    "method": {
+      "kind": "heuristic",
+      "version": 1,
+      "notes": [
+        "Deterministic segments are anchored to extracted title/body/options, evidence quotes, or hard literals.",
+        "Probabilistic segments include recommendation, risk, benefit, and uncertainty language.",
+        "Unverifiable segments are vague or unsupported without clear anchors."
+      ]
+    }
+  }
+}

@@ -1,0 +1,34 @@
+{
+  "ok": true,
+  "prompt": "Classify this DAO proposal claim: Transfer 250000 USDC to 0x1234567890abcdef1234567890abcdef12345678 for Q2 grants; recipient called grants multisig, no invoice/signer list. Separate deterministic, probabilistic, unverifiable. Say whether to rely before voting and what evidence is needed. Verified inference is not verified truth.",
+  "answer": "**Classification: Probabilistic**\n\nWhile the transfer execution itself (sending 250k USDC to a specific address) is deterministic, the claim regarding the recipient's identity (a \"grants multisig\") and the intended use of funds (Q2 grants) is probabilistic. Without an attached signer list or invoice, verifying the destination requires off-chain investigation and reliance on social trust, making absolute certainty impossible prior to execution.\n\n**Rely before voting?**\nNo. Do not rely on the claim without verification. Accepting the label \"grants multisig\" without cryptographic or cryptographic proof of control exposes the DAO to address-spoofing, typo-squatting, or misappropriation of funds.\n\n**Evidence needed:**\n1. **Signer List:** A list of the expected addresses that control the multisig, so voters can verify that the target address `0x1234...` is constructed with the correct owners/threshold.\n2. **Attestation:** A signed message from the current multisig signers, or a statement from their established official communication channels, confirming they control the address and requested the funds.\n3. **Invoice/Budget Breakdown:** A detailed document outlining the Q2 grant allocations to justify the 250,000 USDC amount.",
+  "source": "ambient-api-fallback",
+  "model": "ambient/large",
+  "provenance": {
+    "status": "verified",
+    "request_id": "3b5eaae94a4e48b097960e169c6be13d",
+    "verified": true,
+    "merkle_root": "8fc5d5a5f105760a1ba4355285629ac42278b8e80ed6c0f5fe7065c0d1c02c58",
+    "output_sha256": null,
+    "lifecycle": {
+      "bid_count": 0,
+      "auction_started": false,
+      "auction_ended": false,
+      "bundle": null,
+      "auction": null,
+      "auction_status": null,
+      "auction_bids": null,
+      "bidder": null,
+      "bidder_url": null,
+      "validators": null,
+      "validators_count": null,
+      "verified_by_validators": null,
+      "auction_url": null
+    }
+  },
+  "limitation": "Verification metadata confirm provenance/inference integrity for this output, not factual truth of external claims.",
+  "debug": {
+    "api_error": null,
+    "attempt": 1
+  }
+}

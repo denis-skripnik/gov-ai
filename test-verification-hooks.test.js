@@ -54,6 +54,19 @@ test('classifies vague unsupported fragment as unverifiable', () => {
   assert.equal(hooks.routing_action, 'WARN');
 });
 
+test('classifies unknown fields as unverifiable even when they contain hard literals', () => {
+  const report = {
+    analysis: {
+      unknowns: ['Whether 0x1234567890abcdef1234567890abcdef12345678 is actually controlled by the grants multisig.'],
+    },
+    recommendation: {},
+  };
+
+  const hooks = classifyVerificationHooks(report, extracted, { strictMode: false });
+  assert.equal(hooks.segments[0].category, 'unverifiable');
+  assert.equal(hooks.routing_action, 'WARN');
+});
+
 test('detects mixed categories within one field and triggers strict mode routing', () => {
   const report = {
     analysis: {

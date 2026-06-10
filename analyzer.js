@@ -232,11 +232,57 @@ function isoSafeFileName(d = new Date()) {
 }
 
 function safeJsonParse(s) {
-  try {
-    return JSON.parse(s);
-  } catch {
-    return null;
+  if (typeof s !== "string") return null;
+  const text = s.trim();
+  const attempts = [
+    text,
+    text.replace(/^```(?:json)?\s*/i, "").replace(/\s*```$/i, "").trim(),
+    extractFirstJsonObject(text),
+  ].filter(Boolean);
+
+  for (const candidate of attempts) {
+    try {
+      return JSON.parse(candidate);
+    } catch {
+      // try the next candidate
+    }
   }
+  return null;
+}
+
+function extractFirstJsonObject(text) {
+  const start = text.indexOf("{");
+  if (start === -1) return null;
+
+  let depth = 0;
+  let inString = false;
+  let escaped = false;
+
+  for (let i = start; i < text.length; i++) {
+    const ch = text[i];
+
+    if (inString) {
+      if (escaped) {
+        escaped = false;
+      } else if (ch === "\\") {
+        escaped = true;
+      } else if (ch === '"') {
+        inString = false;
+      }
+      continue;
+    }
+
+    if (ch === '"') {
+      inString = true;
+    } else if (ch === "{") {
+      depth += 1;
+    } else if (ch === "}") {
+      depth -= 1;
+      if (depth === 0) return text.slice(start, i + 1);
+    }
+  }
+
+  return null;
 }
 
 function shorten(str, max = 180) {
@@ -479,6 +525,10 @@ function classifySegment(text, context) {
   const probabilistic = matchesProbabilistic(lower, context, reasons);
   const path = String(context.path || "");
 
+  if (path.startsWith("analysis.unknowns")) {
+    reasons.push("unknown_field_requires_external_evidence");
+    return { category: "unverifiable", reasons };
+  }
   if (probabilistic && (path.startsWith("recommendation.") || path.startsWith("analysis.risks") || path.startsWith("analysis.benefits"))) {
     return { category: "probabilistic", reasons };
   }
@@ -566,13 +616,14 @@ export async function analyzeWithLLM(url, extracted, principles, opts = {}) {
   console.log(`[${new Date().toISOString()}] Starting analysis for: ${url}`);
   
   const {
-    model = "zai-org/GLM-5-FP8",
+    model = process.env.AMBIENT_MODEL || "ambient/large",
 
     // Keep raw response JSON? For now: no spam, but can save if you need.
     debugRawToFile = false,
 
-    // IMPORTANT: for "UI-like verification", stream must be true
-    stream = true,
+    // IMPORTANT: for "UI-like verification", stream must be true.
+    // Set AMBIENT_STREAM=false for providers/models that verify but do not emit streamed content reliably.
+    stream = String(process.env.AMBIENT_STREAM || "true").toLowerCase() !== "false",
   } = opts;
 
   // Week 8: Check if financial proposal

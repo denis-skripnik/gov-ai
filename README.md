@@ -4,6 +4,7 @@ AI assistant for DAO governance proposals.
 
 ## Table of Contents
 
+- [Week 16 - Trust and Verification (Web2)](#week-16---trust-and-verification-web2)
 - [Week 14 - State, Memory and Throughput (Web2)](#week-14---state-memory-and-throughput-web2)
 - [Week 12 - Ambient vs Closed Baseline Benchmark (Web2)](#week-12---ambient-vs-closed-baseline-benchmark-web2)
 - [Week 11 - Agents and Composability (Web2)](#week-11---agents-and-composability-web2)
@@ -30,6 +31,7 @@ AI assistant for DAO governance proposals.
 
 This project started as **Web3 Developer Loop - Experiment #3 (AI for governance or automation)**.
 It now also documents and ships:
+- Week 16 trust and verification (Web2): local proposal fixture support for reproducible developer-loop runs, a treasury-spending scenario, and stricter verification hooks that keep unknown claims unverifiable even when they contain hard literals
 - Week 14 state, memory and throughput (Web2): JSON-backed state layer, bounded prompt-state injection, Ambient API/SGLang live benchmark artifacts, and a separate User Loop chat instruction
 - Week 12 ambient vs closed baseline benchmark (Web2): developer-loop comparison of Ambient against GPT-5.4 via OpenRouter, with output-quality, latency, failure-mode, and benchmark artifact reporting
 - Week 5 verification boundaries (verifiable vs interpretive layers)
@@ -53,6 +55,60 @@ The design goal is **honesty and conservatism**:
 - if some data cannot be extracted, it is marked as `UNKNOWN`
 - the tool does not guess voting options or results
 - the output is meant to **assist** human decision-making, not replace it
+
+---
+
+## Week 16 - Trust and Verification (Web2)
+
+Week 16 asks: **Can you trust execution?** For `gov-ai`, this maps directly to a governance task where correctness matters before voting on a treasury spend.
+
+This repository now supports a reproducible developer-loop path for local proposal fixtures:
+
+```bash
+MULTI_NODE_ENABLED=false AMBIENT_STREAM=false AMBIENT_MODEL=zai-org/GLM-5.1-FP8 node gov-ai.js analyze examples/week16-trust-verification/treasury-transfer-proposal.json
+```
+
+That command uses the normal product pipeline:
+
+1. `fetchAndExtract()` reads the local proposal fixture.
+2. `analyzeWithLLM()` sends the same governance-analysis contract through Ambient.
+3. `gov-ai.js` adds verification boundaries, verification hooks, refusal handling, routing, and a report under `reports/`.
+
+### Week 16 scenario
+
+The retained fixture is a DAO treasury-spending proposal:
+
+- transfer `250,000 USDC` from the community treasury;
+- destination `0x1234567890abcdef1234567890abcdef12345678`;
+- stated purpose: Q2 grants funding;
+- recipient is described as the grants multisig;
+- missing evidence: invoice, signer list, recipient-control proof, and budget breakdown.
+
+### Product change
+
+The important product improvement is not a separate Week 16-only classifier. The core verification hooks now treat `analysis.unknowns` as `unverifiable` even when an unknown contains a hard literal such as an address or amount.
+
+Why: a literal address is deterministic text, but it does not prove control, signer authorization, recipient legitimacy, or spending justification.
+
+### Week 16 artifacts
+
+Reviewers can inspect the committed evidence here:
+
+- `examples/week16-trust-verification/treasury-transfer-proposal.json` - reproducible local proposal input
+- `examples/week16-trust-verification/gov-ai-main-report.json` - report produced by the main `gov-ai.js` pipeline
+- `examples/week16-trust-verification/gov-ai-verification-hooks-output.json` - focused verification-hook snapshot
+- `examples/week16-trust-verification/ambient-api-userloop-result.json` - supplementary Ambient API result used during exploration
+- `examples/week16-trust-verification/README.md` - Week 16 interpretation and reproduction notes
+
+### Short Week 16 outcome summary
+
+Observed product behavior:
+
+- deterministic proposal literals remain visible as source facts;
+- risk analysis stays probabilistic;
+- unresolved recipient control and budget justification remain `unverifiable`;
+- routing returns `WARN` when unresolved unknowns require external evidence;
+- verified inference/provenance is treated as useful evidence about execution, not as proof that the proposal's external claims are true.
 
 ---
 

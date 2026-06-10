@@ -1,0 +1,18 @@
+{
+  "source_type": "local-fixture",
+  "title": "Q2 grants treasury transfer",
+  "body": "Transfer 250,000 USDC from the community treasury to 0x1234567890abcdef1234567890abcdef12345678 for Q2 grants funding. The recipient is described as the grants multisig, but no invoice or multisig signer list is included.",
+  "options": ["For", "Against", "Abstain"],
+  "current_results": null,
+  "metadata": {
+    "week": 16,
+    "theme": "Trust & Verification",
+    "scenario": "DAO treasury spending proposal",
+    "known_missing_evidence": [
+      "invoice",
+      "multisig signer list",
+      "recipient-control proof",
+      "budget breakdown"
+    ]
+  }
+}

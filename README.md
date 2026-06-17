@@ -4,6 +4,7 @@ AI assistant for DAO governance proposals.
 
 ## Table of Contents
 
+- [Week 17 - Multi-Agent Systems (Web2)](#week-17---multi-agent-systems-web2)
 - [Week 16 - Trust and Verification (Web2)](#week-16---trust-and-verification-web2)
 - [Week 14 - State, Memory and Throughput (Web2)](#week-14---state-memory-and-throughput-web2)
 - [Week 12 - Ambient vs Closed Baseline Benchmark (Web2)](#week-12---ambient-vs-closed-baseline-benchmark-web2)
@@ -31,6 +32,7 @@ AI assistant for DAO governance proposals.
 
 This project started as **Web3 Developer Loop - Experiment #3 (AI for governance or automation)**.
 It now also documents and ships:
+- Week 17 multi-agent systems (Web2): deterministic governance-council layer with research, risk, decision, and verification agents sharing one JSON memory artifact
 - Week 16 trust and verification (Web2): local proposal fixture support for reproducible developer-loop runs, a treasury-spending scenario, and stricter verification hooks that keep unknown claims unverifiable even when they contain hard literals
 - Week 14 state, memory and throughput (Web2): JSON-backed state layer, bounded prompt-state injection, Ambient API/SGLang live benchmark artifacts, and a separate User Loop chat instruction
 - Week 12 ambient vs closed baseline benchmark (Web2): developer-loop comparison of Ambient against GPT-5.4 via OpenRouter, with output-quality, latency, failure-mode, and benchmark artifact reporting
@@ -55,6 +57,50 @@ The design goal is **honesty and conservatism**:
 - if some data cannot be extracted, it is marked as `UNKNOWN`
 - the tool does not guess voting options or results
 - the output is meant to **assist** human decision-making, not replace it
+
+---
+
+## Week 17 - Multi-Agent Systems (Web2)
+
+Week 17 asks for multiple specialized agents, shared state, and a multi-step workflow. In `gov-ai`, this is implemented as a deterministic post-analysis governance council rather than as a throwaway prompt demo.
+
+### Week 17 product change
+
+The new council runs over an existing `gov-ai` proposal/report pair and writes a shared JSON memory object:
+
+1. Research agent extracts grounded facts: title, amount, addresses, voting options, and missing evidence.
+2. Risk analysis agent reads those facts and upgrades execution/evidence gaps into severity-labeled risks.
+3. Decision agent reads facts and risks, then selects a voting option and explicit blockers.
+4. Verification agent checks that high-severity risks propagated into the decision and hashes the shared state.
+
+This adds an auditable review layer on top of the normal report. It is deterministic, does not require secrets, and can be attached to human review tickets or Discord evidence without exposing API keys.
+
+### Run the Week 17 demo
+
+```bash
+node gov-ai.js multi-agent-review examples/week16-trust-verification/gov-ai-main-report.json examples/week16-trust-verification/treasury-transfer-proposal.json examples/week17-multi-agent-systems
+```
+
+Equivalent example entry point:
+
+```bash
+node examples/run-week17-multi-agent-council.js
+```
+
+### Week 17 artifacts
+
+Reviewers can inspect the committed evidence here:
+
+- `week17-multi-agent.js` - reusable multi-agent council module
+- `week17-multi-agent.test.js` - tests for ordering, shared memory, risk propagation, and artifacts
+- `examples/run-week17-multi-agent-council.js` - reproducible local runner
+- `examples/week17-multi-agent-systems/multi-agent-council-output.json` - shared-state output
+- `examples/week17-multi-agent-systems/multi-agent-council-report.md` - human-readable workflow report
+- `examples/week17-multi-agent-systems/multi-agent-workflow.svg` - workflow screenshot-style diagram
+
+### Short Week 17 outcome summary
+
+On the retained treasury-transfer fixture, the council found that the proposal requests a `250,000 USDC` transfer to `0x1234567890abcdef1234567890abcdef12345678`, while invoice, signer-list, recipient-control, and budget-breakdown evidence remain unresolved. The decision agent preserved the conservative `Against` recommendation, and the verification agent returned `verified` with a hash over facts, risks, and decision state.
 
 ---
 

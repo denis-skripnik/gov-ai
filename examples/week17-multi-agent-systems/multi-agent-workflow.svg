@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="360" viewBox="0 0 1200 360" role="img" aria-label="Week 17 multi-agent workflow">
+  <rect width="1200" height="360" fill="#0b1020"/>
+  <text x="60" y="56" fill="#f8fafc" font-family="Arial" font-size="30" font-weight="700">gov-ai Week 17 multi-agent council</text>
+  <rect x="60" y="120" width="220" height="110" rx="18" fill="#172554" stroke="#60a5fa" stroke-width="3"/>
+  <text x="84" y="165" fill="#dbeafe" font-family="Arial" font-size="22" font-weight="700">Research agent</text>
+  <text x="84" y="200" fill="#bfdbfe" font-family="Arial" font-size="16">extracts grounded facts</text>
+  <rect x="330" y="120" width="220" height="110" rx="18" fill="#172554" stroke="#60a5fa" stroke-width="3"/>
+  <text x="354" y="165" fill="#dbeafe" font-family="Arial" font-size="22" font-weight="700">Risk agent</text>
+  <text x="354" y="200" fill="#bfdbfe" font-family="Arial" font-size="16">classifies blockers</text>
+  <rect x="600" y="120" width="220" height="110" rx="18" fill="#172554" stroke="#60a5fa" stroke-width="3"/>
+  <text x="624" y="165" fill="#dbeafe" font-family="Arial" font-size="22" font-weight="700">Decision agent</text>
+  <text x="624" y="200" fill="#bfdbfe" font-family="Arial" font-size="16">selects option</text>
+  <rect x="870" y="120" width="220" height="110" rx="18" fill="#172554" stroke="#60a5fa" stroke-width="3"/>
+  <text x="894" y="165" fill="#dbeafe" font-family="Arial" font-size="22" font-weight="700">Verification agent</text>
+  <text x="894" y="200" fill="#bfdbfe" font-family="Arial" font-size="16">checks shared state</text>
+  <path d="M280 175 H330 M550 175 H600 M820 175 H870" stroke="#93c5fd" stroke-width="5" marker-end="url(#arrow)"/>
+  <rect x="335" y="270" width="530" height="48" rx="12" fill="#064e3b" stroke="#34d399" stroke-width="2"/>
+  <text x="385" y="301" fill="#d1fae5" font-family="Arial" font-size="18">shared JSON memory: facts, risks, decision, verification hash</text>
+  <defs><marker id="arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z" fill="#93c5fd"/></marker></defs>
+</svg>

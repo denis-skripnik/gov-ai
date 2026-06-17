@@ -1,0 +1,731 @@
+{
+  "version": 1,
+  "run": {
+    "kind": "gov-ai-week17-multi-agent-council",
+    "started_at": "2026-06-17T12:52:06.681Z",
+    "source": {
+      "report_path": "examples/week16-trust-verification/gov-ai-main-report.json",
+      "proposal_path": "examples/week16-trust-verification/treasury-transfer-proposal.json",
+      "mode": "deterministic-local-demo"
+    },
+    "completed_at": "2026-06-17T12:52:06.683Z",
+    "agent_count": 4,
+    "message_count": 4
+  },
+  "shared_memory": {
+    "proposal": {
+      "title": "Q2 grants treasury transfer",
+      "body": "Transfer 250,000 USDC from the community treasury to 0x1234567890abcdef1234567890abcdef12345678 for Q2 grants funding. The recipient is described as the grants multisig, but no invoice or multisig signer list is included.",
+      "options": [
+        "For",
+        "Against",
+        "Abstain"
+      ],
+      "current_results": null,
+      "metadata": {
+        "week": 16,
+        "theme": "Trust & Verification",
+        "scenario": "DAO treasury spending proposal",
+        "known_missing_evidence": [
+          "invoice",
+          "multisig signer list",
+          "recipient-control proof",
+          "budget breakdown"
+        ],
+        "local_fixture_path": "examples/week16-trust-verification/treasury-transfer-proposal.json"
+      }
+    },
+    "prior_report": {
+      "version": 1,
+      "input": {
+        "url": "examples/week16-trust-verification/treasury-transfer-proposal.json",
+        "fetched_at": "2026-06-10T08:56:21.749Z",
+        "source_type": "local-fixture",
+        "prompt_used": {
+          "prompt_used_summary": "Structured governance analysis prompt. Must output ONLY valid JSON. Must not guess missing options/results; use UNKNOWN.",
+          "prompt_used_excerpt": "\nYou are given:\n\nURL:\nexamples/week16-trust-verification/treasury-transfer-proposal.json\n\nEXTRACTED_DATA (may be incomplete):\n{\n  \"source_type\": \"local-fixture\",\n  \"fetched_at\": \"2026-06-10T08:56:21.749Z\",\n  \"title\": \"Q2 grants treasury transfer\",\n  \"body\": \"Transfer 250,000 USDC from the community treasury to 0x1234567890abcdef1234567890abcdef12345678 for Q2 grants funding. The recipient is described as the grants multisig, but no invoice or multisig signer list is included.\",\n  \"options\": [\n    \"For\",\n    \"Against\",\n    \"Abstain\"\n  ],\n  \"current_results\": null,\n  \"metadata\": {\n    \"week\": 16,\n    \"theme\": \"Trust & Verification\",\n    \"scenario\": \"DAO treasury spending proposal\",\n    \"known_missing_evidence\": [\n      \"invoice\",\n      \"multisig signer list\",\n      \"recipient-control proof\",",
+          "prompt_used_excerpt_truncated": true,
+          "prompt_used_sha256": "52e96efd827c5c0ef2aba42731dff1dafa5f47a591746fbc19d887a544eec5d4",
+          "model": "zai-org/GLM-5.1-FP8",
+          "stream": false,
+          "prompt_used_files": {
+            "principles": {
+              "path": "./principles.json",
+              "sha256": "e446239714ddff5d3c0f2e575e52a9ec7b904c0d3ac85d257ee7f1509aa69a86"
+            },
+            "schema": {
+              "path": "./report.schema.json",
+              "sha256": "974d3880254b779b60706f996941e3ef66b8488863e94f9a66b5e2fc876990f7"
+            }
+          }
+        },
+        "isFinancialProposal": true
+      },
+      "extracted": {
+        "title": "Q2 grants treasury transfer",
+        "body": "Transfer 250,000 USDC from the community treasury to 0x1234567890abcdef1234567890abcdef12345678 for Q2 grants funding. The recipient is described as the grants multisig, but no invoice or multisig signer list is included.",
+        "options": [
+          "For",
+          "Against",
+          "Abstain"
+        ],
+        "current_results": null,
+        "metadata": {
+          "week": 16,
+          "theme": "Trust & Verification",
+          "scenario": "DAO treasury spending proposal",
+          "known_missing_evidence": [
+            "invoice",
+            "multisig signer list",
+            "recipient-control proof",
+            "budget breakdown"
+          ],
+          "local_fixture_path": "examples/week16-trust-verification/treasury-transfer-proposal.json"
+        }
+      },
+      "analysis": {
+        "summary": "Proposal to transfer 250,000 USDC from the community treasury to an address claimed to be the grants multisig. Critical verification documents are missing: no invoice, no multisig signer list, no proof the recipient address is controlled by the claimed multisig, and no budget breakdown for the Q2 grants allocation.",
+        "key_changes": [
+          "Transfer 250,000 USDC from community treasury to 0x1234567890abcdef1234567890abcdef12345678",
+          "Funds designated for Q2 grants funding distribution"
+        ],
+        "risks": [
+          "250,000 USDC is transferred to an address with no recipient-control proof, meaning funds could go to an unintended party",
+          "No multisig signer list is provided, so the governance structure and access control of the receiving wallet cannot be verified",
+          "No invoice is included to validate the legitimacy or amount of the funding request",
+          "No budget breakdown means the DAO cannot assess whether 250,000 USDC is proportionate to planned grant allocations",
+          "Address 0x1234567890abcdef1234567890abcdef12345678 may be a single-signature wallet rather than the claimed multisig, creating a single point of failure for 250,000 USDC"
+        ],
+        "benefits": [],
+        "unknowns": [
+          "Unclear: whether 0x1234567890abcdef1234567890abcdef12345678 is actually controlled by the grants multisig",
+          "Unclear: how the 250,000 USDC will be allocated across specific grants (no budget breakdown provided)",
+          "Unclear: who the current multisig signers are and what their signing threshold is",
+          "Unclear: whether a valid invoice exists or will be produced for this transfer",
+          "Unclear: what accountability or reporting mechanisms exist for funds after transfer",
+          "Unclear: whether Q2 grants funding of exactly 250,000 USDC has been previously approved or budgeted"
+        ],
+        "evidence_quotes": [
+          "Transfer 250,000 USDC from the community treasury to 0x1234567890abcdef1234567890abcdef12345678 for Q2 grants funding.",
+          "The recipient is described as the grants multisig, but no invoice or multisig signer list is included."
+        ]
+      },
+      "recommendation": {
+        "suggested_option": "Against",
+        "confidence": "high",
+        "reasoning": "This is a high-impact treasury spending proposal (250,000 USDC) that fails to meet the evidence threshold required for such transfers. Four critical verification elements are missing: invoice, multisig signer list, recipient-control proof, and budget breakdown. The user's high treasury_risk_sensitivity and requirement for strict specification (needs_strict_spec: true) directly conflict with proceeding on trust alone. The inability to verify multisig signer composition also relates to the avoid_admin_key_changes principle, as unverified signer lists could conceal unauthorized modifications to privileged roles. Without these verifications, the DAO has no assurance that funds will reach the intended party or be used as described.",
+        "conflicts_with_user_principles": [
+          "treasury_risk_sensitivity (high): 250,000 USDC transfer with no invoice, no budget breakdown, and no accountability documentation",
+          "needs_strict_spec (true): proposal lacks specification for recipient verification, fund allocation, and signer composition",
+          "avoid_admin_key_changes: multisig signer list is missing, so any changes to signer composition cannot be audited"
+        ]
+      },
+      "limitations": [
+        "This is not legal or financial advice.",
+        "The tool may have failed to extract all proposal parameters.",
+        "Critical parameters must be checked manually."
+      ],
+      "__ambient": {
+        "verified": true,
+        "merkle_root": "88d6e16e438a8fcff1c02419aa290b7ea47c81b146b5f56ef7d36bce3cc105e4",
+        "request_id": "4b04aec58e2a4e8ab5dda4a09b70af00",
+        "verified_by_validators": null,
+        "validators": null,
+        "auction": null,
+        "bids": null,
+        "bidder": null
+      },
+      "verification_boundary": {
+        "deterministic": [
+          {
+            "path": "analysis.summary",
+            "text": "Proposal to transfer 250,000 USDC from the community treasury to an address claimed to be the grants multisig. Critical verification documents are missing: no invoice, no multisig signer list, no proof the recipient address is controlled by the claimed multisig, and no budget breakdown for the Q2 grants allocation.",
+            "reason": "deterministic:contains_numbers_or_addresses,mentions_extracted_options"
+          },
+          {
+            "path": "analysis.key_changes[0]",
+            "text": "Transfer 250,000 USDC from community treasury to 0x1234567890abcdef1234567890abcdef12345678",
+            "reason": "deterministic:contains_numbers_or_addresses"
+          },
+          {
+            "path": "analysis.key_changes[1]",
+            "text": "Funds designated for Q2 grants funding distribution",
+            "reason": "deterministic:mentions_extracted_options"
+          }
+        ],
+        "interpretive": [
+          {
+            "path": "analysis.risks[0]",
+            "text": "250,000 USDC is transferred to an address with no recipient-control proof, meaning funds could go to an unintended party",
+            "reason": "interpretive"
+          },
+          {
+            "path": "analysis.risks[1]",
+            "text": "No multisig signer list is provided, so the governance structure and access control of the receiving wallet cannot be verified",
+            "reason": "interpretive"
+          },
+          {
+            "path": "analysis.risks[2]",
+            "text": "No invoice is included to validate the legitimacy or amount of the funding request",
+            "reason": "interpretive"
+          },
+          {
+            "path": "analysis.risks[3]",
+            "text": "No budget breakdown means the DAO cannot assess whether 250,000 USDC is proportionate to planned grant allocations",
+            "reason": "interpretive"
+          },
+          {
+            "path": "analysis.risks[4]",
+            "text": "Address 0x1234567890abcdef1234567890abcdef12345678 may be a single-signature wallet rather than the claimed multisig, creating a single point of failure for 250,000 USDC",
+            "reason": "interpretive"
+          },
+          {
+            "path": "analysis.unknowns[0]",
+            "text": "Unclear: whether 0x1234567890abcdef1234567890abcdef12345678 is actually controlled by the grants multisig",
+            "reason": "uncertainty"
+          },
+          {
+            "path": "analysis.unknowns[1]",
+            "text": "Unclear: how the 250,000 USDC will be allocated across specific grants (no budget breakdown provided)",
+            "reason": "uncertainty"
+          },
+          {
+            "path": "analysis.unknowns[2]",
+            "text": "Unclear: who the current multisig signers are and what their signing threshold is",
+            "reason": "uncertainty"
+          },
+          {
+            "path": "analysis.unknowns[3]",
+            "text": "Unclear: whether a valid invoice exists or will be produced for this transfer",
+            "reason": "uncertainty"
+          },
+          {
+            "path": "analysis.unknowns[4]",
+            "text": "Unclear: what accountability or reporting mechanisms exist for funds after transfer",
+            "reason": "uncertainty"
+          },
+          {
+            "path": "analysis.unknowns[5]",
+            "text": "Unclear: whether Q2 grants funding of exactly 250,000 USDC has been previously approved or budgeted",
+            "reason": "uncertainty"
+          },
+          {
+            "path": "recommendation.reasoning",
+            "text": "This is a high-impact treasury spending proposal (250,000 USDC) that fails to meet the evidence threshold required for such transfers. Four critical verification elements are missing: invoice, multisig signer list, recipient-control proof, and budget breakdown. The user's high treasury_risk_sensitivity and requirement for strict specification (needs_strict_spec: true) directly conflict with proceeding on trust alone. The inability to verify multisig signer composition also relates to the avoid_admin_key_changes principle, as unverified signer lists could conceal unauthorized modifications to privileged roles. Without these verifications, the DAO has no assurance that funds will reach the intended party or be used as described.",
+            "reason": "interpretive"
+          },
+          {
+            "path": "recommendation.conflicts_with_user_principles[0]",
+            "text": "treasury_risk_sensitivity (high): 250,000 USDC transfer with no invoice, no budget breakdown, and no accountability documentation",
+            "reason": "interpretive"
+          },
+          {
+            "path": "recommendation.conflicts_with_user_principles[1]",
+            "text": "needs_strict_spec (true): proposal lacks specification for recipient verification, fund allocation, and signer composition",
+            "reason": "interpretive"
+          },
+          {
+            "path": "recommendation.conflicts_with_user_principles[2]",
+            "text": "avoid_admin_key_changes: multisig signer list is missing, so any changes to signer composition cannot be audited",
+            "reason": "interpretive"
+          }
+        ],
+        "uncertainty_flags": [
+          "unknowns:Unclear: whether 0x1234567890abcdef1234567890abc...",
+          "unknowns:Unclear: how the 250,000 USDC will be allocated ...",
+          "unknowns:Unclear: who the current multisig signers are an...",
+          "unknowns:Unclear: whether a valid invoice exists or will ...",
+          "unknowns:Unclear: what accountability or reporting mechan...",
+          "unknowns:Unclear: whether Q2 grants funding of exactly 25..."
+        ],
+        "method": {
+          "kind": "heuristic",
+          "version": 2,
+          "notes": [
+            "Deterministic layer is based on direct matching to extracted fields and evidence_quotes, plus presence of hard literals (numbers, addresses, option strings).",
+            "Interpretive layer includes summary, risks, benefits, and recommendation reasoning.",
+            "This is a boundary labeling aid, not a proof of truth."
+          ]
+        }
+      },
+      "verification_hooks": {
+        "segments": [
+          {
+            "path": "analysis.summary",
+            "text": "Proposal to transfer 250,000 USDC from the community treasury to an address claimed to be the grants multisig.",
+            "category": "deterministic",
+            "reasons": [
+              "contains_hard_literal"
+            ]
+          },
+          {
+            "path": "analysis.summary",
+            "text": "Critical verification documents are missing: no invoice, no multisig signer list, no proof the recipient address is controlled by the claimed multisig, and no budget breakdown for the Q2 grants allocation.",
+            "category": "unverifiable",
+            "reasons": [
+              "not_anchored_to_source_material"
+            ]
+          },
+          {
+            "path": "analysis.key_changes[0]",
+            "text": "Transfer 250,000 USDC from community treasury to 0x1234567890abcdef1234567890abcdef12345678",
+            "category": "deterministic",
+            "reasons": [
+              "contains_hard_literal"
+            ]
+          },
+          {
+            "path": "analysis.key_changes[1]",
+            "text": "Funds designated for Q2 grants funding distribution",
+            "category": "unverifiable",
+            "reasons": [
+              "not_anchored_to_source_material"
+            ]
+          },
+          {
+            "path": "analysis.risks[0]",
+            "text": "250,000 USDC is transferred to an address with no recipient-control proof, meaning funds could go to an unintended party",
+            "category": "probabilistic",
+            "reasons": [
+              "contains_hard_literal",
+              "contains_inference_language",
+              "interpretive_field"
+            ]
+          },
+          {
+            "path": "analysis.risks[1]",
+            "text": "No multisig signer list is provided, so the governance structure and access control of the receiving wallet cannot be verified",
+            "category": "probabilistic",
+            "reasons": [
+              "interpretive_field"
+            ]
+          },
+          {
+            "path": "analysis.risks[2]",
+            "text": "No invoice is included to validate the legitimacy or amount of the funding request",
+            "category": "probabilistic",
+            "reasons": [
+              "interpretive_field"
+            ]
+          },
+          {
+            "path": "analysis.risks[3]",
+            "text": "No budget breakdown means the DAO cannot assess whether 250,000 USDC is proportionate to planned grant allocations",
+            "category": "probabilistic",
+            "reasons": [
+              "contains_hard_literal",
+              "interpretive_field"
+            ]
+          },
+          {
+            "path": "analysis.risks[4]",
+            "text": "Address 0x1234567890abcdef1234567890abcdef12345678 may be a single-signature wallet rather than the claimed multisig, creating a single point of failure for 250,000 USDC",
+            "category": "probabilistic",
+            "reasons": [
+              "contains_hard_literal",
+              "contains_inference_language",
+              "interpretive_field"
+            ]
+          },
+          {
+            "path": "analysis.unknowns[0]",
+            "text": "Unclear: whether 0x1234567890abcdef1234567890abcdef12345678 is actually controlled by the grants multisig",
+            "category": "unverifiable",
+            "reasons": [
+              "contains_hard_literal",
+              "uncertainty_language",
+              "unknown_field_requires_external_evidence"
+            ]
+          },
+          {
+            "path": "analysis.unknowns[1]",
+            "text": "Unclear: how the 250,000 USDC will be allocated across specific grants (no budget breakdown provided)",
+            "category": "unverifiable",
+            "reasons": [
+              "contains_hard_literal",
+              "uncertainty_language",
+              "unknown_field_requires_external_evidence"
+            ]
+          },
+          {
+            "path": "analysis.unknowns[2]",
+            "text": "Unclear: who the current multisig signers are and what their signing threshold is",
+            "category": "unverifiable",
+            "reasons": [
+              "uncertainty_language",
+              "unknown_field_requires_external_evidence"
+            ]
+          },
+          {
+            "path": "analysis.unknowns[3]",
+            "text": "Unclear: whether a valid invoice exists or will be produced for this transfer",
+            "category": "unverifiable",
+            "reasons": [
+              "uncertainty_language",
+              "unknown_field_requires_external_evidence"
+            ]
+          },
+          {
+            "path": "analysis.unknowns[4]",
+            "text": "Unclear: what accountability or reporting mechanisms exist for funds after transfer",
+            "category": "unverifiable",
+            "reasons": [
+              "uncertainty_language",
+              "unknown_field_requires_external_evidence"
+            ]
+          },
+          {
+            "path": "analysis.unknowns[5]",
+            "text": "Unclear: whether Q2 grants funding of exactly 250,000 USDC has been previously approved or budgeted",
+            "category": "unverifiable",
+            "reasons": [
+              "contains_hard_literal",
+              "uncertainty_language",
+              "unknown_field_requires_external_evidence"
+            ]
+          },
+          {
+            "path": "recommendation.reasoning",
+            "text": "This is a high-impact treasury spending proposal (250,000 USDC) that fails to meet the evidence threshold required for such transfers.",
+            "category": "probabilistic",
+            "reasons": [
+              "contains_hard_literal",
+              "interpretive_field"
+            ]
+          },
+          {
+            "path": "recommendation.reasoning",
+            "text": "Four critical verification elements are missing: invoice, multisig signer list, recipient-control proof, and budget breakdown.",
+            "category": "probabilistic",
+            "reasons": [
+              "interpretive_field"
+            ]
+          },
+          {
+            "path": "recommendation.reasoning",
+            "text": "The user's high treasury_risk_sensitivity and requirement for strict specification (needs_strict_spec: true) directly conflict with proceeding on trust alone.",
+            "category": "probabilistic",
+            "reasons": [
+              "interpretive_field"
+            ]
+          },
+          {
+            "path": "recommendation.reasoning",
+            "text": "The inability to verify multisig signer composition also relates to the avoid_admin_key_changes principle, as unverified signer lists could conceal unauthorized modifications to privileged roles.",
+            "category": "probabilistic",
+            "reasons": [
+              "contains_inference_language",
+              "interpretive_field"
+            ]
+          },
+          {
+            "path": "recommendation.reasoning",
+            "text": "Without these verifications, the DAO has no assurance that funds will reach the intended party or be used as described.",
+            "category": "probabilistic",
+            "reasons": [
+              "interpretive_field"
+            ]
+          },
+          {
+            "path": "recommendation.conflicts_with_user_principles[0]",
+            "text": "treasury_risk_sensitivity (high): 250,000 USDC transfer with no invoice, no budget breakdown, and no accountability documentation",
+            "category": "probabilistic",
+            "reasons": [
+              "contains_hard_literal",
+              "interpretive_field"
+            ]
+          },
+          {
+            "path": "recommendation.conflicts_with_user_principles[1]",
+            "text": "needs_strict_spec (true): proposal lacks specification for recipient verification, fund allocation, and signer composition",
+            "category": "probabilistic",
+            "reasons": [
+              "interpretive_field"
+            ]
+          },
+          {
+            "path": "recommendation.conflicts_with_user_principles[2]",
+            "text": "avoid_admin_key_changes: multisig signer list is missing, so any changes to signer composition cannot be audited",
+            "category": "probabilistic",
+            "reasons": [
+              "interpretive_field"
+            ]
+          }
+        ],
+        "mixed_segments": [
+          {
+            "path": "analysis.summary",
+            "categories": [
+              "deterministic",
+              "unverifiable"
+            ]
+          }
+        ],
+        "mixed_categories_detected": true,
+        "requires_separation": true,
+        "strict_mode": false,
+        "strict_rejection_triggered": false,
+        "routing_action": "WARN",
+        "method": {
+          "kind": "heuristic",
+          "version": 1,
+          "notes": [
+            "Deterministic segments are anchored to extracted title/body/options, evidence quotes, or hard literals.",
+            "Probabilistic segments include recommendation, risk, benefit, and uncertainty language.",
+            "Unverifiable segments are vague or unsupported without clear anchors."
+          ]
+        }
+      },
+      "refusal_handling": {
+        "refusal_detected": true,
+        "signals": [
+          "unknowns_present:6"
+        ],
+        "routed_to": "HUMAN_REVIEW",
+        "note": "Refusal detection is heuristic and conservative. It routes ambiguous or underspecified cases to human review."
+      },
+      "week6_evaluation": {
+        "refusal_occurred": true,
+        "agree_with_refusal": null
+      },
+      "routing": {
+        "refusal_detected": true,
+        "strict_verification_triggered": false,
+        "verification_routing_action": "WARN",
+        "routed_to": "HUMAN_REVIEW:reviews/ticket-2026-06-10T08-57-55-309Z.json",
+        "at": "2026-06-10T08:57:55.309Z",
+        "signals": [
+          "unknowns_present:6"
+        ],
+        "report_path": "./reports/report-2026-06-10T08-57-55-309Z.json"
+      }
+    },
+    "facts": [
+      {
+        "key": "title",
+        "value": "Q2 grants treasury transfer",
+        "source": "proposal.title"
+      },
+      {
+        "key": "amount",
+        "value": "250,000 USDC",
+        "source": "proposal/report text"
+      },
+      {
+        "key": "addresses",
+        "value": [
+          "0x1234567890abcdef1234567890abcdef12345678"
+        ],
+        "source": "proposal/report text"
+      },
+      {
+        "key": "voting_options",
+        "value": [
+          "For",
+          "Against",
+          "Abstain"
+        ],
+        "source": "proposal.options"
+      },
+      {
+        "key": "missing_evidence",
+        "value": [
+          "invoice",
+          "multisig signer list",
+          "recipient-control proof",
+          "budget breakdown"
+        ],
+        "source": "metadata plus report unknowns"
+      }
+    ],
+    "risks": [
+      {
+        "text": "250,000 USDC is transferred to an address with no recipient-control proof, meaning funds could go to an unintended party",
+        "source": "prior_report.analysis.risks",
+        "severity": "medium"
+      },
+      {
+        "text": "No multisig signer list is provided, so the governance structure and access control of the receiving wallet cannot be verified",
+        "source": "prior_report.analysis.risks",
+        "severity": "medium"
+      },
+      {
+        "text": "No invoice is included to validate the legitimacy or amount of the funding request",
+        "source": "prior_report.analysis.risks",
+        "severity": "medium"
+      },
+      {
+        "text": "No budget breakdown means the DAO cannot assess whether 250,000 USDC is proportionate to planned grant allocations",
+        "source": "prior_report.analysis.risks",
+        "severity": "medium"
+      },
+      {
+        "text": "Address 0x1234567890abcdef1234567890abcdef12345678 may be a single-signature wallet rather than the claimed multisig, creating a single point of failure for 250,000 USDC",
+        "source": "prior_report.analysis.risks",
+        "severity": "medium"
+      },
+      {
+        "text": "High-impact execution evidence is incomplete: invoice, multisig signer list, recipient-control proof, budget breakdown",
+        "source": "research_agent.missing_evidence",
+        "severity": "high"
+      },
+      {
+        "text": "Treasury transfer of 250,000 USDC targets 0x1234567890abcdef1234567890abcdef12345678, so recipient-control proof should be mandatory before approval",
+        "source": "research_agent.amount_and_addresses",
+        "severity": "high"
+      }
+    ],
+    "decision": {
+      "suggested_option": "Against",
+      "confidence": "high",
+      "rationale": "Do not approve until high-severity execution and evidence gaps are resolved.",
+      "blockers": [
+        "High-impact execution evidence is incomplete: invoice, multisig signer list, recipient-control proof, budget breakdown",
+        "Treasury transfer of 250,000 USDC targets 0x1234567890abcdef1234567890abcdef12345678, so recipient-control proof should be mandatory before approval"
+      ]
+    },
+    "verification": {
+      "status": "verified",
+      "blockers": [],
+      "shared_state_sha256": "dd83eabd10405dd97d3ea9972ed1cb5c5a96c5404e3d6ea796074894b82b5e2d",
+      "checks": [
+        "research facts are stored in shared memory",
+        "risk agent reads research facts before decision",
+        "decision blockers include high-severity risks",
+        "verification hash covers facts risks and decision"
+      ]
+    }
+  },
+  "agents": [
+    {
+      "role": "research_agent",
+      "status": "complete",
+      "wrote": [
+        "shared_memory.facts"
+      ]
+    },
+    {
+      "role": "risk_analysis_agent",
+      "status": "complete",
+      "read": [
+        "shared_memory.facts"
+      ],
+      "wrote": [
+        "shared_memory.risks"
+      ]
+    },
+    {
+      "role": "decision_agent",
+      "status": "complete",
+      "read": [
+        "shared_memory.facts",
+        "shared_memory.risks"
+      ],
+      "wrote": [
+        "shared_memory.decision"
+      ]
+    },
+    {
+      "role": "verification_agent",
+      "status": "complete",
+      "read": [
+        "shared_memory.facts",
+        "shared_memory.risks",
+        "shared_memory.decision"
+      ],
+      "wrote": [
+        "shared_memory.verification"
+      ]
+    }
+  ],
+  "messages": [
+    {
+      "index": 0,
+      "at": "2026-06-17T12:52:06.681Z",
+      "role": "research_agent",
+      "summary": "Collected 5 grounded proposal facts",
+      "data": {
+        "facts": [
+          {
+            "key": "title",
+            "value": "Q2 grants treasury transfer",
+            "source": "proposal.title"
+          },
+          {
+            "key": "amount",
+            "value": "250,000 USDC",
+            "source": "proposal/report text"
+          },
+          {
+            "key": "addresses",
+            "value": [
+              "0x1234567890abcdef1234567890abcdef12345678"
+            ],
+            "source": "proposal/report text"
+          },
+          {
+            "key": "voting_options",
+            "value": [
+              "For",
+              "Against",
+              "Abstain"
+            ],
+            "source": "proposal.options"
+          },
+          {
+            "key": "missing_evidence",
+            "value": [
+              "invoice",
+              "multisig signer list",
+              "recipient-control proof",
+              "budget breakdown"
+            ],
+            "source": "metadata plus report unknowns"
+          }
+        ]
+      }
+    },
+    {
+      "index": 1,
+      "at": "2026-06-17T12:52:06.681Z",
+      "role": "risk_analysis_agent",
+      "summary": "Classified 7 risks",
+      "data": {
+        "high_severity_count": 2
+      }
+    },
+    {
+      "index": 2,
+      "at": "2026-06-17T12:52:06.681Z",
+      "role": "decision_agent",
+      "summary": "Selected Against with high confidence",
+      "data": {
+        "suggested_option": "Against",
+        "confidence": "high",
+        "rationale": "Do not approve until high-severity execution and evidence gaps are resolved.",
+        "blockers": [
+          "High-impact execution evidence is incomplete: invoice, multisig signer list, recipient-control proof, budget breakdown",
+          "Treasury transfer of 250,000 USDC targets 0x1234567890abcdef1234567890abcdef12345678, so recipient-control proof should be mandatory before approval"
+        ]
+      }
+    },
+    {
+      "index": 3,
+      "at": "2026-06-17T12:52:06.681Z",
+      "role": "verification_agent",
+      "summary": "Council verification verified",
+      "data": {
+        "status": "verified",
+        "blockers": [],
+        "shared_state_sha256": "dd83eabd10405dd97d3ea9972ed1cb5c5a96c5404e3d6ea796074894b82b5e2d",
+        "checks": [
+          "research facts are stored in shared memory",
+          "risk agent reads research facts before decision",
+          "decision blockers include high-severity risks",
+          "verification hash covers facts risks and decision"
+        ]
+      }
+    }
+  ],
+  "artifacts": []
+}

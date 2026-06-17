@@ -2,6 +2,7 @@
 import fs from "fs";
 import { fetchAndExtract } from "./fetcher.js";
 import { analyzeWithLLM, classifyVerificationHooks } from "./analyzer.js";
+import { loadJson, runMultiAgentCouncil, writeCouncilArtifacts } from "./week17-multi-agent.js";
 import "dotenv/config";
 
 const cmd = process.argv[2];
@@ -14,6 +15,38 @@ if (cmd === "init") {
   } else {
     console.log("principles.json already exists");
   }
+  process.exit(0);
+}
+
+// ---------- WEEK 17 MULTI-AGENT REVIEW ----------
+if (cmd === "multi-agent-review") {
+  const reportPath = process.argv[3];
+  const proposalPath = process.argv[4];
+  const outputDir = process.argv[5] || "examples/week17-multi-agent-systems";
+
+  if (!reportPath || !proposalPath) {
+    console.error("Usage: node gov-ai.js multi-agent-review <report.json> <proposal.json> [output-dir]");
+    process.exit(1);
+  }
+
+  const report = loadJson(reportPath);
+  const proposal = loadJson(proposalPath);
+  const state = runMultiAgentCouncil({
+    proposal,
+    report,
+    source: {
+      report_path: reportPath,
+      proposal_path: proposalPath,
+      mode: "deterministic-local-demo",
+    },
+  });
+  const artifacts = writeCouncilArtifacts(state, outputDir);
+  console.log(JSON.stringify({
+    status: state.shared_memory.verification.status,
+    decision: state.shared_memory.decision.suggested_option,
+    agent_count: state.run.agent_count,
+    artifacts,
+  }, null, 2));
   process.exit(0);
 }
 
@@ -37,6 +70,7 @@ if (cmd === "analyze") {
   console.log("Usage:");
   console.log("  node gov-ai.js init");
   console.log("  node gov-ai.js analyze <url>");
+  console.log("  node gov-ai.js multi-agent-review <report.json> <proposal.json> [output-dir]");
   console.log("  node gov-ai.js");
   process.exit(0);
 }

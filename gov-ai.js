@@ -111,6 +111,11 @@ report.verification_hooks = classifyVerificationHooks(report, extracted, {
   strictMode: String(process.env.STRICT_VERIFICATION_HOOKS || "").toLowerCase() === "true",
 });
 
+// Week 17: embed deterministic multi-agent council into the primary report before it is routed/saved.
+// Pageserver and other report readers consume reports/*.json, so the council must not live only
+// as a separate demo artifact.
+attachMultiAgentCouncil(report, extracted, { url });
+
 // Week 6: detect refusal + route differently (escalate to human review)
 const refusal = detectRefusal(report, extracted);
 report.refusal_handling = refusal;
@@ -201,6 +206,43 @@ function buildReportFilename(url, extracted) {
 
   const ts = new Date().toISOString().replace(/[:.]/g, "-");
   return `report-${ts}.json`;
+}
+
+function attachMultiAgentCouncil(report, extracted, { url } = {}) {
+  if (!report || typeof report !== "object") return;
+  const state = runMultiAgentCouncil({
+    proposal: extracted,
+    report,
+    source: {
+      url: url || report?.input?.url || null,
+      mode: "embedded-primary-report",
+    },
+  });
+
+  const facts = state.shared_memory.facts || [];
+  const risks = state.shared_memory.risks || [];
+  const highSeverityRisks = risks.filter((risk) => risk.severity === "high");
+  const decision = state.shared_memory.decision || {};
+  const verification = state.shared_memory.verification || {};
+
+  report.multi_agent_council = {
+    version: 1,
+    workflow: ["research_agent", "risk_analysis_agent", "decision_agent", "verification_agent"],
+    agent_count: state.run.agent_count,
+    facts,
+    risk_summary: {
+      total: risks.length,
+      high_severity_count: highSeverityRisks.length,
+      high_severity: highSeverityRisks,
+    },
+    decision,
+    verification,
+    messages: state.messages.map((message) => ({
+      role: message.role,
+      summary: message.summary,
+    })),
+    note: "Embedded deterministic multi-agent review over the primary governance report. Pageserver can display this alongside the model analysis.",
+  };
 }
 
 /**

@@ -127,6 +127,7 @@ export function decisionAgent(sharedState) {
   const options = proposal.options || [];
   const highSeverityCount = risks.filter((risk) => risk.severity === 'high').length;
   const priorOption = report?.recommendation?.suggested_option;
+  const priorConfidence = report?.recommendation?.confidence || 'medium';
   const againstOption = options.find((option) => /^(against|nay|no)$/i.test(option));
   const abstainOption = options.find((option) => /^abstain$/i.test(option));
 
@@ -136,10 +137,10 @@ export function decisionAgent(sharedState) {
 
   const decision = {
     suggested_option: suggestedOption,
-    confidence: highSeverityCount > 0 ? 'high' : 'medium',
+    confidence: highSeverityCount > 0 ? 'high' : priorConfidence,
     rationale: highSeverityCount > 0
       ? 'Do not approve until high-severity execution and evidence gaps are resolved.'
-      : 'No high-severity blocker was found by the deterministic council.',
+      : 'No high-severity blocker was found by the deterministic council, so the council preserves the primary report recommendation and confidence.',
     blockers: risks.filter((risk) => risk.severity === 'high').map((risk) => risk.text),
   };
 

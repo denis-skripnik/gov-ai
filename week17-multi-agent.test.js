@@ -67,6 +67,31 @@ test('week17 council propagates high-severity risks into decision blockers', () 
   }
 });
 
+test('week17 council preserves primary report confidence when no high-severity blocker exists', () => {
+  const oracleProposal = {
+    title: 'Oracle feed update',
+    body: 'Update 21 markets from Pyth Core to Pyth Pro. By voting yes you support it. By voting abstain you decline to vote.',
+    options: ['YES', 'NO', 'NO_WITH_VETO', 'ABSTAIN'],
+  };
+  const oracleReport = {
+    extracted: oracleProposal,
+    analysis: {
+      key_changes: ['Update 21 markets from Pyth Core to Pyth Pro'],
+      risks: ['Oracle feed changes require caution'],
+      unknowns: ['Current voting results are unavailable'],
+    },
+    recommendation: {
+      suggested_option: 'ABSTAIN',
+      confidence: 'low',
+    },
+  };
+
+  const state = runMultiAgentCouncil({ proposal: oracleProposal, report: oracleReport });
+  assert.equal(state.shared_memory.decision.suggested_option, 'ABSTAIN');
+  assert.equal(state.shared_memory.decision.confidence, 'low');
+  assert.deepEqual(state.shared_memory.decision.blockers, []);
+});
+
 test('week17 council writes reproducible review artifacts', () => {
   const tempDir = fs.mkdtempSync(path.join(os.tmpdir(), 'gov-ai-week17-'));
   const state = runMultiAgentCouncil({ proposal, report });

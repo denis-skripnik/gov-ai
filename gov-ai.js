@@ -481,19 +481,21 @@ function detectRefusal(report, extracted) {
   const sourceType = safeStr(extracted?.source_type).toLowerCase();
   if (sourceType === "generic") signals.push("source_type_generic");
 
-  // Conservative rule: refusal if any high-signal present
+  // Conservative rule: distinguish true refusal from review-worthy uncertainty.
+  // Unknowns and low confidence should warn/escalate, but they are not refusals.
   const refusalDetected =
     signals.includes("suggested_option_unknown") ||
-    signals.includes("confidence_low") ||
     signals.includes("missing_extracted_options") ||
-    signals.some((s) => s.startsWith("unknowns_present:"));
+    signals.includes("source_type_generic");
+  const reviewRequired = refusalDetected || signals.length > 0;
 
   return {
     refusal_detected: refusalDetected,
+    review_required: reviewRequired,
     signals,
-    routed_to: refusalDetected ? "HUMAN_REVIEW" : "NORMAL_PIPELINE",
+    routed_to: reviewRequired ? "HUMAN_REVIEW" : "NORMAL_PIPELINE",
     note:
-      "Refusal detection is heuristic and conservative. It routes ambiguous or underspecified cases to human review.",
+      "Refusal detection is heuristic and conservative. Uncertainty can require human review without being labeled as a model refusal.",
   };
 }
 
@@ -504,10 +506,12 @@ function routeReport(report, refusal, verificationHooks, reportPath) {
   const routeFile = `routes/route-${ts}.json`;
   const strictVerificationTriggered = Boolean(verificationHooks?.strict_rejection_triggered);
   const refusalDetected = Boolean(refusal?.refusal_detected);
+  const reviewRequired = Boolean(refusal?.review_required);
 
-  if (!refusalDetected && !strictVerificationTriggered) {
+  if (!reviewRequired && !strictVerificationTriggered) {
     const out = {
       refusal_detected: false,
+      review_required: false,
       strict_verification_triggered: false,
       verification_routing_action: verificationHooks?.routing_action || "ALLOW",
       routed_to: "NORMAL_PIPELINE",
@@ -534,13 +538,16 @@ function routeReport(report, refusal, verificationHooks, reportPath) {
     verification_routing_action: verificationHooks?.routing_action || null,
     note: strictVerificationTriggered
       ? "Strict verification hooks detected mixed categories. Escalated to human review queue."
-      : "Refusal detected. Escalated to human review queue.",
+      : refusalDetected
+        ? "Refusal detected. Escalated to human review queue."
+        : "Review-worthy uncertainty detected. Escalated to human review queue.",
   };
 
   fs.writeFileSync(ticketPath, JSON.stringify(ticket, null, 2));
 
   const out = {
     refusal_detected: refusalDetected,
+    review_required: reviewRequired,
     strict_verification_triggered: strictVerificationTriggered,
     verification_routing_action: verificationHooks?.routing_action || null,
     routed_to: `HUMAN_REVIEW:${ticketPath}`,

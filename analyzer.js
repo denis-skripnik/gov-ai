@@ -289,9 +289,9 @@ function getAmbientMaxTokens(value = process.env.AMBIENT_MAX_TOKENS) {
   const parsed = Number(value);
   if (Number.isFinite(parsed) && parsed > 0) return Math.floor(parsed);
   // Reasoning models can spend hundreds or thousands of completion tokens before
-  // emitting user-visible JSON. A low implicit provider default can produce
-  // verified metadata with truncated or missing content.
-  return 4096;
+  // emitting user-visible JSON. Long financial Snapshot proposals can exceed 4096
+  // and otherwise produce verified metadata with truncated, invalid JSON.
+  return 8192;
 }
 
 function shorten(str, max = 180) {

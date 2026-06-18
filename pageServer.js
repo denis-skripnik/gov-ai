@@ -89,6 +89,13 @@ const I18N = {
     signals: 'Signals',
     routedTo: 'Routed To',
     systemIdentity: 'System Identity',
+    multiAgentCouncil: 'Multi-Agent Council',
+    workflow: 'Workflow',
+    agentCount: 'Agent count',
+    councilFacts: 'Facts collected',
+    riskSummary: 'Risk summary',
+    councilDecision: 'Council decision',
+    councilVerification: 'Council verification',
     promptUsed: 'Prompt Used',
     showDetails: 'Show details',
     hideDetails: 'Hide details',
@@ -169,6 +176,13 @@ const I18N = {
     signals: 'Сигналы',
     routedTo: 'Перенаправлено в',
     systemIdentity: 'Системная идентичность',
+    multiAgentCouncil: 'Совет агентов',
+    workflow: 'Процесс',
+    agentCount: 'Количество агентов',
+    councilFacts: 'Собранные факты',
+    riskSummary: 'Сводка рисков',
+    councilDecision: 'Решение совета',
+    councilVerification: 'Проверка совета',
     promptUsed: 'Использованный промпт',
     showDetails: 'Показать детали',
     hideDetails: 'Скрыть детали',
@@ -484,6 +498,72 @@ function formatRecommendation(recommendation, t) {
     html += '</div>';
   }
   
+  html += '</div>';
+  return html;
+}
+
+function formatMultiAgentCouncil(council, t) {
+  if (!council) return '';
+
+  let html = openSection('multi-agent-council-section', 'multi-agent-council', t.multiAgentCouncil);
+
+  if (Array.isArray(council.workflow) && council.workflow.length > 0) {
+    html += `<p><strong>${t.workflow}:</strong> ${council.workflow.join(' → ')}</p>`;
+  }
+
+  if (typeof council.agent_count !== 'undefined') {
+    html += `<p><strong>${t.agentCount}:</strong> ${council.agent_count}</p>`;
+  }
+
+  if (Array.isArray(council.facts) && council.facts.length > 0) {
+    html += `<h3>${t.councilFacts}</h3><ul>`;
+    for (const fact of council.facts) {
+      html += `<li>${formatMarkdown(fact.statement || JSON.stringify(fact))}</li>`;
+    }
+    html += '</ul>';
+  }
+
+  if (council.risk_summary) {
+    html += `<h3>${t.riskSummary}</h3>`;
+    if (Array.isArray(council.risk_summary.high_severity) && council.risk_summary.high_severity.length > 0) {
+      html += '<h4>High severity</h4><ul>';
+      for (const risk of council.risk_summary.high_severity) html += `<li>${formatMarkdown(risk)}</li>`;
+      html += '</ul>';
+    }
+    if (Array.isArray(council.risk_summary.review_flags) && council.risk_summary.review_flags.length > 0) {
+      html += '<h4>Review flags</h4><ul>';
+      for (const flag of council.risk_summary.review_flags) html += `<li>${formatMarkdown(flag)}</li>`;
+      html += '</ul>';
+    }
+  }
+
+  if (council.decision) {
+    html += `<h3>${t.councilDecision}</h3>`;
+    if (council.decision.suggested_option) html += `<p><strong>${t.suggestedOption}:</strong> <span class="highlight">${council.decision.suggested_option}</span></p>`;
+    if (council.decision.confidence) html += `<p><strong>${t.confidence}:</strong> <span class="badge">${council.decision.confidence}</span></p>`;
+    if (council.decision.rationale) html += formatMarkdown(council.decision.rationale);
+    if (Array.isArray(council.decision.blockers) && council.decision.blockers.length > 0) {
+      html += '<h4>Blockers</h4><ul>';
+      for (const blocker of council.decision.blockers) html += `<li>${formatMarkdown(blocker)}</li>`;
+      html += '</ul>';
+    }
+  }
+
+  if (council.verification) {
+    html += `<h3>${t.councilVerification}</h3>`;
+    if (council.verification.status) html += `<p><strong>${t.status}:</strong> <span class="badge">${council.verification.status}</span></p>`;
+    if (council.verification.output_hash) html += `<p><strong>Output hash:</strong> <code>${council.verification.output_hash}</code></p>`;
+    if (Array.isArray(council.verification.checks) && council.verification.checks.length > 0) {
+      html += '<ul>';
+      for (const check of council.verification.checks) html += `<li>${formatMarkdown(check)}</li>`;
+      html += '</ul>';
+    }
+  }
+
+  if (council.note) {
+    html += `<p class="note">${formatMarkdown(council.note)}</p>`;
+  }
+
   html += '</div>';
   return html;
 }
@@ -1375,6 +1455,7 @@ function generateReportPage(report, filename, lang, currentUrl) {
           ${formatExtracted(report.extracted, t)}
           ${formatAnalysis(report.analysis, t)}
           ${formatRecommendation(report.recommendation, t)}
+          ${formatMultiAgentCouncil(report.multi_agent_council, t)}
           ${formatLimitations(report.limitations, t)}
           ${formatVerification(report.__ambient, t)}
           ${formatVerificationBoundary(report.verification_boundary, t)}

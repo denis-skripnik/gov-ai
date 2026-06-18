@@ -6,22 +6,58 @@ function safeJsonParse(text) {
   }
 }
 
+function extractFirstJsonObject(text) {
+  const source = String(text || '');
+  let start = -1;
+  let depth = 0;
+  let inString = false;
+  let escaped = false;
+
+  for (let i = 0; i < source.length; i += 1) {
+    const char = source[i];
+
+    if (start === -1) {
+      if (char === '{') {
+        start = i;
+        depth = 1;
+      }
+      continue;
+    }
+
+    if (escaped) {
+      escaped = false;
+      continue;
+    }
+    if (char === '\\') {
+      escaped = true;
+      continue;
+    }
+    if (char === '"') {
+      inString = !inString;
+      continue;
+    }
+    if (inString) continue;
+
+    if (char === '{') depth += 1;
+    if (char === '}') depth -= 1;
+    if (depth === 0) return source.slice(start, i + 1);
+  }
+
+  return null;
+}
+
 export function parseModelJsonOrNull(content) {
   const direct = safeJsonParse(content);
   if (direct) return direct;
 
   const fenced = String(content || '').match(/```(?:json)?\s*([\s\S]*?)```/i);
   if (fenced?.[1]) {
-    const parsed = safeJsonParse(fenced[1].trim());
+    const parsed = safeJsonParse(fenced[1].trim()) || safeJsonParse(extractFirstJsonObject(fenced[1]));
     if (parsed) return parsed;
   }
 
-  const text = String(content || '');
-  const start = text.indexOf('{');
-  const end = text.lastIndexOf('}');
-  if (start !== -1 && end !== -1 && end > start) {
-    return safeJsonParse(text.slice(start, end + 1));
-  }
+  const firstObject = extractFirstJsonObject(content);
+  if (firstObject) return safeJsonParse(firstObject);
 
   return null;
 }

@@ -39,6 +39,16 @@ test('parseModelJsonOrNull accepts fenced JSON content', () => {
   assert.deepEqual(parsed, { ok: true });
 });
 
+test('parseModelJsonOrNull extracts the first complete JSON object and ignores trailing junk', () => {
+  const parsed = parseModelJsonOrNull('preface {"ok":true,"text":"brace } inside"} trailing {"bad":');
+  assert.deepEqual(parsed, { ok: true, text: 'brace } inside' });
+});
+
+test('parseModelJsonOrNull returns null for malformed non-object output', () => {
+  assert.equal(parseModelJsonOrNull('not json at all'), null);
+  assert.equal(parseModelJsonOrNull('{"unterminated": true'), null);
+});
+
 test('evaluateBenchmarkOutputQuality reports full quality for schema-shaped output', () => {
   const quality = evaluateBenchmarkOutputQuality(validReport);
   assert.equal(quality.json_valid, true);

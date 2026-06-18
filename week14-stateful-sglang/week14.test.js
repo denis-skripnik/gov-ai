@@ -22,6 +22,23 @@ test('JsonMemoryStore persists and bounds prompt state', () => {
   assert.deepEqual(state.turns.map((turn) => turn.content), ['second', 'third']);
 });
 
+test('JsonMemoryStore keeps long chains bounded and retains newest turns', () => {
+  const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'week14-long-chain-'));
+  const store = new JsonMemoryStore(path.join(dir, 'memory.json'));
+
+  for (let i = 0; i < 100; i += 1) {
+    store.appendTurn('s-long', {
+      role: i % 2 === 0 ? 'user' : 'assistant',
+      content: `turn-${i} ${'x'.repeat(20)}`,
+    });
+  }
+
+  const state = store.getPromptState('s-long', { maxTurns: 8, maxChars: 1200 });
+  assert.ok(state.turns.length <= 8);
+  assert.match(state.turns.at(-1).content, /turn-99/);
+  assert.ok(JSON.stringify(state).length <= 1200);
+});
+
 test('buildStatefulMessages injects prior state before current task', () => {
   const messages = buildStatefulMessages({
     systemPrompt: 'system',

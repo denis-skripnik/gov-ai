@@ -285,6 +285,15 @@ function extractFirstJsonObject(text) {
   return null;
 }
 
+function getAmbientMaxTokens(value = process.env.AMBIENT_MAX_TOKENS) {
+  const parsed = Number(value);
+  if (Number.isFinite(parsed) && parsed > 0) return Math.floor(parsed);
+  // Reasoning models can spend hundreds or thousands of completion tokens before
+  // emitting user-visible JSON. A low implicit provider default can produce
+  // verified metadata with truncated or missing content.
+  return 4096;
+}
+
 function shorten(str, max = 180) {
   if (typeof str !== "string") return str;
   const s = str.replace(/\s+/g, " ").trim();
@@ -325,7 +334,7 @@ async function withRetry(fn, { tries = 3, baseDelayMs = 600 } = {}) {
 }
 
 // Export for external use
-export { latencyTracker, isFinancialProposal, isAmbientMultiNodeCapacityError, multiNodeAnalysis };
+export { latencyTracker, isFinancialProposal, isAmbientMultiNodeCapacityError, multiNodeAnalysis, getAmbientMaxTokens };
 
 // Minimal base58 encoder (no deps)
 const B58_ALPHABET = "123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz";
@@ -624,6 +633,7 @@ export async function analyzeWithLLM(url, extracted, principles, opts = {}) {
     // IMPORTANT: for "UI-like verification", stream must be true.
     // Set AMBIENT_STREAM=false for providers/models that verify but do not emit streamed content reliably.
     stream = String(process.env.AMBIENT_STREAM || "true").toLowerCase() !== "false",
+    maxTokens = getAmbientMaxTokens(),
   } = opts;
 
   // Week 8: Check if financial proposal
@@ -664,6 +674,7 @@ export async function analyzeWithLLM(url, extracted, principles, opts = {}) {
           emit_ambient_events: true,
           wait_for_verification: true,
           emit_usage: true,
+          max_tokens: maxTokens,
         }),
       });
 
@@ -739,6 +750,7 @@ schema: "./report.schema.json",
         emit_ambient_events: true,
         wait_for_verification: true,
         emit_usage: true,
+        max_tokens: maxTokens,
       }),
     });
 

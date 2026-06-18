@@ -1,0 +1,663 @@
+{
+  "version": 1,
+  "run": {
+    "kind": "gov-ai-week17-multi-agent-council",
+    "started_at": "2026-06-18T04:01:28.132Z",
+    "source": {
+      "report_path": "reports/report-daodao-injective-659.json",
+      "proposal_path": "tmp/daodao-injective-659-extracted.json",
+      "mode": "deterministic-local-demo"
+    },
+    "completed_at": "2026-06-18T04:01:28.134Z",
+    "agent_count": 4,
+    "message_count": 4
+  },
+  "shared_memory": {
+    "proposal": {
+      "title": "Update Oracle Feeds to Pyth Pro for Various Perpetual Markets on Injective Exchange dApps",
+      "body": "If passed, this proposal will update additional active perpetual markets that currently use Pyth Core oracle feeds to use Pyth Pro oracle feeds. This proposal updates oracle parameters for 21 active Pyth Core derivative markets: CAKE/USDC PERP, BERA/USDC PERP, BOME/USDC PERP, BRETT/USDC PERP, LAYER/USDC PERP, MANA/USDC PERP, W/USDC PERP, XAUT/USDC PERP, AUDUSD/USDC PERP, EURUSD/USDC PERP, GBPUSD/USDC PERP, NZDUSD/USDC PERP, USDCAD/USDC PERP, USDCHF/USDC PERP, USDJPY/USDC PERP, USDSGD/USDC PERP, XAG/USDC PERP, XAU/USDC PERP, USDHKD/USDC PERP, USDNOK/USDC PERP, USDSEK/USDC PERP. Each trading pair will use Pyth Pro, and all other market parameters will remain unchanged. This continues the Pyth Pro migration in waves.\n\n<strong>Actions:</strong>\n\n- By voting <strong>yes</strong> on this proposal, you support updating the oracle feeds for the markets listed above to Pyth Pro oracle feeds.\n- By voting <strong>no</strong> on this proposal, you do not support updating the oracle feeds for the markets listed above to Pyth Pro oracle feeds.\n- By voting <strong>no with veto</strong>, you find this proposal to be spam/irrelevant/malicious to governance, and support burning the 100 INJ deposit if NoWithVeto votes are greater than one-third of the total voting power.\n- By voting <strong>abstain</strong>, you wish to contribute to quorum while formally declining to vote either for or against the proposal.\n\n<em>Disclosure: I am a member of the Injective Labs team.</em>",
+      "options": [
+        "YES",
+        "NO",
+        "NO_WITH_VETO",
+        "ABSTAIN"
+      ],
+      "current_results": null,
+      "metadata": {
+        "nextjs": true
+      }
+    },
+    "prior_report": {
+      "version": 1,
+      "input": {
+        "url": "https://daodao.zone/dao/injective/proposals/659",
+        "fetched_at": "2026-06-18T03:59:15.362Z",
+        "source_type": "daodao",
+        "prompt_used": {
+          "prompt_used_summary": "Structured governance analysis prompt. Must output ONLY valid JSON. Must not guess missing options/results; use UNKNOWN.",
+          "prompt_used_excerpt": "\nYou are given:\n\nURL:\nhttps://daodao.zone/dao/injective/proposals/659\n\nEXTRACTED_DATA (may be incomplete):\n{\n  \"source_type\": \"daodao\",\n  \"fetched_at\": \"2026-06-18T03:59:15.362Z\",\n  \"title\": \"Update Oracle Feeds to Pyth Pro for Various Perpetual Markets on Injective Exchange dApps\",\n  \"body\": \"If passed, this proposal will update additional active perpetual markets that currently use Pyth Core oracle feeds to use Pyth Pro oracle feeds. This proposal updates oracle parameters for 21 active Pyth Core derivative markets: CAKE/USDC PERP, BERA/USDC PERP, BOME/USDC PERP, BRETT/USDC PERP, LAYER/USDC PERP, MANA/USDC PERP, W/USDC PERP, XAUT/USDC PERP, AUDUSD/USDC PERP, EURUSD/USDC PERP, GBPUSD/USDC PERP, NZDUSD/USDC PERP, USDCAD/USDC PERP, USDCHF/USDC PERP, USDJPY/USDC PERP, USDSGD/USDC PERP, XAG/U",
+          "prompt_used_excerpt_truncated": true,
+          "prompt_used_sha256": "7477795df3166a5b8d0f3083b05f68ad06ca01bb39e8962bc208c8d221c8bd66",
+          "model": "zai-org/GLM-5.1-FP8",
+          "stream": false,
+          "prompt_used_files": {
+            "principles": {
+              "path": "./principles.json",
+              "sha256": "e446239714ddff5d3c0f2e575e52a9ec7b904c0d3ac85d257ee7f1509aa69a86"
+            },
+            "schema": {
+              "path": "./report.schema.json",
+              "sha256": "974d3880254b779b60706f996941e3ef66b8488863e94f9a66b5e2fc876990f7"
+            }
+          }
+        },
+        "isFinancialProposal": false
+      },
+      "extracted": {
+        "title": "Update Oracle Feeds to Pyth Pro for Various Perpetual Markets on Injective Exchange dApps",
+        "body": "If passed, this proposal will update additional active perpetual markets that currently use Pyth Core oracle feeds to use Pyth Pro oracle feeds. This proposal updates oracle parameters for 21 active Pyth Core derivative markets: CAKE/USDC PERP, BERA/USDC PERP, BOME/USDC PERP, BRETT/USDC PERP, LAYER/USDC PERP, MANA/USDC PERP, W/USDC PERP, XAUT/USDC PERP, AUDUSD/USDC PERP, EURUSD/USDC PERP, GBPUSD/USDC PERP, NZDUSD/USDC PERP, USDCAD/USDC PERP, USDCHF/USDC PERP, USDJPY/USDC PERP, USDSGD/USDC PERP, XAG/USDC PERP, XAU/USDC PERP, USDHKD/USDC PERP, USDNOK/USDC PERP, USDSEK/USDC PERP. Each trading pair will use Pyth Pro, and all other market parameters will remain unchanged. This continues the Pyth Pro migration in waves.\n\n<strong>Actions:</strong>\n\n- By voting <strong>yes</strong> on this proposal, you support updating the oracle feeds for the markets listed above to Pyth Pro oracle feeds.\n- By voting <strong>no</strong> on this proposal, you do not support updating the oracle feeds for the markets listed above to Pyth Pro oracle feeds.\n- By voting <strong>no with veto</strong>, you find this proposal to be spam/irrelevant/malicious to governance, and support burning the 100 INJ deposit if NoWithVeto votes are greater than one-third of the total voting power.\n- By voting <strong>abstain</strong>, you wish to contribute to quorum while formally declining to vote either for or against the proposal.\n\n<em>Disclosure: I am a member of the Injective Labs team.</em>",
+        "options": [
+          "YES",
+          "NO",
+          "NO_WITH_VETO",
+          "ABSTAIN"
+        ],
+        "current_results": null,
+        "metadata": {
+          "nextjs": true
+        }
+      },
+      "analysis": {
+        "summary": "This proposal updates 21 active perpetual markets from Pyth Core oracle feeds to Pyth Pro oracle feeds on the Injective Exchange. It is part of an ongoing migration conducted in waves. No other market parameters are changed.",
+        "key_changes": [
+          "Switches oracle feed source from Pyth Core to Pyth Pro for 21 specified perpetual markets (CAKE/USDC, BERA/USDC, BOME/USDC, BRETT/USDC, LAYER/USDC, MANA/USDC, W/USDC, XAUT/USDC, AUDUSD/USDC, EURUSD/USDC, GBPUSD/USDC, NZDUSD/USDC, USDCAD/USDC, USDCHF/USDC, USDJPY/USDC, USDSGD/USDC, XAG/USDC, XAU/USDC, USDHKD/USDC, USDNOK/USDC, USDSEK/USDC)",
+          "All other market parameters remain unchanged"
+        ],
+        "risks": [
+          "Migrating 21 markets simultaneously creates a large blast radius if Pyth Pro feeds exhibit latency, downtime, or price deviation issues, potentially causing incorrect liquidations or trading disruptions across all affected pairs",
+          "No rollback mechanism is specified in the proposal; if Pyth Pro feeds malfunction, a new governance proposal would be required to revert",
+          "Oracle feed changes directly affect price discovery for perpetual markets; any difference in feed behavior between Pyth Core and Pyth Pro could lead to unexpected liquidation cascades"
+        ],
+        "benefits": [
+          "Continues an established Pyth Pro migration pattern conducted in waves, indicating prior successful waves",
+          "Scope is strictly limited to oracle feed source only; all other market parameters remain unchanged"
+        ],
+        "unknowns": [
+          "Unclear: Specific technical differences between Pyth Core and Pyth Pro oracle feeds (latency, update frequency, data sources, reliability metrics) are not detailed in the proposal",
+          "Unclear: Outcomes and stability of previous migration waves are not referenced or linked",
+          "Unclear: No testing, simulation, or audit results for Pyth Pro feed integration are provided",
+          "Unclear: No information on whether Pyth Pro introduces different trust assumptions or decentralization properties compared to Pyth Core",
+          "Current voting results are unavailable"
+        ],
+        "evidence_quotes": [
+          "This proposal updates oracle parameters for 21 active Pyth Core derivative markets",
+          "Each trading pair will use Pyth Pro, and all other market parameters will remain unchanged.",
+          "This continues the Pyth Pro migration in waves.",
+          "Disclosure: I am a member of the Injective Labs team."
+        ]
+      },
+      "recommendation": {
+        "suggested_option": "YES",
+        "confidence": "medium",
+        "reasoning": "The proposal has a clear, bounded scope: updating only the oracle feed source for 21 explicitly listed markets with no other parameter changes. It follows a previously established migration pattern conducted in waves, suggesting institutional learning. The proposer has disclosed their Injective Labs affiliation. However, the lack of technical detail comparing Pyth Core vs Pyth Pro, absence of prior wave outcomes, and no specified rollback mechanism are meaningful gaps—especially given the user's preference for strict specifications and high treasury risk sensitivity. Oracle changes directly affect market integrity for all 21 pairs. These unknowns prevent higher confidence but do not outweigh the bounded nature of the change and the precedent of prior waves.",
+        "conflicts_with_user_principles": [
+          "needs_strict_spec: The proposal does not detail the technical differences between Pyth Core and Pyth Pro feeds, leaving the exact nature of the change underspecified",
+          "decentralization_priority: It is unknown whether Pyth Pro has different decentralization or trust properties compared to Pyth Core; this information is absent from the proposal"
+        ]
+      },
+      "limitations": [
+        "This is not legal or financial advice.",
+        "The tool may have failed to extract all proposal parameters.",
+        "Critical parameters must be checked manually."
+      ],
+      "__ambient": {
+        "verified": true,
+        "merkle_root": "7e12382e5f9ccd9d934725ed15ef3c0e0d9211193b3f45f4161891ffdca48355",
+        "request_id": "57cb75949cba4b639d00c3c8aa0a2b8f",
+        "verified_by_validators": null,
+        "validators": null,
+        "auction": null,
+        "bids": null,
+        "bidder": null
+      },
+      "verification_boundary": {
+        "deterministic": [
+          {
+            "path": "analysis.summary",
+            "text": "This proposal updates 21 active perpetual markets from Pyth Core oracle feeds to Pyth Pro oracle feeds on the Injective Exchange. It is part of an ongoing migration conducted in waves. No other market parameters are changed.",
+            "reason": "deterministic:contains_numbers_or_addresses,mentions_extracted_options"
+          },
+          {
+            "path": "analysis.key_changes[0]",
+            "text": "Switches oracle feed source from Pyth Core to Pyth Pro for 21 specified perpetual markets (CAKE/USDC, BERA/USDC, BOME/USDC, BRETT/USDC, LAYER/USDC, MANA/USDC, W/USDC, XAUT/USDC, AUDUSD/USDC, EURUSD/USDC, GBPUSD/USDC, NZDUSD/USDC, USDCAD/USDC, USDCHF/USDC, USDJPY/USDC, USDSGD/USDC, XAG/USDC, XAU/USDC, USDHKD/USDC, USDNOK/USDC, USDSEK/USDC)",
+            "reason": "deterministic:contains_numbers_or_addresses,mentions_extracted_options"
+          }
+        ],
+        "interpretive": [
+          {
+            "path": "analysis.key_changes[1]",
+            "text": "All other market parameters remain unchanged",
+            "reason": "interpretive"
+          },
+          {
+            "path": "analysis.risks[0]",
+            "text": "Migrating 21 markets simultaneously creates a large blast radius if Pyth Pro feeds exhibit latency, downtime, or price deviation issues, potentially causing incorrect liquidations or trading disruptions across all affected pairs",
+            "reason": "interpretive"
+          },
+          {
+            "path": "analysis.risks[1]",
+            "text": "No rollback mechanism is specified in the proposal; if Pyth Pro feeds malfunction, a new governance proposal would be required to revert",
+            "reason": "interpretive"
+          },
+          {
+            "path": "analysis.risks[2]",
+            "text": "Oracle feed changes directly affect price discovery for perpetual markets; any difference in feed behavior between Pyth Core and Pyth Pro could lead to unexpected liquidation cascades",
+            "reason": "interpretive"
+          },
+          {
+            "path": "analysis.benefits[0]",
+            "text": "Continues an established Pyth Pro migration pattern conducted in waves, indicating prior successful waves",
+            "reason": "interpretive"
+          },
+          {
+            "path": "analysis.benefits[1]",
+            "text": "Scope is strictly limited to oracle feed source only; all other market parameters remain unchanged",
+            "reason": "interpretive"
+          },
+          {
+            "path": "analysis.unknowns[0]",
+            "text": "Unclear: Specific technical differences between Pyth Core and Pyth Pro oracle feeds (latency, update frequency, data sources, reliability metrics) are not detailed in the proposal",
+            "reason": "uncertainty"
+          },
+          {
+            "path": "analysis.unknowns[1]",
+            "text": "Unclear: Outcomes and stability of previous migration waves are not referenced or linked",
+            "reason": "uncertainty"
+          },
+          {
+            "path": "analysis.unknowns[2]",
+            "text": "Unclear: No testing, simulation, or audit results for Pyth Pro feed integration are provided",
+            "reason": "uncertainty"
+          },
+          {
+            "path": "analysis.unknowns[3]",
+            "text": "Unclear: No information on whether Pyth Pro introduces different trust assumptions or decentralization properties compared to Pyth Core",
+            "reason": "uncertainty"
+          },
+          {
+            "path": "analysis.unknowns[4]",
+            "text": "Current voting results are unavailable",
+            "reason": "uncertainty"
+          },
+          {
+            "path": "recommendation.reasoning",
+            "text": "The proposal has a clear, bounded scope: updating only the oracle feed source for 21 explicitly listed markets with no other parameter changes. It follows a previously established migration pattern conducted in waves, suggesting institutional learning. The proposer has disclosed their Injective Labs affiliation. However, the lack of technical detail comparing Pyth Core vs Pyth Pro, absence of prior wave outcomes, and no specified rollback mechanism are meaningful gaps—especially given the user's preference for strict specifications and high treasury risk sensitivity. Oracle changes directly affect market integrity for all 21 pairs. These unknowns prevent higher confidence but do not outweigh the bounded nature of the change and the precedent of prior waves.",
+            "reason": "interpretive"
+          },
+          {
+            "path": "recommendation.conflicts_with_user_principles[0]",
+            "text": "needs_strict_spec: The proposal does not detail the technical differences between Pyth Core and Pyth Pro feeds, leaving the exact nature of the change underspecified",
+            "reason": "interpretive"
+          },
+          {
+            "path": "recommendation.conflicts_with_user_principles[1]",
+            "text": "decentralization_priority: It is unknown whether Pyth Pro has different decentralization or trust properties compared to Pyth Core; this information is absent from the proposal",
+            "reason": "interpretive"
+          }
+        ],
+        "uncertainty_flags": [
+          "unknowns:Unclear: Specific technical differences between ...",
+          "unknowns:Unclear: Outcomes and stability of previous migr...",
+          "unknowns:Unclear: No testing, simulation, or audit result...",
+          "unknowns:Unclear: No information on whether Pyth Pro intr...",
+          "unknowns:Current voting results are unavailable"
+        ],
+        "method": {
+          "kind": "heuristic",
+          "version": 2,
+          "notes": [
+            "Deterministic layer is based on direct matching to extracted fields and evidence_quotes, plus presence of hard literals (numbers, addresses, option strings).",
+            "Interpretive layer includes summary, risks, benefits, and recommendation reasoning.",
+            "This is a boundary labeling aid, not a proof of truth."
+          ]
+        }
+      },
+      "verification_hooks": {
+        "segments": [
+          {
+            "path": "analysis.summary",
+            "text": "This proposal updates 21 active perpetual markets from Pyth Core oracle feeds to Pyth Pro oracle feeds on the Injective Exchange.",
+            "category": "deterministic",
+            "reasons": [
+              "contains_hard_literal"
+            ]
+          },
+          {
+            "path": "analysis.summary",
+            "text": "It is part of an ongoing migration conducted in waves.",
+            "category": "unverifiable",
+            "reasons": [
+              "not_anchored_to_source_material"
+            ]
+          },
+          {
+            "path": "analysis.summary",
+            "text": "No other market parameters are changed.",
+            "category": "unverifiable",
+            "reasons": [
+              "not_anchored_to_source_material"
+            ]
+          },
+          {
+            "path": "analysis.key_changes[0]",
+            "text": "Switches oracle feed source from Pyth Core to Pyth Pro for 21 specified perpetual markets (CAKE/USDC, BERA/USDC, BOME/USDC, BRETT/USDC, LAYER/USDC, MANA/USDC, W/USDC, XAUT/USDC, AUDUSD/USDC, EURUSD/USDC, GBPUSD/USDC, NZDUSD/USDC, USDCAD/USDC, USDCHF/USDC, USDJPY/USDC, USDSGD/USDC, XAG/USDC, XAU/USDC, USDHKD/USDC, USDNOK/USDC, USDSEK/USDC)",
+            "category": "deterministic",
+            "reasons": [
+              "contains_hard_literal"
+            ]
+          },
+          {
+            "path": "analysis.key_changes[1]",
+            "text": "All other market parameters remain unchanged",
+            "category": "unverifiable",
+            "reasons": [
+              "not_anchored_to_source_material"
+            ]
+          },
+          {
+            "path": "analysis.risks[0]",
+            "text": "Migrating 21 markets simultaneously creates a large blast radius if Pyth Pro feeds exhibit latency, downtime, or price deviation issues, potentially causing incorrect liquidations or trading disruptions across all affected pairs",
+            "category": "probabilistic",
+            "reasons": [
+              "contains_hard_literal",
+              "interpretive_field"
+            ]
+          },
+          {
+            "path": "analysis.risks[1]",
+            "text": "No rollback mechanism is specified in the proposal",
+            "category": "probabilistic",
+            "reasons": [
+              "interpretive_field"
+            ]
+          },
+          {
+            "path": "analysis.risks[1]",
+            "text": "if Pyth Pro feeds malfunction, a new governance proposal would be required to revert",
+            "category": "probabilistic",
+            "reasons": [
+              "interpretive_field"
+            ]
+          },
+          {
+            "path": "analysis.risks[2]",
+            "text": "Oracle feed changes directly affect price discovery for perpetual markets",
+            "category": "probabilistic",
+            "reasons": [
+              "interpretive_field"
+            ]
+          },
+          {
+            "path": "analysis.risks[2]",
+            "text": "any difference in feed behavior between Pyth Core and Pyth Pro could lead to unexpected liquidation cascades",
+            "category": "probabilistic",
+            "reasons": [
+              "contains_inference_language",
+              "interpretive_field"
+            ]
+          },
+          {
+            "path": "analysis.benefits[0]",
+            "text": "Continues an established Pyth Pro migration pattern conducted in waves, indicating prior successful waves",
+            "category": "probabilistic",
+            "reasons": [
+              "interpretive_field"
+            ]
+          },
+          {
+            "path": "analysis.benefits[1]",
+            "text": "Scope is strictly limited to oracle feed source only",
+            "category": "probabilistic",
+            "reasons": [
+              "interpretive_field"
+            ]
+          },
+          {
+            "path": "analysis.benefits[1]",
+            "text": "all other market parameters remain unchanged",
+            "category": "probabilistic",
+            "reasons": [
+              "interpretive_field"
+            ]
+          },
+          {
+            "path": "analysis.unknowns[0]",
+            "text": "Unclear: Specific technical differences between Pyth Core and Pyth Pro oracle feeds (latency, update frequency, data sources, reliability metrics) are not detailed in the proposal",
+            "category": "unverifiable",
+            "reasons": [
+              "uncertainty_language",
+              "unknown_field_requires_external_evidence"
+            ]
+          },
+          {
+            "path": "analysis.unknowns[1]",
+            "text": "Unclear: Outcomes and stability of previous migration waves are not referenced or linked",
+            "category": "unverifiable",
+            "reasons": [
+              "uncertainty_language",
+              "unknown_field_requires_external_evidence"
+            ]
+          },
+          {
+            "path": "analysis.unknowns[2]",
+            "text": "Unclear: No testing, simulation, or audit results for Pyth Pro feed integration are provided",
+            "category": "unverifiable",
+            "reasons": [
+              "uncertainty_language",
+              "unknown_field_requires_external_evidence"
+            ]
+          },
+          {
+            "path": "analysis.unknowns[3]",
+            "text": "Unclear: No information on whether Pyth Pro introduces different trust assumptions or decentralization properties compared to Pyth Core",
+            "category": "unverifiable",
+            "reasons": [
+              "uncertainty_language",
+              "unknown_field_requires_external_evidence"
+            ]
+          },
+          {
+            "path": "analysis.unknowns[4]",
+            "text": "Current voting results are unavailable",
+            "category": "unverifiable",
+            "reasons": [
+              "unknown_field_requires_external_evidence"
+            ]
+          },
+          {
+            "path": "recommendation.reasoning",
+            "text": "The proposal has a clear, bounded scope: updating only the oracle feed source for 21 explicitly listed markets with no other parameter changes.",
+            "category": "probabilistic",
+            "reasons": [
+              "contains_hard_literal",
+              "interpretive_field"
+            ]
+          },
+          {
+            "path": "recommendation.reasoning",
+            "text": "It follows a previously established migration pattern conducted in waves, suggesting institutional learning.",
+            "category": "probabilistic",
+            "reasons": [
+              "interpretive_field"
+            ]
+          },
+          {
+            "path": "recommendation.reasoning",
+            "text": "The proposer has disclosed their Injective Labs affiliation.",
+            "category": "probabilistic",
+            "reasons": [
+              "interpretive_field"
+            ]
+          },
+          {
+            "path": "recommendation.reasoning",
+            "text": "However, the lack of technical detail comparing Pyth Core vs Pyth Pro, absence of prior wave outcomes, and no specified rollback mechanism are meaningful gaps—especially given the user's preference for strict specifications and high treasury risk sensitivity.",
+            "category": "probabilistic",
+            "reasons": [
+              "contains_inference_language",
+              "interpretive_field"
+            ]
+          },
+          {
+            "path": "recommendation.reasoning",
+            "text": "Oracle changes directly affect market integrity for all 21 pairs.",
+            "category": "probabilistic",
+            "reasons": [
+              "contains_hard_literal",
+              "interpretive_field"
+            ]
+          },
+          {
+            "path": "recommendation.reasoning",
+            "text": "These unknowns prevent higher confidence but do not outweigh the bounded nature of the change and the precedent of prior waves.",
+            "category": "probabilistic",
+            "reasons": [
+              "contains_inference_language",
+              "interpretive_field"
+            ]
+          },
+          {
+            "path": "recommendation.conflicts_with_user_principles[0]",
+            "text": "needs_strict_spec: The proposal does not detail the technical differences between Pyth Core and Pyth Pro feeds, leaving the exact nature of the change underspecified",
+            "category": "probabilistic",
+            "reasons": [
+              "interpretive_field"
+            ]
+          },
+          {
+            "path": "recommendation.conflicts_with_user_principles[1]",
+            "text": "decentralization_priority: It is unknown whether Pyth Pro has different decentralization or trust properties compared to Pyth Core",
+            "category": "probabilistic",
+            "reasons": [
+              "interpretive_field",
+              "uncertainty_language"
+            ]
+          },
+          {
+            "path": "recommendation.conflicts_with_user_principles[1]",
+            "text": "this information is absent from the proposal",
+            "category": "probabilistic",
+            "reasons": [
+              "interpretive_field"
+            ]
+          }
+        ],
+        "mixed_segments": [
+          {
+            "path": "analysis.summary",
+            "categories": [
+              "deterministic",
+              "unverifiable"
+            ]
+          }
+        ],
+        "mixed_categories_detected": true,
+        "requires_separation": true,
+        "strict_mode": false,
+        "strict_rejection_triggered": false,
+        "routing_action": "WARN",
+        "method": {
+          "kind": "heuristic",
+          "version": 1,
+          "notes": [
+            "Deterministic segments are anchored to extracted title/body/options, evidence quotes, or hard literals.",
+            "Probabilistic segments include recommendation, risk, benefit, and uncertainty language.",
+            "Unverifiable segments are vague or unsupported without clear anchors."
+          ]
+        }
+      },
+      "refusal_handling": {
+        "refusal_detected": true,
+        "signals": [
+          "unknowns_present:5"
+        ],
+        "routed_to": "HUMAN_REVIEW",
+        "note": "Refusal detection is heuristic and conservative. It routes ambiguous or underspecified cases to human review."
+      },
+      "week6_evaluation": {
+        "refusal_occurred": true,
+        "agree_with_refusal": null
+      },
+      "routing": {
+        "refusal_detected": true,
+        "strict_verification_triggered": false,
+        "verification_routing_action": "WARN",
+        "routed_to": "HUMAN_REVIEW:reviews/ticket-2026-06-18T04-00-24-840Z.json",
+        "at": "2026-06-18T04:00:24.840Z",
+        "signals": [
+          "unknowns_present:5"
+        ],
+        "report_path": "./reports/report-daodao-injective-659.json"
+      }
+    },
+    "facts": [
+      {
+        "key": "title",
+        "value": "Update Oracle Feeds to Pyth Pro for Various Perpetual Markets on Injective Exchange dApps",
+        "source": "proposal.title"
+      },
+      {
+        "key": "voting_options",
+        "value": [
+          "YES",
+          "NO",
+          "NO_WITH_VETO",
+          "ABSTAIN"
+        ],
+        "source": "proposal.options"
+      }
+    ],
+    "risks": [
+      {
+        "text": "Migrating 21 markets simultaneously creates a large blast radius if Pyth Pro feeds exhibit latency, downtime, or price deviation issues, potentially causing incorrect liquidations or trading disruptions across all affected pairs",
+        "source": "prior_report.analysis.risks",
+        "severity": "medium"
+      },
+      {
+        "text": "No rollback mechanism is specified in the proposal; if Pyth Pro feeds malfunction, a new governance proposal would be required to revert",
+        "source": "prior_report.analysis.risks",
+        "severity": "medium"
+      },
+      {
+        "text": "Oracle feed changes directly affect price discovery for perpetual markets; any difference in feed behavior between Pyth Core and Pyth Pro could lead to unexpected liquidation cascades",
+        "source": "prior_report.analysis.risks",
+        "severity": "medium"
+      }
+    ],
+    "decision": {
+      "suggested_option": "YES",
+      "confidence": "medium",
+      "rationale": "No high-severity blocker was found by the deterministic council.",
+      "blockers": []
+    },
+    "verification": {
+      "status": "verified",
+      "blockers": [],
+      "shared_state_sha256": "d8a75826d79ee30663aa22c45a6afdd5662f7e6981b8223da881a35df102cdaf",
+      "checks": [
+        "research facts are stored in shared memory",
+        "risk agent reads research facts before decision",
+        "decision blockers include high-severity risks",
+        "verification hash covers facts risks and decision"
+      ]
+    }
+  },
+  "agents": [
+    {
+      "role": "research_agent",
+      "status": "complete",
+      "wrote": [
+        "shared_memory.facts"
+      ]
+    },
+    {
+      "role": "risk_analysis_agent",
+      "status": "complete",
+      "read": [
+        "shared_memory.facts"
+      ],
+      "wrote": [
+        "shared_memory.risks"
+      ]
+    },
+    {
+      "role": "decision_agent",
+      "status": "complete",
+      "read": [
+        "shared_memory.facts",
+        "shared_memory.risks"
+      ],
+      "wrote": [
+        "shared_memory.decision"
+      ]
+    },
+    {
+      "role": "verification_agent",
+      "status": "complete",
+      "read": [
+        "shared_memory.facts",
+        "shared_memory.risks",
+        "shared_memory.decision"
+      ],
+      "wrote": [
+        "shared_memory.verification"
+      ]
+    }
+  ],
+  "messages": [
+    {
+      "index": 0,
+      "at": "2026-06-18T04:01:28.132Z",
+      "role": "research_agent",
+      "summary": "Collected 2 grounded proposal facts",
+      "data": {
+        "facts": [
+          {
+            "key": "title",
+            "value": "Update Oracle Feeds to Pyth Pro for Various Perpetual Markets on Injective Exchange dApps",
+            "source": "proposal.title"
+          },
+          {
+            "key": "voting_options",
+            "value": [
+              "YES",
+              "NO",
+              "NO_WITH_VETO",
+              "ABSTAIN"
+            ],
+            "source": "proposal.options"
+          }
+        ]
+      }
+    },
+    {
+      "index": 1,
+      "at": "2026-06-18T04:01:28.132Z",
+      "role": "risk_analysis_agent",
+      "summary": "Classified 3 risks",
+      "data": {
+        "high_severity_count": 0
+      }
+    },
+    {
+      "index": 2,
+      "at": "2026-06-18T04:01:28.132Z",
+      "role": "decision_agent",
+      "summary": "Selected YES with medium confidence",
+      "data": {
+        "suggested_option": "YES",
+        "confidence": "medium",
+        "rationale": "No high-severity blocker was found by the deterministic council.",
+        "blockers": []
+      }
+    },
+    {
+      "index": 3,
+      "at": "2026-06-18T04:01:28.132Z",
+      "role": "verification_agent",
+      "summary": "Council verification verified",
+      "data": {
+        "status": "verified",
+        "blockers": [],
+        "shared_state_sha256": "d8a75826d79ee30663aa22c45a6afdd5662f7e6981b8223da881a35df102cdaf",
+        "checks": [
+          "research facts are stored in shared memory",
+          "risk agent reads research facts before decision",
+          "decision blockers include high-severity risks",
+          "verification hash covers facts risks and decision"
+        ]
+      }
+    }
+  ],
+  "artifacts": []
+}

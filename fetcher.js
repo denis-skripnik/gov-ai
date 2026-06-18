@@ -330,18 +330,26 @@ function inferStandardGovernanceOptions({ text = "", voteMeta = null } = {}) {
     if (!found.includes(value)) found.push(value);
   };
 
-  const upper = String(text || "").toUpperCase();
+  const plainText = String(text || "")
+    .replace(/<[^>]+>/g, " ")
+    .replace(/\s+/g, " ")
+    .trim();
+
+  const hasYes = /\b(vote|voting)\s+yes\b/i.test(plainText);
+  const hasNo = /\b(vote|voting)\s+no\b/i.test(plainText);
+  const hasNoWithVeto = /\bno\s+with\s+veto\b/i.test(plainText);
+  const hasAbstain = /\babstain\b/i.test(plainText);
 
   if (voteMeta && typeof voteMeta === "object") {
-    if ("yes" in voteMeta || upper.includes("VOTE YES")) push("YES");
-    if ("no" in voteMeta || upper.includes("VOTE NO")) push("NO");
-    if ("no_with_veto" in voteMeta || upper.includes("NO WITH VETO")) push("NO_WITH_VETO");
-    if ("abstain" in voteMeta || upper.includes("ABSTAIN")) push("ABSTAIN");
+    if ("yes" in voteMeta || hasYes) push("YES");
+    if ("no" in voteMeta || hasNo) push("NO");
+    if ("no_with_veto" in voteMeta || hasNoWithVeto) push("NO_WITH_VETO");
+    if ("abstain" in voteMeta || hasAbstain) push("ABSTAIN");
   } else {
-    if (upper.includes("VOTE YES")) push("YES");
-    if (upper.includes("VOTE NO")) push("NO");
-    if (upper.includes("NO WITH VETO")) push("NO_WITH_VETO");
-    if (upper.includes("ABSTAIN")) push("ABSTAIN");
+    if (hasYes) push("YES");
+    if (hasNo) push("NO");
+    if (hasNoWithVeto) push("NO_WITH_VETO");
+    if (hasAbstain) push("ABSTAIN");
   }
 
   return found;
@@ -529,10 +537,14 @@ if (u.hostname === "www.mintscan.io" || u.hostname === "mintscan.io") {
   sourceType = "mintscan";
 }
 
+const extractedOptions = Array.isArray(extracted.options) ? extracted.options : [];
+const options = extractedOptions.length ? extractedOptions : inferStandardGovernanceOptions({ text: extracted.body || "" });
+
 return {
   source_type: sourceType,
   fetched_at: new Date().toISOString(),
-  ...extracted
+  ...extracted,
+  options
 };
 
 }

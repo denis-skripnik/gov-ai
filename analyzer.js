@@ -289,9 +289,10 @@ function getAmbientMaxTokens(value = process.env.AMBIENT_MAX_TOKENS) {
   const parsed = Number(value);
   if (Number.isFinite(parsed) && parsed > 0) return Math.floor(parsed);
   // Reasoning models can spend hundreds or thousands of completion tokens before
-  // emitting user-visible JSON. Long financial Snapshot proposals can exceed 4096
-  // and otherwise produce verified metadata with truncated, invalid JSON.
-  return 8192;
+  // emitting user-visible JSON. Long financial Snapshot proposals can exceed 4096.
+  // 16k is a practical default: large enough for long governance reports, but low
+  // enough to avoid likely provider-side rejections from unrealistic token budgets.
+  return 16384;
 }
 
 function shorten(str, max = 180) {

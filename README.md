@@ -4,6 +4,7 @@ AI assistant for DAO governance proposals.
 
 ## Table of Contents
 
+- [Week 18 - Open Inference Runtime Matrix (Web2)](#week-18---open-inference-runtime-matrix-web2)
 - [Week 17 - Multi-Agent Systems (Web2)](#week-17---multi-agent-systems-web2)
 - [Week 16 - Trust and Verification (Web2)](#week-16---trust-and-verification-web2)
 - [Week 14 - State, Memory and Throughput (Web2)](#week-14---state-memory-and-throughput-web2)
@@ -32,6 +33,7 @@ AI assistant for DAO governance proposals.
 
 This project started as **Web3 Developer Loop - Experiment #3 (AI for governance or automation)**.
 It now also documents and ships:
+- Week 18 open inference economy (Web2): runtime matrix for OpenAI-compatible governance-agent execution, model/runtime switching, fallback-ready telemetry, and deterministic mock validation
 - Week 17 multi-agent systems (Web2): deterministic governance-council layer with research, risk, decision, and verification agents sharing one JSON memory artifact
 - Week 16 trust and verification (Web2): local proposal fixture support for reproducible developer-loop runs, a treasury-spending scenario, and stricter verification hooks that keep unknown claims unverifiable even when they contain hard literals
 - Week 14 state, memory and throughput (Web2): JSON-backed state layer, bounded prompt-state injection, Ambient API/SGLang live benchmark artifacts, and a separate User Loop chat instruction
@@ -57,6 +59,42 @@ The design goal is **honesty and conservatism**:
 - if some data cannot be extracted, it is marked as `UNKNOWN`
 - the tool does not guess voting options or results
 - the output is meant to **assist** human decision-making, not replace it
+
+---
+
+## Week 18 - Open Inference Runtime Matrix (Web2)
+
+Week 18 asks whether Ambient can behave like an open inference economy instead of a single centralized model provider. In `gov-ai`, this is implemented as a runtime-aware matrix for governance-agent execution.
+
+### Week 18 product change
+
+The new runtime matrix can run the same governance proposal through configurable OpenAI-compatible runtime profiles and records:
+
+- provider type and model
+- stream mode
+- latency
+- JSON validity
+- schema completeness
+- failure type
+- selected runtime
+- verification metadata when returned by the runtime
+
+This makes open inference behavior auditable at the application layer: if a runtime fails, the artifact preserves what failed and why, instead of hiding runtime behavior behind one generic model call.
+
+### Run the Week 18 mock loop
+
+```bash
+WEEK18_MOCK=true node gov-ai.js open-inference-loop examples/week18-open-inference/mock-proposal.json
+```
+
+Mock mode does not call external services. It validates orchestration, JSON quality checks, runtime selection, and artifact writing.
+
+### Week 18 artifacts
+
+- `open-inference-runtimes.js` - runtime profile loading for mock, Ambient, and external OpenAI-compatible endpoints
+- `week18-open-inference-loop.js` - runtime loop, telemetry capture, runtime selection, and artifact writer
+- `week18-open-inference.test.js` - tests for profile loading, failure classification, selection, and artifacts
+- `examples/week18-open-inference/` - reproducible mock fixture and generated evidence
 
 ---
 

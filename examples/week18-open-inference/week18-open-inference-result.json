@@ -1,0 +1,131 @@
+{
+  "week": 18,
+  "theme": "Open Inference Economy",
+  "status": "complete",
+  "started_at": "2026-07-01T06:49:18.810Z",
+  "finished_at": "2026-07-01T06:49:18.811Z",
+  "proposal_source": "examples/week18-open-inference/mock-proposal.json",
+  "selected_runtime": "mock_open_inference_runtime",
+  "runtimes_tested": [
+    {
+      "name": "mock_open_inference_runtime",
+      "provider": "mock",
+      "api_url_kind": "mock",
+      "model": "mock-governance-model",
+      "stream": false,
+      "max_tokens": 16384,
+      "timeout_ms": 120000,
+      "verification": null,
+      "ok": true,
+      "latency_ms": 1,
+      "finished_at": "2026-07-01T06:49:18.811Z",
+      "failure": null,
+      "json_valid": true,
+      "schema_complete": true,
+      "completeness_score": 1,
+      "missing_fields": [],
+      "finish_reason": "stop",
+      "usage": {
+        "prompt_tokens": 0,
+        "completion_tokens": 0,
+        "total_tokens": 0
+      },
+      "report": {
+        "input": {
+          "url": "fixture://week18-open-inference/mock-proposal",
+          "fetched_at": "2026-07-01T00:00:00.000Z",
+          "source_type": "fixture"
+        },
+        "extracted": {
+          "title": "Treasury runway extension for open inference tooling",
+          "body": "Allocate a limited budget to maintain governance analysis tooling, API monitoring, and open inference runtime experiments for the next quarter. The proposal includes engineering work, reporting, and reliability checks, but does not include a detailed vendor invoice.",
+          "options": [
+            "For",
+            "Against",
+            "Abstain"
+          ],
+          "current_results": null,
+          "metadata": {
+            "source_type": "fixture",
+            "proposal_id": "week18-open-inference-mock"
+          }
+        },
+        "analysis": {
+          "summary": "Runtime mock_open_inference_runtime produced a deterministic mock governance report for Week 18.",
+          "key_changes": [
+            "Open inference runtime switching is observable."
+          ],
+          "risks": [
+            "Mock mode does not prove live network availability."
+          ],
+          "benefits": [
+            "The same governance pipeline can compare runtime behavior."
+          ],
+          "unknowns": [
+            "Live latency and verification require a real Ambient run."
+          ],
+          "evidence_quotes": [
+            "Treasury runway extension for open inference tooling"
+          ]
+        },
+        "recommendation": {
+          "suggested_option": "Abstain",
+          "confidence": "medium",
+          "reasoning": "Mock mode validates orchestration and artifact shape, not proposal truth.",
+          "conflicts_with_user_principles": []
+        },
+        "limitations": [
+          "Mock runtime is for local validation only."
+        ]
+      }
+    }
+  ],
+  "report": {
+    "input": {
+      "url": "fixture://week18-open-inference/mock-proposal",
+      "fetched_at": "2026-07-01T00:00:00.000Z",
+      "source_type": "fixture"
+    },
+    "extracted": {
+      "title": "Treasury runway extension for open inference tooling",
+      "body": "Allocate a limited budget to maintain governance analysis tooling, API monitoring, and open inference runtime experiments for the next quarter. The proposal includes engineering work, reporting, and reliability checks, but does not include a detailed vendor invoice.",
+      "options": [
+        "For",
+        "Against",
+        "Abstain"
+      ],
+      "current_results": null,
+      "metadata": {
+        "source_type": "fixture",
+        "proposal_id": "week18-open-inference-mock"
+      }
+    },
+    "analysis": {
+      "summary": "Runtime mock_open_inference_runtime produced a deterministic mock governance report for Week 18.",
+      "key_changes": [
+        "Open inference runtime switching is observable."
+      ],
+      "risks": [
+        "Mock mode does not prove live network availability."
+      ],
+      "benefits": [
+        "The same governance pipeline can compare runtime behavior."
+      ],
+      "unknowns": [
+        "Live latency and verification require a real Ambient run."
+      ],
+      "evidence_quotes": [
+        "Treasury runway extension for open inference tooling"
+      ]
+    },
+    "recommendation": {
+      "suggested_option": "Abstain",
+      "confidence": "medium",
+      "reasoning": "Mock mode validates orchestration and artifact shape, not proposal truth.",
+      "conflicts_with_user_principles": []
+    },
+    "limitations": [
+      "Mock runtime is for local validation only."
+    ]
+  }
+}

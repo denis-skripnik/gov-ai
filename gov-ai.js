@@ -3,6 +3,7 @@ import fs from "fs";
 import { fetchAndExtract } from "./fetcher.js";
 import { analyzeWithLLM, classifyVerificationHooks } from "./analyzer.js";
 import { loadJson, runMultiAgentCouncil, writeCouncilArtifacts } from "./week17-multi-agent.js";
+import { runWeek18OpenInferenceLoop } from "./week18-open-inference-loop.js";
 import "dotenv/config";
 
 const cmd = process.argv[2];
@@ -50,6 +51,33 @@ if (cmd === "multi-agent-review") {
   process.exit(0);
 }
 
+// ---------- WEEK 18 OPEN INFERENCE RUNTIME MATRIX ----------
+if (cmd === "open-inference-loop") {
+  const proposalPath = process.argv[3];
+  const outputDir = process.argv[4] || "examples/week18-open-inference";
+
+  if (!proposalPath) {
+    console.error("Usage: node gov-ai.js open-inference-loop <proposal.json> [output-dir]");
+    process.exit(1);
+  }
+
+  const result = await runWeek18OpenInferenceLoop({ proposalPath, outputDir });
+  console.log(JSON.stringify({
+    status: result.status,
+    selected_runtime: result.selected_runtime,
+    runtimes_tested: result.runtimes_tested.map((runtime) => ({
+      name: runtime.name,
+      ok: runtime.ok,
+      latency_ms: runtime.latency_ms,
+      json_valid: runtime.json_valid,
+      schema_complete: runtime.schema_complete,
+      failure: runtime.failure?.type || null,
+    })),
+    artifacts: result.artifacts,
+  }, null, 2));
+  process.exit(result.status === "complete" ? 0 : 2);
+}
+
 // ---------- RESOLVE URL ----------
 let url = null;
 
@@ -71,6 +99,7 @@ if (cmd === "analyze") {
   console.log("  node gov-ai.js init");
   console.log("  node gov-ai.js analyze <url>");
   console.log("  node gov-ai.js multi-agent-review <report.json> <proposal.json> [output-dir]");
+  console.log("  node gov-ai.js open-inference-loop <proposal.json> [output-dir]");
   console.log("  node gov-ai.js");
   process.exit(0);
 }

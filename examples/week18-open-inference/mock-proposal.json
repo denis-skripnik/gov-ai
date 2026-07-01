@@ -1,0 +1,10 @@
+{
+  "url": "fixture://week18-open-inference/mock-proposal",
+  "title": "Treasury runway extension for open inference tooling",
+  "body": "Allocate a limited budget to maintain governance analysis tooling, API monitoring, and open inference runtime experiments for the next quarter. The proposal includes engineering work, reporting, and reliability checks, but does not include a detailed vendor invoice.",
+  "options": ["For", "Against", "Abstain"],
+  "metadata": {
+    "source_type": "fixture",
+    "proposal_id": "week18-open-inference-mock"
+  }
+}

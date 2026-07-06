@@ -97,6 +97,8 @@ test('runSingleRuntime classifies HTTP 429 as runtime failure', async () => {
     stream: false,
     maxTokens: 100,
     timeoutMs: 1000,
+    maxAttempts: 1,
+    retryBackoffMs: 0,
     verification: false,
   };
 
@@ -109,4 +111,85 @@ test('runSingleRuntime classifies HTTP 429 as runtime failure', async () => {
 
   assert.equal(result.ok, false);
   assert.equal(result.failure.type, 'http_429');
+  assert.equal(result.recovery_action, 'retry_or_fallback');
+  assert.equal(result.attempts.length, 1);
+});
+
+test('runSingleRuntime retries retryable runtime failures and then succeeds', async () => {
+  const profile = {
+    name: 'retry_runtime',
+    provider: 'openai_compatible',
+    apiUrl: 'http://example.invalid/v1/chat/completions',
+    apiKey: null,
+    model: 'test-model',
+    stream: false,
+    maxTokens: 100,
+    timeoutMs: 1000,
+    maxAttempts: 2,
+    retryBackoffMs: 0,
+    verification: false,
+  };
+  let calls = 0;
+  const validReport = {
+    input: {},
+    extracted: { title: 'Retry proposal' },
+    analysis: { summary: 'ok', key_changes: [], risks: [], benefits: [], unknowns: [], evidence_quotes: [] },
+    recommendation: { suggested_option: 'Abstain', confidence: 'low', reasoning: 'test', conflicts_with_user_principles: [] },
+    limitations: [],
+  };
+
+  const result = await runSingleRuntime({
+    profile,
+    messages: [],
+    proposal: fixtureProposal,
+    sleepImpl: async () => {},
+    fetchImpl: async () => {
+      calls += 1;
+      if (calls === 1) return { ok: false, status: 500 };
+      return {
+        ok: true,
+        status: 200,
+        json: async () => ({ choices: [{ message: { content: JSON.stringify(validReport) }, finish_reason: 'stop' }] }),
+      };
+    },
+  });
+
+  assert.equal(result.ok, true);
+  assert.equal(calls, 2);
+  assert.equal(result.attempts.length, 2);
+  assert.equal(result.attempts[0].will_retry, true);
+  assert.equal(result.recovery_action, 'none');
+});
+
+test('runSingleRuntime does not retry non-retryable 400 failures', async () => {
+  const profile = {
+    name: 'bad_request_runtime',
+    provider: 'openai_compatible',
+    apiUrl: 'http://example.invalid/v1/chat/completions',
+    apiKey: null,
+    model: 'test-model',
+    stream: false,
+    maxTokens: 100,
+    timeoutMs: 1000,
+    maxAttempts: 3,
+    retryBackoffMs: 0,
+    verification: false,
+  };
+  let calls = 0;
+
+  const result = await runSingleRuntime({
+    profile,
+    messages: [],
+    proposal: fixtureProposal,
+    sleepImpl: async () => {},
+    fetchImpl: async () => {
+      calls += 1;
+      return { ok: false, status: 400 };
+    },
+  });
+
+  assert.equal(result.ok, false);
+  assert.equal(calls, 1);
+  assert.equal(result.failure.type, 'http_400');
+  assert.equal(result.recovery_action, 'stop');
 });

@@ -78,55 +78,103 @@ export async function runWeek18OpenInferenceLoop({
   };
 }
 
-export async function runSingleRuntime({ profile, messages, proposal, fetchImpl = globalThis.fetch, now = () => new Date() }) {
+export async function runSingleRuntime({ profile, messages, proposal, fetchImpl = globalThis.fetch, now = () => new Date(), sleepImpl = sleep }) {
   const started = Date.now();
   const publicProfile = publicRuntimeProfile(profile);
+  const maxAttempts = Math.max(1, Number(profile.maxAttempts || 1));
+  const retryBackoffMs = Math.max(0, Number(profile.retryBackoffMs || 0));
+  const attempts = [];
 
-  try {
-    const response = profile.provider === 'mock'
-      ? await runMockRuntime({ profile, proposal })
-      : await callOpenAICompatibleRuntime({ profile, messages, fetchImpl });
+  for (let attempt = 1; attempt <= maxAttempts; attempt += 1) {
+    const attemptStarted = Date.now();
+    try {
+      const response = profile.provider === 'mock'
+        ? await runMockRuntime({ profile, proposal })
+        : await callOpenAICompatibleRuntime({ profile, messages, fetchImpl });
 
-    const latencyMs = Date.now() - started;
-    const content = response.content || '';
-    if (!content.trim()) throw Object.assign(new Error('empty content from runtime'), { status: response.status });
+      const content = response.content || '';
+      if (!content.trim()) throw Object.assign(new Error('empty content from runtime'), { status: response.status });
 
-    const parsed = parseModelJsonOrNull(content);
-    const quality = evaluateBenchmarkOutputQuality(parsed);
+      const parsed = parseModelJsonOrNull(content);
+      const quality = evaluateBenchmarkOutputQuality(parsed);
+      const validationFailure = quality.json_valid
+        ? null
+        : { type: 'invalid_json', message: 'Runtime returned content without a valid JSON object' };
+      attempts.push({
+        attempt,
+        ok: quality.json_valid && quality.completeness_score >= 0.8,
+        latency_ms: Date.now() - attemptStarted,
+        failure: validationFailure,
+      });
 
-    return {
-      ...publicProfile,
-      ok: quality.json_valid && quality.completeness_score >= 0.8,
-      latency_ms: latencyMs,
-      finished_at: now().toISOString(),
-      failure: quality.json_valid ? null : { type: 'invalid_json', message: 'Runtime returned content without a valid JSON object' },
-      json_valid: quality.json_valid,
-      schema_complete: quality.required_top_level_present && quality.required_nested_fields_present,
-      completeness_score: quality.completeness_score,
-      missing_fields: quality.missing_fields,
-      finish_reason: response.finish_reason || null,
-      usage: response.usage || null,
-      verification: response.verification || null,
-      report: parsed,
-    };
-  } catch (error) {
-    const failure = classifyBenchmarkFailure(error);
-    return {
-      ...publicProfile,
-      ok: false,
-      latency_ms: Date.now() - started,
-      finished_at: now().toISOString(),
-      failure,
-      json_valid: false,
-      schema_complete: false,
-      completeness_score: 0,
-      missing_fields: [],
-      finish_reason: null,
-      usage: null,
-      verification: null,
-      report: null,
-    };
+      return {
+        ...publicProfile,
+        ok: quality.json_valid && quality.completeness_score >= 0.8,
+        latency_ms: Date.now() - started,
+        finished_at: now().toISOString(),
+        attempts,
+        recovery_action: validationFailure ? 'fallback_or_stop' : 'none',
+        failure: validationFailure,
+        json_valid: quality.json_valid,
+        schema_complete: quality.required_top_level_present && quality.required_nested_fields_present,
+        completeness_score: quality.completeness_score,
+        missing_fields: quality.missing_fields,
+        finish_reason: response.finish_reason || null,
+        usage: response.usage || null,
+        verification: response.verification || null,
+        report: parsed,
+      };
+    } catch (error) {
+      const failure = classifyBenchmarkFailure(error);
+      const retryable = isRetryableRuntimeFailure(failure);
+      const willRetry = retryable && attempt < maxAttempts;
+      attempts.push({
+        attempt,
+        ok: false,
+        latency_ms: Date.now() - attemptStarted,
+        failure,
+        retryable,
+        will_retry: willRetry,
+      });
+      if (!willRetry) break;
+      await sleepImpl(retryBackoffMs * attempt);
+    }
   }
+
+  const lastFailure = attempts.at(-1)?.failure || { type: 'other', message: 'runtime failed without failure details' };
+  return {
+    ...publicProfile,
+    ok: false,
+    latency_ms: Date.now() - started,
+    finished_at: now().toISOString(),
+    attempts,
+    recovery_action: recoveryActionForFailure(lastFailure),
+    failure: lastFailure,
+    json_valid: false,
+    schema_complete: false,
+    completeness_score: 0,
+    missing_fields: [],
+    finish_reason: null,
+    usage: null,
+    verification: null,
+    report: null,
+  };
+}
+
+
+function sleep(ms) {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
+export function isRetryableRuntimeFailure(failure) {
+  const type = failure?.type || 'other';
+  return type === 'timeout' || type === 'http_429' || /^http_5\d\d$/.test(type);
+}
+
+export function recoveryActionForFailure(failure) {
+  if (isRetryableRuntimeFailure(failure)) return 'retry_or_fallback';
+  if (['invalid_json', 'invalid_json_response', 'empty_content'].includes(failure?.type)) return 'fallback_or_stop';
+  return 'stop';
 }
 
 export function selectBestRuntime(runtimes) {
@@ -257,6 +305,8 @@ function renderMarkdownSummary(artifact) {
       `  - json_valid: ${runtime.json_valid}`,
       `  - schema_complete: ${runtime.schema_complete}`,
       `  - failure: ${runtime.failure?.type || 'none'}`,
+      `  - recovery_action: ${runtime.recovery_action || 'none'}`,
+      `  - attempts: ${runtime.attempts?.length || 0}`,
     );
   }
 

@@ -26,6 +26,8 @@ export function loadRuntimeProfilesFromEnv(env = process.env) {
       stream: false,
       maxTokens: parseNumber(env.WEEK18_MAX_TOKENS, 16384),
       timeoutMs: parseNumber(env.WEEK18_TIMEOUT_MS, 120000),
+      maxAttempts: parseNumber(env.WEEK19_MAX_ATTEMPTS || env.WEEK18_MAX_ATTEMPTS, 1),
+      retryBackoffMs: parseNumber(env.WEEK19_RETRY_BACKOFF_MS || env.WEEK18_RETRY_BACKOFF_MS, 500),
       verification: false,
     });
   }
@@ -39,7 +41,9 @@ export function loadRuntimeProfilesFromEnv(env = process.env) {
       model: env.AMBIENT_MODEL || 'zai-org/GLM-5.1-FP8',
       stream: parseBoolean(env.AMBIENT_STREAM, true),
       maxTokens: parseNumber(env.AMBIENT_MAX_TOKENS || env.WEEK18_MAX_TOKENS, 16384),
-      timeoutMs: parseNumber(env.WEEK18_TIMEOUT_MS, 120000),
+      timeoutMs: parseNumber(env.WEEK19_TIMEOUT_MS || env.WEEK18_TIMEOUT_MS, 120000),
+      maxAttempts: parseNumber(env.WEEK19_MAX_ATTEMPTS || env.WEEK18_MAX_ATTEMPTS, 2),
+      retryBackoffMs: parseNumber(env.WEEK19_RETRY_BACKOFF_MS || env.WEEK18_RETRY_BACKOFF_MS, 1000),
       verification: true,
     });
   }
@@ -53,7 +57,9 @@ export function loadRuntimeProfilesFromEnv(env = process.env) {
       model: env.OPEN_INFERENCE_MODEL,
       stream: parseBoolean(env.OPEN_INFERENCE_STREAM, false),
       maxTokens: parseNumber(env.OPEN_INFERENCE_MAX_TOKENS || env.WEEK18_MAX_TOKENS, 16384),
-      timeoutMs: parseNumber(env.OPEN_INFERENCE_TIMEOUT_MS || env.WEEK18_TIMEOUT_MS, 120000),
+      timeoutMs: parseNumber(env.OPEN_INFERENCE_TIMEOUT_MS || env.WEEK19_TIMEOUT_MS || env.WEEK18_TIMEOUT_MS, 120000),
+      maxAttempts: parseNumber(env.OPEN_INFERENCE_MAX_ATTEMPTS || env.WEEK19_MAX_ATTEMPTS || env.WEEK18_MAX_ATTEMPTS, 2),
+      retryBackoffMs: parseNumber(env.OPEN_INFERENCE_RETRY_BACKOFF_MS || env.WEEK19_RETRY_BACKOFF_MS || env.WEEK18_RETRY_BACKOFF_MS, 1000),
       verification: false,
     });
   }
@@ -77,6 +83,8 @@ export function publicRuntimeProfile(profile) {
     stream: Boolean(profile.stream),
     max_tokens: profile.maxTokens,
     timeout_ms: profile.timeoutMs,
+    max_attempts: profile.maxAttempts,
+    retry_backoff_ms: profile.retryBackoffMs,
     verification: Boolean(profile.verification),
   };
 }

@@ -15,7 +15,7 @@ async function main() {
   const concurrency = toPositiveInt(args.concurrency, Math.min(runs, 10));
   const timeoutMs = toPositiveInt(args["timeout-ms"], 5400000);
   const outDir = args["out-dir"] || "load-reports";
-  const model = args.model || "zai-org/GLM-5-FP8";
+  const model = args.model || process.env.AMBIENT_MODEL || "ambient/large";
   const strictHooks = toBoolean(args["strict-hooks"]);
 
   if (!API_KEY) {

@@ -4,6 +4,8 @@ import { fetchAndExtract } from "./fetcher.js";
 import { analyzeWithLLM, classifyVerificationHooks } from "./analyzer.js";
 import { loadJson, runMultiAgentCouncil, writeCouncilArtifacts } from "./week17-multi-agent.js";
 import { runWeek18OpenInferenceLoop } from "./week18-open-inference-loop.js";
+import { loadJson as loadPipelineJson, runWeek20AgentPipeline, writePipelineArtifacts } from "./week20-agent-pipeline.js";
+import { runWeek21RoutingBenchmark } from "./week21-routing-intelligence.js";
 import "dotenv/config";
 
 const cmd = process.argv[2];
@@ -78,6 +80,56 @@ if (cmd === "open-inference-loop") {
   process.exit(result.status === "complete" ? 0 : 2);
 }
 
+// ---------- WEEK 20 AGENT ARCHITECTURE PIPELINE ----------
+if (cmd === "agent-pipeline") {
+  const reportPath = process.argv[3];
+  const proposalPath = process.argv[4];
+  const outputDir = process.argv[5] || "examples/week20-agent-pipeline";
+
+  if (!reportPath || !proposalPath) {
+    console.error("Usage: node gov-ai.js agent-pipeline <report.json> <proposal.json> [output-dir]");
+    process.exit(1);
+  }
+
+  const report = loadPipelineJson(reportPath);
+  const proposal = loadPipelineJson(proposalPath);
+  const pipeline = runWeek20AgentPipeline({
+    proposal,
+    report,
+    source: {
+      report_path: reportPath,
+      proposal_path: proposalPath,
+      mode: "deterministic-local-agent-pipeline",
+    },
+  });
+  const artifacts = writePipelineArtifacts(pipeline, outputDir);
+  console.log(JSON.stringify({
+    status: pipeline.status,
+    stage_count: pipeline.stage_count,
+    pipeline_sha256: pipeline.pipeline_sha256,
+    artifacts,
+  }, null, 2));
+  process.exit(pipeline.status === "ready_for_reviewer" ? 0 : 2);
+}
+
+// ---------- WEEK 21 ROUTING INTELLIGENCE BENCHMARK ----------
+if (cmd === "routing-intelligence") {
+  const proposalPath = process.argv[3] || "examples/week16-trust-verification/treasury-transfer-proposal.json";
+  const outputDir = process.argv[4] || "examples/week21-routing-intelligence";
+
+  const result = runWeek21RoutingBenchmark({ proposalPath, outputDir });
+  console.log(JSON.stringify({
+    status: result.status,
+    tasks_routed: result.metrics.tasks_routed,
+    average_estimated_ttft_ms: result.metrics.average_estimated_ttft_ms,
+    capacity_fallbacks: result.metrics.capacity_fallbacks,
+    route_stability: result.metrics.consistency.route_stability,
+    benchmark_sha256: result.benchmark_sha256,
+    artifacts: result.artifacts,
+  }, null, 2));
+  process.exit(result.status === "complete" ? 0 : 2);
+}
+
 // ---------- RESOLVE URL ----------
 let url = null;
 
@@ -100,6 +152,8 @@ if (cmd === "analyze") {
   console.log("  node gov-ai.js analyze <url>");
   console.log("  node gov-ai.js multi-agent-review <report.json> <proposal.json> [output-dir]");
   console.log("  node gov-ai.js open-inference-loop <proposal.json> [output-dir]");
+  console.log("  node gov-ai.js agent-pipeline <report.json> <proposal.json> [output-dir]");
+  console.log("  node gov-ai.js routing-intelligence [proposal.json] [output-dir]");
   console.log("  node gov-ai.js");
   process.exit(0);
 }

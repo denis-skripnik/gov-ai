@@ -38,7 +38,7 @@ export function loadRuntimeProfilesFromEnv(env = process.env) {
       provider: 'ambient',
       apiUrl: env.AMBIENT_API_URL || DEFAULT_AMBIENT_API_URL,
       apiKey: env.AMBIENT_API_KEY,
-      model: env.AMBIENT_MODEL || 'zai-org/GLM-5.1-FP8',
+      model: env.AMBIENT_MODEL || 'ambient/large',
       stream: parseBoolean(env.AMBIENT_STREAM, true),
       maxTokens: parseNumber(env.AMBIENT_MAX_TOKENS || env.WEEK18_MAX_TOKENS, 16384),
       timeoutMs: parseNumber(env.WEEK19_TIMEOUT_MS || env.WEEK18_TIMEOUT_MS, 120000),

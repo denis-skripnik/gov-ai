@@ -4,6 +4,8 @@ AI assistant for DAO governance proposals.
 
 ## Table of Contents
 
+- [Week 21 - Routing Intelligence Benchmark (Web2)](#week-21---routing-intelligence-benchmark-web2)
+- [Week 20 - Agent Architecture Pipeline (Web2)](#week-20---agent-architecture-pipeline-web2)
 - [Week 18 - Open Inference Runtime Matrix (Web2)](#week-18---open-inference-runtime-matrix-web2)
 - [Week 17 - Multi-Agent Systems (Web2)](#week-17---multi-agent-systems-web2)
 - [Week 16 - Trust and Verification (Web2)](#week-16---trust-and-verification-web2)
@@ -33,6 +35,9 @@ AI assistant for DAO governance proposals.
 
 This project started as **Web3 Developer Loop - Experiment #3 (AI for governance or automation)**.
 It now also documents and ships:
+- Week 21 routing intelligence (Web2): deterministic prompt-category routing, capacity-aware fallback, TTFT estimates, consistency metrics, and edge-case handling for governance-analysis tasks
+- Core Ambient runtime hardening: `ambient/large` is the default router model for main analysis, stale explicit model IDs can fall back to configured valid models, and generated reports include Ambient model/runtime metadata beside the existing verification fields
+- Week 20 agent architecture (Web2): proposal-centered autonomous pipeline with intake, long-context evidence planning, tool reliability checks, multi-agent council reuse, and explicit human handoff artifacts
 - Week 18 open inference economy (Web2): runtime matrix for OpenAI-compatible governance-agent execution, model/runtime switching, fallback-ready telemetry, and deterministic mock validation
 - Week 17 multi-agent systems (Web2): deterministic governance-council layer with research, risk, decision, and verification agents sharing one JSON memory artifact
 - Week 16 trust and verification (Web2): local proposal fixture support for reproducible developer-loop runs, a treasury-spending scenario, and stricter verification hooks that keep unknown claims unverifiable even when they contain hard literals
@@ -59,6 +64,91 @@ The design goal is **honesty and conservatism**:
 - if some data cannot be extracted, it is marked as `UNKNOWN`
 - the tool does not guess voting options or results
 - the output is meant to **assist** human decision-making, not replace it
+
+---
+
+## Week 21 - Routing Intelligence Benchmark (Web2)
+
+Week 21 asks whether smarter routing can improve model selection, capacity handling, latency, consistency, and edge-case behavior.
+
+For `gov-ai`, the product fit is a deterministic local routing benchmark over governance-analysis prompt categories:
+
+1. Classify tasks into summary, treasury-risk, policy-compliance, decision-support, and routing-edge categories.
+2. Select mock model profiles by category fit, reliability, consistency, TTFT, and available capacity.
+3. Force one capacity spike to prove fallback behavior is visible instead of hidden.
+4. Record consistency and prompt-injection edge-case handling.
+5. Write JSON and Markdown artifacts for reproducible review.
+
+Run the Week 21 benchmark on the retained treasury fixture:
+
+```bash
+node gov-ai.js routing-intelligence examples/week16-trust-verification/treasury-transfer-proposal.json examples/week21-routing-intelligence
+```
+
+Expected local result:
+
+```json
+{
+  "status": "complete",
+  "tasks_routed": 6,
+  "capacity_fallbacks": 1
+}
+```
+
+Artifacts:
+
+- `week21-routing-intelligence.js` - deterministic routing policy and benchmark runner
+- `week21-routing-intelligence.test.js` - tests for category classification, routing, fallback, TTFT, consistency, and artifacts
+- `examples/week21-routing-intelligence/week21-routing-intelligence-output.json` - machine-readable routing evidence
+- `examples/week21-routing-intelligence/week21-routing-intelligence-report.md` - human-readable routing report
+
+This is not a live Ambient latency claim. It is a reproducible application-level benchmark showing which routing decisions gov-ai would make under smarter routing constraints.
+
+Product-level Week 21 changes were also applied to the main analysis path:
+
+- Default Ambient model: `ambient/large`.
+- Live smoke showed `ambient/large` returns HTTP 200 and routes to an underlying model (`z-ai/glm-5.2` in the observed run).
+- If a stale explicit model such as `zai-org/GLM-5-FP8` returns Ambient `Unknown model`, `analyzeWithLLM` retries with configured fallback models.
+- Existing verification report fields remain in `__ambient`: `verified`, `merkle_root`, `request_id`, validator/auction/bidder data.
+- Additional Ambient runtime fields are now included: `requested_model`, `model`, `model_returned`, `model_attempts`, `model_fallback`, and `runtime`.
+
+---
+
+## Week 20 - Agent Architecture Pipeline (Web2)
+
+Week 20 asks for autonomous AI applications: multi-agent systems, tool-using agents, long-context workflows, autonomous pipelines, and agent collaboration.
+
+For `gov-ai`, the correct product fit is not a new token-specific demo. It is a proposal-centered agent pipeline that turns one governance proposal analysis into a reusable autonomous workflow:
+
+1. Intake agent normalizes proposal/source metadata.
+2. Long-context agent splits proposal, unknowns, and risks into bounded evidence windows.
+3. Tool reliability agent checks whether required product artifacts exist.
+4. Council agent reuses the Week 17 multi-agent governance council.
+5. Handoff agent produces explicit human-review blockers and next actions.
+
+Run the deterministic Week 20 pipeline on the retained treasury-spending fixture:
+
+```bash
+node gov-ai.js agent-pipeline examples/week16-trust-verification/gov-ai-main-report.json examples/week16-trust-verification/treasury-transfer-proposal.json examples/week20-agent-pipeline
+```
+
+Expected local result:
+
+```json
+{
+  "status": "ready_for_reviewer",
+  "stage_count": 5
+}
+```
+
+Artifacts:
+
+- `week20-agent-pipeline.js` - reusable autonomous proposal pipeline
+- `week20-agent-pipeline.test.js` - tests for stage ordering, evidence windows, tool checks, artifacts
+- `examples/week20-agent-pipeline/week20-agent-pipeline-output.json` - shared pipeline state
+- `examples/week20-agent-pipeline/week20-agent-pipeline-report.md` - human-readable report
+
+This keeps the project centered on AI-assisted governance proposals while adding the Week 20 architecture layer: agents that plan, check tools, preserve context, collaborate through shared state, and hand back to a human when governance evidence is insufficient.
 
 ---
 

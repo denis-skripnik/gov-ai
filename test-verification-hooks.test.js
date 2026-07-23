@@ -3,7 +3,15 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
-import { classifyVerificationHooks, isAmbientMultiNodeCapacityError, multiNodeAnalysis } from './analyzer.js';
+import {
+  classifyVerificationHooks,
+  isAmbientMultiNodeCapacityError,
+  multiNodeAnalysis,
+  DEFAULT_AMBIENT_MODEL,
+  buildAmbientModelAttempts,
+  isUnknownAmbientModelError,
+  buildAmbientRuntimeInfo,
+} from './analyzer.js';
 
 const extracted = {
   title: 'Treasury Transfer Proposal',
@@ -87,6 +95,49 @@ test('detects the specific Ambient multi-node capacity error signatures', () => 
   assert.equal(isAmbientMultiNodeCapacityError(new Error('Ambient API error HTTP 429 (x-request-id: abc): rate limited')), true);
   assert.equal(isAmbientMultiNodeCapacityError(new Error('There were no bidders for this auction. Please try again.')), true);
   assert.equal(isAmbientMultiNodeCapacityError(new Error('Ambient API error HTTP 500: internal error')), false);
+});
+
+test('uses ambient/large as the default Ambient router model', () => {
+  assert.equal(DEFAULT_AMBIENT_MODEL, 'ambient/large');
+});
+
+test('builds de-duplicated Ambient model attempts with router fallback first', () => {
+  assert.deepEqual(buildAmbientModelAttempts('zai-org/GLM-5-FP8'), [
+    'zai-org/GLM-5-FP8',
+    'ambient/large',
+    'zai-org/GLM-5.1-FP8',
+  ]);
+  assert.deepEqual(buildAmbientModelAttempts('ambient/large'), [
+    'ambient/large',
+    'zai-org/GLM-5.1-FP8',
+  ]);
+});
+
+test('detects Ambient unknown-model responses as fallback candidates', () => {
+  assert.equal(isUnknownAmbientModelError(400, '{"error":{"message":"Unknown model: \'zai-org/GLM-5-FP8\'. Valid models: [\'ambient/large\']"}}'), true);
+  assert.equal(isUnknownAmbientModelError(400, '{"error":{"message":"bad request"}}'), false);
+  assert.equal(isUnknownAmbientModelError(500, '{"error":{"message":"Unknown model"}}'), false);
+});
+
+test('buildAmbientRuntimeInfo preserves verification fields and adds model/fallback metadata', () => {
+  const info = buildAmbientRuntimeInfo({
+    verified: true,
+    merkleRoot: 'abc',
+    requestId: 'req-1',
+    requestedModel: 'zai-org/GLM-5-FP8',
+    selectedModel: 'ambient/large',
+    modelAttempts: ['zai-org/GLM-5-FP8', 'ambient/large'],
+    fallbackReason: 'unknown_model',
+  });
+
+  assert.equal(info.verified, true);
+  assert.equal(info.merkle_root, 'abc');
+  assert.equal(info.request_id, 'req-1');
+  assert.equal(info.model, 'ambient/large');
+  assert.equal(info.requested_model, 'zai-org/GLM-5-FP8');
+  assert.deepEqual(info.model_attempts, ['zai-org/GLM-5-FP8', 'ambient/large']);
+  assert.equal(info.model_fallback.activated, true);
+  assert.equal(info.model_fallback.reason, 'unknown_model');
 });
 
 test('returns the only successful result when multi-node gets one success', async () => {

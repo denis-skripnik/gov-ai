@@ -44,6 +44,14 @@ test('loadRuntimeProfilesFromEnv supports OpenAI-compatible external profile and
   assert.equal(profiles[0].provider, 'openai_compatible');
 });
 
+test('loadRuntimeProfilesFromEnv uses ambient/large for Ambient live profile by default', () => {
+  const profiles = loadRuntimeProfilesFromEnv({ AMBIENT_API_KEY: 'test-key' });
+
+  assert.equal(profiles.length, 1);
+  assert.equal(profiles[0].provider, 'ambient');
+  assert.equal(profiles[0].model, 'ambient/large');
+});
+
 test('runSingleRuntime produces schema-valid report in mock mode', async () => {
   const profile = loadRuntimeProfilesFromEnv({ WEEK18_MOCK: 'true' })[0];
   const result = await runSingleRuntime({

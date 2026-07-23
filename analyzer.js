@@ -4,6 +4,8 @@ import crypto from "crypto";
 
 const API_URL = "https://api.ambient.xyz/v1/chat/completions";
 const API_KEY = process.env.AMBIENT_API_KEY;
+export const DEFAULT_AMBIENT_MODEL = "ambient/large";
+const DEFAULT_AMBIENT_MODEL_FALLBACKS = ["ambient/large", "zai-org/GLM-5.1-FP8"];
 const STRICT_VERIFICATION_HOOKS = String(process.env.STRICT_VERIFICATION_HOOKS || "").toLowerCase() === "true";
 
 // ========== Week 8: Dynamic Timeout ==========
@@ -300,6 +302,67 @@ function shorten(str, max = 180) {
   const s = str.replace(/\s+/g, " ").trim();
   if (s.length <= max) return s;
   return `${s.slice(0, max)}...`;
+}
+
+export function buildAmbientModelAttempts(primaryModel = DEFAULT_AMBIENT_MODEL, fallbackValue = process.env.AMBIENT_MODEL_FALLBACKS) {
+  const fallbackModels = String(fallbackValue || DEFAULT_AMBIENT_MODEL_FALLBACKS.join(","))
+    .split(",")
+    .map((model) => model.trim())
+    .filter(Boolean);
+  return [primaryModel || DEFAULT_AMBIENT_MODEL, ...fallbackModels]
+    .filter((model, index, arr) => arr.indexOf(model) === index);
+}
+
+export function isUnknownAmbientModelError(status, bodyText = "") {
+  return Number(status) === 400 && String(bodyText).toLowerCase().includes("unknown model");
+}
+
+export function buildAmbientRuntimeInfo({
+  verified = null,
+  merkleRoot = null,
+  requestId = null,
+  requestedModel = DEFAULT_AMBIENT_MODEL,
+  selectedModel = requestedModel,
+  modelReturned = null,
+  modelAttempts = [selectedModel],
+  fallbackReason = null,
+  lifecycle = null,
+} = {}) {
+  const verifiers = lifecycle?.bundled?.verifiers?.keys || null;
+  const validatorsCount = Array.isArray(verifiers) ? verifiers.length : null;
+  const auctionAddress = lifecycle?.bundled?.auction || lifecycle?.auctionStarted?.auction || lifecycle?.auctionEnded?.auction || null;
+  const auctionStatusRaw = lifecycle ? pickAuctionStatus(lifecycle) : null;
+  const auctionStatus = auctionStatusRaw ? (String(auctionStatusRaw).toLowerCase() === "ended" ? "Done" : auctionStatusRaw) : null;
+  const bids = lifecycle ? pickBidsCount(lifecycle) : { placed: null, revealed: null };
+  const bidder = lifecycle ? pickBidder(lifecycle) : null;
+
+  return {
+    verified,
+    merkle_root: merkleRoot,
+    request_id: requestId,
+    model: selectedModel,
+    model_returned: modelReturned,
+    requested_model: requestedModel,
+    model_attempts: modelAttempts,
+    model_fallback: {
+      activated: selectedModel !== requestedModel,
+      reason: selectedModel !== requestedModel ? (fallbackReason || "fallback") : null,
+    },
+    runtime: {
+      provider: "ambient",
+      api_url: API_URL,
+      selection: selectedModel === "ambient/large" ? "ambient_router" : "explicit_model",
+    },
+    verified_by_validators: validatorsCount != null ? `Verified by ${validatorsCount} validators` : null,
+    auction: auctionAddress
+      ? {
+          status: auctionStatus,
+          bids: (bids.placed != null || bids.revealed != null) ? { placed: bids.placed, revealed: bids.revealed } : null,
+          address: ambientAddressUrl(auctionAddress),
+        }
+      : null,
+    bidder: bidder ? ambientAddressUrl(bidder) : null,
+  };
 }
 
 function isRetryableNetworkError(e) {
@@ -626,7 +689,7 @@ export async function analyzeWithLLM(url, extracted, principles, opts = {}) {
   console.log(`[${new Date().toISOString()}] Starting analysis for: ${url}`);
   
   const {
-    model = process.env.AMBIENT_MODEL || "ambient/large",
+    model = process.env.AMBIENT_MODEL || DEFAULT_AMBIENT_MODEL,
 
     // Keep raw response JSON? For now: no spam, but can save if you need.
     debugRawToFile = false,
@@ -654,10 +717,105 @@ export async function analyzeWithLLM(url, extracted, principles, opts = {}) {
   }
   
   const prompt = buildPrompt(url, extracted, principles);
+  const requestedModel = model;
+  const modelAttempts = buildAmbientModelAttempts(requestedModel);
 
   if (!stream) {
     return withRetry(async () => {
-      // Non-streaming mode: you only get verified + merkle_root (no lifecycle events).
+      let lastUnknownModelError = null;
+      for (let attemptIndex = 0; attemptIndex < modelAttempts.length; attemptIndex++) {
+        const selectedModel = modelAttempts[attemptIndex];
+        const attemptedModels = modelAttempts.slice(0, attemptIndex + 1);
+        const fallbackReason = selectedModel !== requestedModel ? "unknown_model" : null;
+        // Non-streaming mode: you only get verified + merkle_root (no lifecycle events).
+        const response = await fetch(API_URL, {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${API_KEY}`,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            model: selectedModel,
+            messages: [
+              { role: "system", content: "You are a governance analysis assistant. You must output ONLY valid JSON." },
+              { role: "user", content: prompt },
+            ],
+            stream: false,
+            emit_verified: true,
+            emit_ambient_events: true,
+            wait_for_verification: true,
+            emit_usage: true,
+            max_tokens: maxTokens,
+          }),
+        });
+
+        const requestId = response.headers.get("x-request-id") || null;
+        if (!response.ok) {
+          const bodyText = await response.text().catch(() => "");
+          const message = `Ambient API error HTTP ${response.status} (x-request-id: ${requestId || "UNKNOWN"}): ${shorten(bodyText, 800)}`;
+          if (isUnknownAmbientModelError(response.status, bodyText) && attemptIndex < modelAttempts.length - 1) {
+            lastUnknownModelError = new Error(message);
+            console.warn(`[${new Date().toISOString()}] Ambient model ${selectedModel} is unavailable; retrying with ${modelAttempts[attemptIndex + 1]}`);
+            continue;
+          }
+          throw new Error(message);
+        }
+
+        const data = await response.json().catch(async () => {
+          const bodyText = await response.text().catch(() => "");
+          throw new Error(`Ambient returned non-JSON response (x-request-id: ${requestId || "UNKNOWN"}): ${shorten(bodyText, 500)}`);
+        });
+
+        const verificationUI = buildAmbientRuntimeInfo({
+          verified: data?.verified ?? null,
+          merkleRoot: data?.merkle_root ?? null,
+          requestId,
+          requestedModel,
+          selectedModel,
+          modelReturned: data?.model || null,
+          modelAttempts: attemptedModels,
+          fallbackReason,
+        });
+
+        console.log("verification:", verificationUI);
+
+        const assistantMsg = data?.choices?.[0]?.message;
+        const text = assistantMsg?.content;
+        if (!text) throw new Error(`No response from Ambient (x-request-id: ${requestId || "UNKNOWN"})`);
+
+        const report = safeJsonParse(text);
+        if (!report) throw new Error("Invalid JSON from model");
+
+        report.__ambient = verificationUI;
+        // Attach prompt in the correct place (input.prompt_used), programmatically (not model-controlled)
+        attachPromptUsed(report, {
+          prompt,
+          model: verificationUI.model,
+          stream: false,
+          files: {
+principles: "./principles.json",
+schema: "./report.schema.json",
+          },
+        });
+
+        // Week 8: Attach financial proposal flag
+        if (report && report.input) {
+          report.input.isFinancialProposal = isFinancial;
+        }
+
+        return report;
+      }
+      throw lastUnknownModelError || new Error("Ambient model fallback exhausted");
+    });
+  }
+
+  return withRetry(async () => {
+    let lastUnknownModelError = null;
+    for (let attemptIndex = 0; attemptIndex < modelAttempts.length; attemptIndex++) {
+      const selectedModel = modelAttempts[attemptIndex];
+      const attemptedModels = modelAttempts.slice(0, attemptIndex + 1);
+      const fallbackReason = selectedModel !== requestedModel ? "unknown_model" : null;
+      // Streaming mode: captures ambient.lifecycle events + text chunks + merkle_root + verified
       const response = await fetch(API_URL, {
         method: "POST",
         headers: {
@@ -665,12 +823,13 @@ export async function analyzeWithLLM(url, extracted, principles, opts = {}) {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          model,
+          model: selectedModel,
           messages: [
             { role: "system", content: "You are a governance analysis assistant. You must output ONLY valid JSON." },
             { role: "user", content: prompt },
           ],
-          stream: false,
+          stream: true,
+
           emit_verified: true,
           emit_ambient_events: true,
           wait_for_verification: true,
@@ -682,84 +841,14 @@ export async function analyzeWithLLM(url, extracted, principles, opts = {}) {
       const requestId = response.headers.get("x-request-id") || null;
       if (!response.ok) {
         const bodyText = await response.text().catch(() => "");
-        throw new Error(`Ambient API error HTTP ${response.status} (x-request-id: ${requestId || "UNKNOWN"}): ${shorten(bodyText, 800)}`);
+        const message = `Ambient API error HTTP ${response.status} (x-request-id: ${requestId || "UNKNOWN"}): ${shorten(bodyText, 800)}`;
+        if (isUnknownAmbientModelError(response.status, bodyText) && attemptIndex < modelAttempts.length - 1) {
+          lastUnknownModelError = new Error(message);
+          console.warn(`[${new Date().toISOString()}] Ambient model ${selectedModel} is unavailable; retrying with ${modelAttempts[attemptIndex + 1]}`);
+          continue;
+        }
+        throw new Error(message);
       }
-
-      const data = await response.json().catch(async () => {
-        const bodyText = await response.text().catch(() => "");
-        throw new Error(`Ambient returned non-JSON response (x-request-id: ${requestId || "UNKNOWN"}): ${shorten(bodyText, 500)}`);
-      });
-
-      const verificationUI = {
-        verified: data?.verified ?? null,
-        merkle_root: data?.merkle_root ?? null,
-        request_id: requestId,
-        verified_by_validators: null,
-        validators: null,
-        auction: null,
-        bids: null,
-        bidder: null,
-      };
-
-      console.log("verification:", verificationUI);
-
-      const assistantMsg = data?.choices?.[0]?.message;
-      const text = assistantMsg?.content;
-      if (!text) throw new Error(`No response from Ambient (x-request-id: ${requestId || "UNKNOWN"})`);
-
-      const report = safeJsonParse(text);
-      if (!report) throw new Error("Invalid JSON from model");
-
-      report.__ambient = verificationUI;
-      // Attach prompt in the correct place (input.prompt_used), programmatically (not model-controlled)
-      attachPromptUsed(report, {
-        prompt,
-        model,
-        stream: false,
-        files: {
-principles: "./principles.json",
-schema: "./report.schema.json",
-        },
-      });
-
-      // Week 8: Attach financial proposal flag
-      if (report && report.input) {
-        report.input.isFinancialProposal = isFinancial;
-      }
-
-      return report;
-    });
-  }
-
-  return withRetry(async () => {
-    // Streaming mode: captures ambient.lifecycle events + text chunks + merkle_root + verified
-    const response = await fetch(API_URL, {
-      method: "POST",
-      headers: {
-        Authorization: `Bearer ${API_KEY}`,
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        model,
-        messages: [
-          { role: "system", content: "You are a governance analysis assistant. You must output ONLY valid JSON." },
-          { role: "user", content: prompt },
-        ],
-        stream: true,
-
-        emit_verified: true,
-        emit_ambient_events: true,
-        wait_for_verification: true,
-        emit_usage: true,
-        max_tokens: maxTokens,
-      }),
-    });
-
-    const requestId = response.headers.get("x-request-id") || null;
-    if (!response.ok) {
-      const bodyText = await response.text().catch(() => "");
-      throw new Error(`Ambient API error HTTP ${response.status} (x-request-id: ${requestId || "UNKNOWN"}): ${shorten(bodyText, 800)}`);
-    }
 
     let text = "";
     let verified = null;
@@ -828,35 +917,16 @@ schema: "./report.schema.json",
       }
     }
 
-    // Build UI-like verification block (similar to app.ambient.xyz)
-    const verifiers = lifecycle?.bundled?.verifiers?.keys || null;
-    const validatorsCount = Array.isArray(verifiers) ? verifiers.length : null;
-
-    const auctionAddress = lifecycle?.bundled?.auction || lifecycle?.auctionStarted?.auction || lifecycle?.auctionEnded?.auction || null;
-    const auctionStatusRaw = pickAuctionStatus(lifecycle);
-    const auctionStatus = auctionStatusRaw ? (String(auctionStatusRaw).toLowerCase() === "ended" ? "Done" : auctionStatusRaw) : null;
-
-    const bids = pickBidsCount(lifecycle);
-    const bidder = pickBidder(lifecycle);
-
-    const verificationUI = {
-      verified: verified,
-      merkle_root: merkleRoot,
-      request_id: requestId,
-      model,
-
-      // UI-like lines
-      verified_by_validators: validatorsCount != null ? `Verified by ${validatorsCount} validators` : null,
-      auction: auctionAddress
-        ? {
-            status: auctionStatus,
-            bids: (bids.placed != null || bids.revealed != null) ? { placed: bids.placed, revealed: bids.revealed } : null,
-            address: ambientAddressUrl(auctionAddress),
-          }
-        : null,
-
-      bidder: bidder ? ambientAddressUrl(bidder) : null,
-    };
+    const verificationUI = buildAmbientRuntimeInfo({
+      verified,
+      merkleRoot,
+      requestId,
+      requestedModel,
+      selectedModel,
+      modelAttempts: attemptedModels,
+      fallbackReason,
+      lifecycle,
+    });
 
     // Print only verification block (as you requested)
     console.log("verification:", verificationUI);
@@ -877,7 +947,7 @@ schema: "./report.schema.json",
     // Attach prompt in the correct place (input.prompt_used), programmatically (not model-controlled)
     attachPromptUsed(report, {
       prompt,
-      model,
+      model: verificationUI.model,
       stream: true,
       files: {
 principles: "./principles.json",
@@ -891,6 +961,8 @@ schema: "./report.schema.json",
     }
 
     return report;
+    }
+    throw lastUnknownModelError || new Error("Ambient model fallback exhausted");
   });
 }
 

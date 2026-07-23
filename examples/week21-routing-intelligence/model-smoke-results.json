@@ -1,0 +1,18 @@
+{
+  "live_api_used": true,
+  "api_url": "https://api.ambient.xyz/v1/chat/completions",
+  "results": [
+    {
+      "model_requested": "ambient/large",
+      "http_status": 200,
+      "ok": true,
+      "duration_ms": 1573,
+      "request_id_present": true,
+      "model_returned": "z-ai/glm-5.2",
+      "output_field": "content",
+      "output_chars": 3,
+      "finish_reason": "stop",
+      "error_preview": null
+    }
+  ]
+}

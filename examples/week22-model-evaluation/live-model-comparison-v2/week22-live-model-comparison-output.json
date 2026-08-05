@@ -1,0 +1,488 @@
+{
+  "week": 22,
+  "theme": "Beyond One Model",
+  "kind": "gov-ai-week22-live-model-comparison-addendum",
+  "status": "complete",
+  "started_at": "2026-08-05T13:12:40.316Z",
+  "finished_at": "2026-08-05T13:14:33.816Z",
+  "models": [
+    "ambient/large",
+    "z-ai/glm-5.2",
+    "moonshotai/kimi-k2.7-code",
+    "deepseek/deepseek-v4-flash-0731"
+  ],
+  "cases": [
+    {
+      "id": "structured_json",
+      "dimension": "structured_output",
+      "prompt_sha256": "d0188fb24119f469c650ae5491e2de35c9fa82541768099b50cafb386e1f5d6d"
+    },
+    {
+      "id": "missing_evidence_guardrail",
+      "dimension": "hallucination_resistance",
+      "prompt_sha256": "2a251feab894a45d02f9f50694c3e99d931a61d9e7122699c7c993a406f9b052"
+    },
+    {
+      "id": "coding_fixture",
+      "dimension": "coding_tooling",
+      "prompt_sha256": "224d842ce03ecc21fe1cf05b84b1b84a399dfa8745afdb83bcffaca606ab2cdc"
+    }
+  ],
+  "results": [
+    {
+      "model": "ambient/large",
+      "label": "Ambient large router",
+      "case_id": "structured_json",
+      "dimension": "structured_output",
+      "status": 200,
+      "ok": true,
+      "latency_ms": 17460,
+      "request_id_present": true,
+      "model_returned": "z-ai/glm-5.2",
+      "finish_reason": "stop",
+      "content_len": 174,
+      "content_preview": "{\n  \"risk_level\": \"High\",\n  \"missing_evidence\": [\n    \"invoice\",\n    \"signer list\",\n    \"recipient control proof\",\n    \"budget breakdown\"\n  ],\n  \"recommendation\": \"Against\"\n}",
+      "usage": {
+        "prompt_tokens": 67,
+        "total_tokens": 530,
+        "completion_tokens": 463,
+        "prompt_tokens_details": {
+          "cached_tokens": 0,
+          "created_cache_tokens": 64,
+          "multimodal_tokens": null
+        },
+        "completion_tokens_details": {
+          "reasoning_tokens": 414
+        }
+      },
+      "error": null,
+      "score": 100,
+      "checks": {
+        "json_parseable": true,
+        "has_required_keys": true
+      }
+    },
+    {
+      "model": "ambient/large",
+      "label": "Ambient large router",
+      "case_id": "missing_evidence_guardrail",
+      "dimension": "hallucination_resistance",
+      "status": 200,
+      "ok": true,
+      "latency_ms": 4988,
+      "request_id_present": true,
+      "model_returned": "z-ai/glm-5.2",
+      "finish_reason": "stop",
+      "content_len": 532,
+      "content_preview": "The DAO treasury proposal cannot be assessed due to missing critical data. \n\nInvoice details: UNKNOWN. \nSigner list: UNKNOWN. \nRecipient control: UNKNOWN. \nVote count: UNKNOWN. \nBudget facts: UNKNOWN. \n\nWithout verifiable documentation of f",
+      "usage": {
+        "prompt_tokens": 57,
+        "total_tokens": 845,
+        "completion_tokens": 788,
+        "prompt_tokens_details": {
+          "cached_tokens": 0,
+          "created_cache_tokens": 0,
+          "multimodal_tokens": null
+        },
+        "completion_tokens_details": {
+          "reasoning_tokens": 786
+        }
+      },
+      "error": null,
+      "score": 95,
+      "checks": {
+        "marks_unknown": true,
+        "cautious_recommendation": true
+      }
+    },
+    {
+      "model": "ambient/large",
+      "label": "Ambient large router",
+      "case_id": "coding_fixture",
+      "dimension": "coding_tooling",
+      "status": 200,
+      "ok": true,
+      "latency_ms": 5526,
+      "request_id_present": true,
+      "model_returned": "z-ai/glm-5.2",
+      "finish_reason": "stop",
+      "content_len": 206,
+      "content_preview": "function validateGovAiFixture(report) {\n  const requiredKeys = ['verified', 'merkle_root', 'request_id', 'recommendation', 'limitations'];\n  return requiredKeys.filter(key => !report || !(key in report));\n}",
+      "usage": {
+        "prompt_tokens": 50,
+        "total_tokens": 1044,
+        "completion_tokens": 994,
+        "prompt_tokens_details": {
+          "cached_tokens": 0,
+          "created_cache_tokens": 0,
+          "multimodal_tokens": null
+        },
+        "completion_tokens_details": {
+          "reasoning_tokens": 967
+        }
+      },
+      "error": null,
+      "score": 100,
+      "checks": {
+        "has_named_function": true,
+        "includes_verification_keys": true
+      }
+    },
+    {
+      "model": "z-ai/glm-5.2",
+      "label": "Direct GLM 5 2",
+      "case_id": "structured_json",
+      "dimension": "structured_output",
+      "status": 200,
+      "ok": true,
+      "latency_ms": 3145,
+      "request_id_present": true,
+      "model_returned": "z-ai/glm-5.2",
+      "finish_reason": "stop",
+      "content_len": 174,
+      "content_preview": "{\n  \"risk_level\": \"High\",\n  \"missing_evidence\": [\n    \"invoice\",\n    \"signer list\",\n    \"recipient control proof\",\n    \"budget breakdown\"\n  ],\n  \"recommendation\": \"Against\"\n}",
+      "usage": {
+        "prompt_tokens": 67,
+        "total_tokens": 530,
+        "completion_tokens": 463,
+        "prompt_tokens_details": {
+          "cached_tokens": 0,
+          "created_cache_tokens": 64,
+          "multimodal_tokens": null
+        },
+        "completion_tokens_details": {
+          "reasoning_tokens": 414
+        }
+      },
+      "error": null,
+      "score": 100,
+      "checks": {
+        "json_parseable": true,
+        "has_required_keys": true
+      }
+    },
+    {
+      "model": "z-ai/glm-5.2",
+      "label": "Direct GLM 5 2",
+      "case_id": "missing_evidence_guardrail",
+      "dimension": "hallucination_resistance",
+      "status": 200,
+      "ok": true,
+      "latency_ms": 3890,
+      "request_id_present": true,
+      "model_returned": "z-ai/glm-5.2",
+      "finish_reason": "stop",
+      "content_len": 423,
+      "content_preview": "Invoice: UNKNOWN. \nSigner list: UNKNOWN. \nRecipient control: UNKNOWN. \nVote count: UNKNOWN. \nBudget facts: UNKNOWN. \n\nAssessment: Without these critical parameters, the proposal's financial security, multisig integrity, and community consen",
+      "usage": {
+        "prompt_tokens": 57,
+        "total_tokens": 721,
+        "completion_tokens": 664,
+        "prompt_tokens_details": null,
+        "completion_tokens_details": {
+          "reasoning_tokens": 643
+        }
+      },
+      "error": null,
+      "score": 70,
+      "checks": {
+        "marks_unknown": true,
+        "cautious_recommendation": true
+      }
+    },
+    {
+      "model": "z-ai/glm-5.2",
+      "label": "Direct GLM 5 2",
+      "case_id": "coding_fixture",
+      "dimension": "coding_tooling",
+      "status": 200,
+      "ok": true,
+      "latency_ms": 5218,
+      "request_id_present": true,
+      "model_returned": "z-ai/glm-5.2",
+      "finish_reason": "stop",
+      "content_len": 213,
+      "content_preview": "```javascript\nfunction validateGovAiFixture(report) {\n  const requiredKeys = ['verified', 'merkle_root', 'request_id', 'recommendation', 'limitations'];\n  return requiredKeys.filter(key => !(key in report));\n}\n```",
+      "usage": {
+        "prompt_tokens": 50,
+        "total_tokens": 598,
+        "completion_tokens": 548,
+        "prompt_tokens_details": {
+          "cached_tokens": 0,
+          "created_cache_tokens": 0,
+          "multimodal_tokens": null
+        },
+        "completion_tokens_details": {
+          "reasoning_tokens": 505
+        }
+      },
+      "error": null,
+      "score": 100,
+      "checks": {
+        "has_named_function": true,
+        "includes_verification_keys": true
+      }
+    },
+    {
+      "model": "moonshotai/kimi-k2.7-code",
+      "label": "Kimi code",
+      "case_id": "structured_json",
+      "dimension": "structured_output",
+      "status": 200,
+      "ok": true,
+      "latency_ms": 1606,
+      "request_id_present": true,
+      "model_returned": "moonshotai/kimi-k2.7-code",
+      "finish_reason": "stop",
+      "content_len": 147,
+      "content_preview": " {\"risk_level\": \"High\", \"missing_evidence\": [\"invoice\", \"signer list\", \"recipient control proof\", \"budget breakdown\"], \"recommendation\": \"Against\"}",
+      "usage": {
+        "prompt_tokens": 63,
+        "total_tokens": 227,
+        "completion_tokens": 164,
+        "prompt_tokens_details": {
+          "cached_tokens": 0,
+          "multimodal_tokens": null
+        },
+        "completion_tokens_details": {
+          "reasoning_tokens": 155
+        }
+      },
+      "error": null,
+      "score": 100,
+      "checks": {
+        "json_parseable": true,
+        "has_required_keys": true
+      }
+    },
+    {
+      "model": "moonshotai/kimi-k2.7-code",
+      "label": "Kimi code",
+      "case_id": "missing_evidence_guardrail",
+      "dimension": "hallucination_resistance",
+      "status": 200,
+      "ok": true,
+      "latency_ms": 4844,
+      "request_id_present": true,
+      "model_returned": "moonshotai/kimi-k2.7-code",
+      "finish_reason": "stop",
+      "content_len": 341,
+      "content_preview": " The referenced proposal was not provided. Invoice: UNKNOWN. Signer list: UNKNOWN. Recipient control: UNKNOWN. Vote count/quorum: UNKNOWN. Budget context: UNKNOWN. Safest recommendation: reject or delay disbursement until the invoice, multi",
+      "usage": {
+        "prompt_tokens": 53,
+        "total_tokens": 619,
+        "completion_tokens": 566,
+        "prompt_tokens_details": {
+          "cached_tokens": 0,
+          "multimodal_tokens": null
+        },
+        "completion_tokens_details": {
+          "reasoning_tokens": 527
+        }
+      },
+      "error": null,
+      "score": 75,
+      "checks": {
+        "marks_unknown": true,
+        "cautious_recommendation": false
+      }
+    },
+    {
+      "model": "moonshotai/kimi-k2.7-code",
+      "label": "Kimi code",
+      "case_id": "coding_fixture",
+      "dimension": "coding_tooling",
+      "status": 200,
+      "ok": true,
+      "latency_ms": 4246,
+      "request_id_present": true,
+      "model_returned": "moonshotai/kimi-k2.7-code",
+      "finish_reason": "stop",
+      "content_len": 206,
+      "content_preview": " ```javascript\nfunction validateGovAiFixture(report) {\n  const required = ['verified', 'merkle_root', 'request_id', 'recommendation', 'limitations'];\n  return required.filter(key => !(key in report));\n}\n```",
+      "usage": {
+        "prompt_tokens": 47,
+        "total_tokens": 177,
+        "completion_tokens": 130,
+        "prompt_tokens_details": {
+          "cached_tokens": 0,
+          "multimodal_tokens": null
+        },
+        "completion_tokens_details": {
+          "reasoning_tokens": 103
+        }
+      },
+      "error": null,
+      "score": 100,
+      "checks": {
+        "has_named_function": true,
+        "includes_verification_keys": true
+      }
+    },
+    {
+      "model": "deepseek/deepseek-v4-flash-0731",
+      "label": "DeepSeek flash 0731",
+      "case_id": "structured_json",
+      "dimension": "structured_output",
+      "status": 200,
+      "ok": true,
+      "latency_ms": 5798,
+      "request_id_present": true,
+      "model_returned": "deepseek/deepseek-v4-flash-0731",
+      "finish_reason": "stop",
+      "content_len": 154,
+      "content_preview": "{\n  \"risk_level\": \"high\",\n  \"missing_evidence\": [\"invoice\", \"signer list\", \"recipient control proof\", \"budget breakdown\"],\n  \"recommendation\": \"Against\"\n}",
+      "usage": {
+        "prompt_tokens": 60,
+        "total_tokens": 122,
+        "completion_tokens": 62,
+        "prompt_tokens_details": {
+          "cached_tokens": 0,
+          "created_cache_tokens": 0,
+          "multimodal_tokens": null
+        }
+      },
+      "error": null,
+      "score": 100,
+      "checks": {
+        "json_parseable": true,
+        "has_required_keys": true
+      }
+    },
+    {
+      "model": "deepseek/deepseek-v4-flash-0731",
+      "label": "DeepSeek flash 0731",
+      "case_id": "missing_evidence_guardrail",
+      "dimension": "hallucination_resistance",
+      "status": 200,
+      "ok": true,
+      "latency_ms": 26132,
+      "request_id_present": true,
+      "model_returned": "deepseek/deepseek-v4-flash-0731",
+      "finish_reason": "stop",
+      "content_len": 355,
+      "content_preview": "Proposal details are UNKNOWN. Invoice, signer list, recipient control, vote count, and budget specifics are UNKNOWN. Safest recommendation: delay execution until full documentation is provided, require multi-sig review, and mandate a time-l",
+      "usage": {
+        "prompt_tokens": 52,
+        "total_tokens": 497,
+        "completion_tokens": 445,
+        "prompt_tokens_details": {
+          "cached_tokens": 0,
+          "created_cache_tokens": 0,
+          "multimodal_tokens": null
+        }
+      },
+      "error": null,
+      "score": 50,
+      "checks": {
+        "marks_unknown": true,
+        "cautious_recommendation": false
+      }
+    },
+    {
+      "model": "deepseek/deepseek-v4-flash-0731",
+      "label": "DeepSeek flash 0731",
+      "case_id": "coding_fixture",
+      "dimension": "coding_tooling",
+      "status": 200,
+      "ok": true,
+      "latency_ms": 23440,
+      "request_id_present": true,
+      "model_returned": "deepseek/deepseek-v4-flash-0731",
+      "finish_reason": "stop",
+      "content_len": 300,
+      "content_preview": "```javascript\nfunction validateGovAiFixture(report) {\n  const required = ['verified', 'merkle_root', 'request_id', 'recommendation', 'limitations'];\n  const missing = [];\n  for (const key of required) {\n    if (!report.hasOwnProperty(key)) ",
+      "usage": {
+        "prompt_tokens": 43,
+        "total_tokens": 603,
+        "completion_tokens": 560,
+        "prompt_tokens_details": {
+          "cached_tokens": 0,
+          "created_cache_tokens": 0,
+          "multimodal_tokens": null
+        }
+      },
+      "error": null,
+      "score": 100,
+      "checks": {
+        "has_named_function": true,
+        "includes_verification_keys": true
+      }
+    }
+  ],
+  "summary": {
+    "by_model": [
+      {
+        "model": "ambient/large",
+        "label": "Ambient large router",
+        "success_count": 3,
+        "case_count": 3,
+        "average_score": 98,
+        "average_latency_ms": 9325,
+        "failed_cases": []
+      },
+      {
+        "model": "z-ai/glm-5.2",
+        "label": "Direct GLM 5 2",
+        "success_count": 3,
+        "case_count": 3,
+        "average_score": 90,
+        "average_latency_ms": 4084,
+        "failed_cases": []
+      },
+      {
+        "model": "moonshotai/kimi-k2.7-code",
+        "label": "Kimi code",
+        "success_count": 3,
+        "case_count": 3,
+        "average_score": 92,
+        "average_latency_ms": 3565,
+        "failed_cases": []
+      },
+      {
+        "model": "deepseek/deepseek-v4-flash-0731",
+        "label": "DeepSeek flash 0731",
+        "success_count": 3,
+        "case_count": 3,
+        "average_score": 83,
+        "average_latency_ms": 18457,
+        "failed_cases": []
+      }
+    ],
+    "best_by_dimension": [
+      {
+        "case_id": "structured_json",
+        "dimension": "structured_output",
+        "recommended_model": "moonshotai/kimi-k2.7-code",
+        "score": 100,
+        "latency_ms": 1606
+      },
+      {
+        "case_id": "missing_evidence_guardrail",
+        "dimension": "hallucination_resistance",
+        "recommended_model": "ambient/large",
+        "score": 95,
+        "latency_ms": 4988
+      },
+      {
+        "case_id": "coding_fixture",
+        "dimension": "coding_tooling",
+        "recommended_model": "moonshotai/kimi-k2.7-code",
+        "score": 100,
+        "latency_ms": 4246
+      }
+    ]
+  },
+  "recommendations": [
+    "Use ambient/large as the production default router because it hides some direct-model volatility.",
+    "Include Kimi code in Dev Loop coding/tooling comparisons when workers are available.",
+    "Include DeepSeek flash 0731 in Dev Loop reasoning and guardrail comparisons because it answered the smoke check and is a distinct family from GLM.",
+    "Treat direct model IDs as availability-sensitive: rerun a small probe before publishing strong model claims."
+  ],
+  "limitations": [
+    "Small live comparison only: 4 models, 3 cases, single run per case.",
+    "Scores are rubric checks for gov-ai report utility, not general intelligence scores.",
+    "No secrets, private content, or production writes were used."
+  ],
+  "comparison_sha256": "5468b77ace638f36e1d53ae2dfe998e96d7a4a52b1317e222f29c3b0d4959a41"
+}

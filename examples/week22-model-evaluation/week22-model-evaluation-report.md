@@ -16,10 +16,27 @@ Theme: Beyond One Model
 - research_grounding: conservative_verifier — strong_fit (92/100)
 - coding_tooling: code_tool_specialist — strong_fit (92/100)
 
+## Live API comparison addendum
+
+A follow-up Dev Loop addendum compares real Ambient API responses for `ambient/large`, `z-ai/glm-5.2`, `moonshotai/kimi-k2.7-code`, and `deepseek/deepseek-v4-flash-0731` on three gov-ai tasks: structured JSON, missing-evidence guardrail, and coding fixture.
+
+Artifact: `examples/week22-model-evaluation/live-model-comparison-v2/week22-live-model-comparison-report.md`
+
+Small-run result:
+- `ambient/large`: 3/3 successful, average score 98, average latency 9325 ms.
+- `z-ai/glm-5.2`: 3/3 successful, average score 90, average latency 4084 ms.
+- `moonshotai/kimi-k2.7-code`: 3/3 successful, average score 92, average latency 3565 ms.
+- `deepseek/deepseek-v4-flash-0731`: 3/3 successful, average score 83, average latency 18457 ms.
+
+Best by dimension in this small run:
+- Structured output: `moonshotai/kimi-k2.7-code`.
+- Missing-evidence guardrail: `ambient/large`.
+- Coding fixture: `moonshotai/kimi-k2.7-code`.
+
 ## Limitations
 - This is not a leaderboard-quality benchmark; it is a deterministic product benchmark over a small governance fixture.
-- Scores are policy-fit heuristics for gov-ai routing and prompt evaluation, not measured model intelligence.
-- Use live API results only as an additional low-volume smoke check, and keep outputs sanitized.
+- The live comparison addendum is a small API comparison only: 4 models, 3 cases, single run per case.
+- Scores estimate product fit for gov-ai routing and regression use, not general model intelligence.
 
 ## Product use
 Use this artifact to choose which model/profile to try for each gov-ai task type: schema output, missing-evidence guardrails, reasoning, source grounding, and fixture/tooling work. Treat it as model-selection evidence for this product, not as a broad benchmark of model quality.

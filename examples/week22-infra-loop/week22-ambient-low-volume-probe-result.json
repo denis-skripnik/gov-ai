@@ -1,0 +1,258 @@
+{
+  "week": 22,
+  "theme": "Beyond One Model",
+  "kind": "ambient-low-volume-multi-model-operation-probe",
+  "status": "complete",
+  "started_at": "2026-08-05T12:31:29.595Z",
+  "finished_at": "2026-08-05T12:31:35.384Z",
+  "repo": "denis-skripnik/gov-ai",
+  "git_head": "be2d96ae87d63ebfc554bb84125ed31a152145d0",
+  "safety": {
+    "concurrency": 1,
+    "max_models_requested": 4,
+    "timeout_ms": 30000,
+    "max_tokens_per_chat_request": 64,
+    "prompt_class": "non-sensitive fixed OK smoke prompt",
+    "destructive_actions": false,
+    "commit_push_deploy": false
+  },
+  "live_evidence": {
+    "api_url_kind": "ambient",
+    "models_endpoint": {
+      "evidence_type": "live_api",
+      "endpoint": "/models",
+      "http_status": 200,
+      "ok": true,
+      "latency_ms": 716,
+      "request_id_present": false,
+      "response_shape": [
+        "data",
+        "has_more",
+        "object"
+      ],
+      "model_ids_count": 21,
+      "model_ids_sample": [
+        "z-ai/glm-5.2",
+        "z-ai/glm-4.5-air",
+        "google/gemma-4-26b-a4b-it",
+        "google/gemma-4-31b-it",
+        "openai/gpt-oss-120b",
+        "openai/gpt-oss-20b",
+        "moonshotai/kimi-k2.5",
+        "moonshotai/kimi-k2.6",
+        "moonshotai/kimi-k2.7-code",
+        "nvidia/nemotron-3-nano-30b-a3b",
+        "qwen/qwen3-coder-30b-a3b-instruct",
+        "qwen/qwen3-next-80b-a3b-instruct"
+      ],
+      "error_preview": null
+    },
+    "chat_completions": [
+      {
+        "evidence_type": "live_api",
+        "endpoint": "/chat/completions",
+        "model_requested": "ambient/large",
+        "http_status": 200,
+        "ok": true,
+        "latency_ms": 1212,
+        "request_id_present": true,
+        "response_shape": [
+          "choices",
+          "created",
+          "ec_transfer_params",
+          "id",
+          "kv_transfer_params",
+          "metrics",
+          "model",
+          "object",
+          "prompt_logprobs",
+          "prompt_text",
+          "prompt_token_ids",
+          "service_tier",
+          "system_fingerprint",
+          "usage"
+        ],
+        "choices_shape": [
+          "finish_reason",
+          "index",
+          "logprobs",
+          "message",
+          "routed_experts",
+          "stop_reason",
+          "token_ids"
+        ],
+        "output_field": "choices[0].message.content",
+        "output_chars": 2,
+        "output_sha256": "565339bc4d33d72817b583024112eb7f5cdf3e5eef0252d6ec1b9c9a94e12bb3",
+        "model_returned": "z-ai/glm-5.2",
+        "finish_reason": "stop",
+        "usage_present": true,
+        "usage_shape": [
+          "completion_tokens",
+          "completion_tokens_details",
+          "prompt_tokens",
+          "prompt_tokens_details",
+          "total_tokens"
+        ],
+        "error_preview": null
+      },
+      {
+        "evidence_type": "live_api",
+        "endpoint": "/chat/completions",
+        "model_requested": "zai-org/GLM-5.1-FP8",
+        "http_status": 400,
+        "ok": false,
+        "latency_ms": 177,
+        "request_id_present": false,
+        "response_shape": [
+          "error"
+        ],
+        "choices_shape": [],
+        "output_field": null,
+        "output_chars": 0,
+        "output_sha256": null,
+        "model_returned": null,
+        "finish_reason": null,
+        "usage_present": false,
+        "usage_shape": [],
+        "error_preview": "{\"error\":{\"message\":\"Unknown model: 'zai-org/GLM-5.1-FP8'. Valid models: ['ambient/large', 'ambient/small', 'z-ai/glm-5.2', 'z-ai/glm-4.5-air', 'google/gemma-4-26b-a4b-it', 'google/gemma-4-31b-it', 'openai/gpt-oss-120b',"
+      },
+      {
+        "evidence_type": "live_api",
+        "endpoint": "/chat/completions",
+        "model_requested": "z-ai/glm-5.2",
+        "http_status": 200,
+        "ok": true,
+        "latency_ms": 1086,
+        "request_id_present": true,
+        "response_shape": [
+          "choices",
+          "created",
+          "ec_transfer_params",
+          "id",
+          "kv_transfer_params",
+          "metrics",
+          "model",
+          "object",
+          "prompt_logprobs",
+          "prompt_text",
+          "prompt_token_ids",
+          "service_tier",
+          "system_fingerprint",
+          "usage"
+        ],
+        "choices_shape": [
+          "finish_reason",
+          "index",
+          "logprobs",
+          "message",
+          "routed_experts",
+          "stop_reason",
+          "token_ids"
+        ],
+        "output_field": "choices[0].message.content",
+        "output_chars": 2,
+        "output_sha256": "565339bc4d33d72817b583024112eb7f5cdf3e5eef0252d6ec1b9c9a94e12bb3",
+        "model_returned": "z-ai/glm-5.2",
+        "finish_reason": "stop",
+        "usage_present": true,
+        "usage_shape": [
+          "completion_tokens",
+          "completion_tokens_details",
+          "prompt_tokens",
+          "prompt_tokens_details",
+          "total_tokens"
+        ],
+        "error_preview": null
+      },
+      {
+        "evidence_type": "live_api",
+        "endpoint": "/chat/completions",
+        "model_requested": "google/gemma-4-26b-a4b-it",
+        "http_status": 200,
+        "ok": false,
+        "latency_ms": 2598,
+        "request_id_present": true,
+        "response_shape": [
+          "choices",
+          "created",
+          "id",
+          "merkle_root",
+          "merkle_root_hash",
+          "model",
+          "object",
+          "request_id",
+          "system_fingerprint",
+          "timings",
+          "usage"
+        ],
+        "choices_shape": [
+          "finish_reason",
+          "index",
+          "message"
+        ],
+        "output_field": "choices[0].message.content",
+        "output_chars": 0,
+        "output_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "model_returned": "gemma-4-26B_q4_0-it-21bfe2a8.gguf",
+        "finish_reason": "length",
+        "usage_present": true,
+        "usage_shape": [
+          "completion_tokens",
+          "completion_tokens_details",
+          "prompt_tokens",
+          "prompt_tokens_details",
+          "total_tokens"
+        ],
+        "error_preview": null
+      }
+    ]
+  },
+  "synthetic_local_evidence": {
+    "evidence_type": "synthetic_local",
+    "source": "deterministic local fallback design derived from Week 21 routing profiles; no extra live requests",
+    "simulated_request_count": 0,
+    "fallback_candidates": {
+      "primary_if_available": "z-ai/glm-5.2",
+      "if_model_unavailable": "ambient/large",
+      "if_all_live_models_fail": "gov-ai local/mock routing profile only; do not synthesize live Ambient evidence"
+    },
+    "routing_policy_notes": [
+      "Use sequential probes for operations visibility; avoid concurrency unless explicitly testing capacity.",
+      "Treat HTTP 429, 5xx, timeout, and no-bidders/unknown-model messages as fallback candidates, not quality failures.",
+      "Do not infer model quality from this tiny OK prompt; it only checks availability, latency, field shape, and request-id presence."
+    ],
+    "observed_live_failures_used_for_design": [
+      {
+        "model_requested": "zai-org/GLM-5.1-FP8",
+        "http_status": 400,
+        "latency_ms": 177,
+        "error_preview": "{\"error\":{\"message\":\"Unknown model: 'zai-org/GLM-5.1-FP8'. Valid models: ['ambient/large', 'ambient/small', 'z-ai/glm-5.2', 'z-ai/glm-4.5-air', 'google/gemma-4-26b-a4b-it', 'google/gemma-4-31b-it', 'openai/gpt-oss-120b',"
+      },
+      {
+        "model_requested": "google/gemma-4-26b-a4b-it",
+        "http_status": 200,
+        "latency_ms": 2598,
+        "error_preview": null
+      }
+    ]
+  },
+  "metrics": {
+    "live_chat_requests": 4,
+    "successful_models": 2,
+    "failed_models": 2,
+    "request_id_presence_count": 3,
+    "content_field_present_count": 3,
+    "latency_min_ms": 177,
+    "latency_avg_ms": 1268,
+    "latency_max_ms": 2598
+  },
+  "limitations": [
+    "This is an operations smoke probe, not a quality benchmark.",
+    "One tiny prompt per model cannot prove reliability, reasoning quality, or factual accuracy.",
+    "Sequential low volume avoids capacity pressure, so it does not measure concurrent load behavior.",
+    "Request-id presence is recorded as a boolean only; exact request IDs are intentionally not stored in the summary table.",
+    "If /models is unavailable or partial, candidate models fall back to the conservative local allowlist."
+  ],
+  "artifact_sha256": "e192eba398a44fff6740d47986398cc2b482e972e6c6f672a78390534f8f0afb"
+}

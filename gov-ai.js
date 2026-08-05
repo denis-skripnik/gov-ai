@@ -6,6 +6,7 @@ import { loadJson, runMultiAgentCouncil, writeCouncilArtifacts } from "./week17-
 import { runWeek18OpenInferenceLoop } from "./week18-open-inference-loop.js";
 import { loadJson as loadPipelineJson, runWeek20AgentPipeline, writePipelineArtifacts } from "./week20-agent-pipeline.js";
 import { runWeek21RoutingBenchmark } from "./week21-routing-intelligence.js";
+import { runWeek22ModelEvaluationBenchmark } from "./week22-model-evaluation.js";
 import "dotenv/config";
 
 const cmd = process.argv[2];
@@ -130,6 +131,29 @@ if (cmd === "routing-intelligence") {
   process.exit(result.status === "complete" ? 0 : 2);
 }
 
+// ---------- WEEK 22 MODEL EVALUATION BENCHMARK ----------
+if (cmd === "model-evaluation") {
+  const proposalPath = process.argv[3] || "examples/week16-trust-verification/treasury-transfer-proposal.json";
+  const outputDir = process.argv[4] || "examples/week22-model-evaluation";
+
+  const result = runWeek22ModelEvaluationBenchmark({ proposalPath, outputDir });
+  console.log(JSON.stringify({
+    status: result.status,
+    models_compared: result.metrics.models_compared,
+    cases_evaluated: result.metrics.cases_evaluated,
+    strong_fit_count: result.metrics.strong_fit_count,
+    recommendations: result.recommendations.map((item) => ({
+      dimension: item.dimension,
+      best_profile: item.best_profile,
+      rating: item.rating,
+      score: item.score,
+    })),
+    benchmark_sha256: result.benchmark_sha256,
+    artifacts: result.artifacts,
+  }, null, 2));
+  process.exit(result.status === "complete" ? 0 : 2);
+}
+
 // ---------- RESOLVE URL ----------
 let url = null;
 
@@ -154,6 +178,7 @@ if (cmd === "analyze") {
   console.log("  node gov-ai.js open-inference-loop <proposal.json> [output-dir]");
   console.log("  node gov-ai.js agent-pipeline <report.json> <proposal.json> [output-dir]");
   console.log("  node gov-ai.js routing-intelligence [proposal.json] [output-dir]");
+  console.log("  node gov-ai.js model-evaluation [proposal.json] [output-dir]");
   console.log("  node gov-ai.js");
   process.exit(0);
 }

@@ -1,0 +1,518 @@
+{
+  "week": 22,
+  "theme": "Beyond One Model",
+  "kind": "gov-ai-week22-model-evaluation-benchmark",
+  "status": "complete",
+  "started_at": "2026-08-05T12:30:53.639Z",
+  "finished_at": "2026-08-05T12:30:53.640Z",
+  "proposal_source": "examples/week16-trust-verification/treasury-transfer-proposal.json",
+  "proposal_fingerprint": "0341425b277c0e37272c9a176e38b4abc58c5835520a686d93d910e98b8f7c72",
+  "profiles": [
+    {
+      "name": "fast_summarizer",
+      "model": "mock-fast-summary",
+      "strengths": [
+        "structured_output"
+      ],
+      "weak_dimensions": [
+        "hallucination_resistance",
+        "reasoning"
+      ],
+      "estimated_ttft_ms": 210,
+      "reliability": 0.9,
+      "cost_index": 1,
+      "notes": "Useful for short schema-shaped summaries when risk is low."
+    },
+    {
+      "name": "conservative_verifier",
+      "model": "mock-conservative-verifier",
+      "strengths": [
+        "hallucination_resistance",
+        "research_grounding",
+        "structured_output"
+      ],
+      "weak_dimensions": [
+        "coding_tooling"
+      ],
+      "estimated_ttft_ms": 520,
+      "reliability": 0.96,
+      "cost_index": 2,
+      "notes": "Best fit for missing-evidence and source-grounding checks."
+    },
+    {
+      "name": "deep_governance_reasoner",
+      "model": "mock-deep-governance",
+      "strengths": [
+        "reasoning",
+        "hallucination_resistance"
+      ],
+      "weak_dimensions": [],
+      "estimated_ttft_ms": 820,
+      "reliability": 0.97,
+      "cost_index": 3,
+      "notes": "Best fit for multi-step risk/recommendation tradeoffs."
+    },
+    {
+      "name": "code_tool_specialist",
+      "model": "mock-code-tool-specialist",
+      "strengths": [
+        "coding_tooling",
+        "structured_output"
+      ],
+      "weak_dimensions": [
+        "research_grounding"
+      ],
+      "estimated_ttft_ms": 470,
+      "reliability": 0.94,
+      "cost_index": 2,
+      "notes": "Best fit for fixture generation, regression checks, and artifact tooling."
+    }
+  ],
+  "cases": [
+    {
+      "id": "schema_governance_report",
+      "dimension": "structured_output",
+      "title": "Produce the gov-ai report schema exactly",
+      "prompt": "Return only the structured governance report JSON with input, extracted, analysis, recommendation, and limitations.",
+      "expected_behaviors": [
+        "valid_json_only",
+        "required_top_level_fields",
+        "required_nested_fields"
+      ],
+      "requires_live_api": false,
+      "product_use": "Keeps reports machine-readable for the API, Telegram bot, and report viewer."
+    },
+    {
+      "id": "missing_evidence_guardrail",
+      "dimension": "hallucination_resistance",
+      "title": "Do not invent missing treasury evidence",
+      "prompt": "Assess the proposal while treating missing evidence as UNKNOWN: invoice, multisig signer list, recipient-control proof, budget breakdown.",
+      "expected_behaviors": [
+        "marks_missing_evidence_unknown",
+        "does_not_invent_vote_results",
+        "cites_limitations"
+      ],
+      "requires_live_api": false,
+      "product_use": "Protects conservative governance recommendations when extraction is incomplete."
+    },
+    {
+      "id": "treasury_reasoning_path",
+      "dimension": "reasoning",
+      "title": "Reason through treasury risk and voting options",
+      "prompt": "Compare For, Against, and Abstain for a treasury transfer with missing controls and explain the conservative decision path.",
+      "expected_behaviors": [
+        "weighs_options",
+        "separates_risk_from_benefit",
+        "explains_confidence"
+      ],
+      "requires_live_api": false,
+      "product_use": "Helps route complex proposals to stronger deliberation models."
+    },
+    {
+      "id": "source_grounding_check",
+      "dimension": "research_grounding",
+      "title": "Ground claims in extracted source fields",
+      "prompt": "List which claims are supported by extracted proposal fields and which require manual source review.",
+      "expected_behaviors": [
+        "uses_extracted_fields_only",
+        "quotes_available_evidence",
+        "flags_manual_review"
+      ],
+      "requires_live_api": false,
+      "product_use": "Makes source limitations visible before humans rely on a report."
+    },
+    {
+      "id": "fixture_regression_tooling",
+      "dimension": "coding_tooling",
+      "title": "Produce regression-ready fixture expectations",
+      "prompt": "Turn this proposal into a deterministic regression fixture with expected unknowns and schema checks.",
+      "expected_behaviors": [
+        "creates_testable_expectations",
+        "mentions_fixture_hash",
+        "keeps_secrets_out"
+      ],
+      "requires_live_api": false,
+      "product_use": "Lets developers compare models and prompts without spending API calls."
+    }
+  ],
+  "evaluations": [
+    {
+      "profile": "fast_summarizer",
+      "model": "mock-fast-summary",
+      "case_id": "schema_governance_report",
+      "dimension": "structured_output",
+      "score": 93,
+      "rating": "strong_fit",
+      "estimated_ttft_ms": 210,
+      "reliability": 0.9,
+      "cost_index": 1,
+      "expected_behavior_coverage": 1,
+      "caution_flags": [],
+      "interpretation": "fast_summarizer is a primary fit for structured_output."
+    },
+    {
+      "profile": "conservative_verifier",
+      "model": "mock-conservative-verifier",
+      "case_id": "schema_governance_report",
+      "dimension": "structured_output",
+      "score": 92,
+      "rating": "strong_fit",
+      "estimated_ttft_ms": 520,
+      "reliability": 0.96,
+      "cost_index": 2,
+      "expected_behavior_coverage": 1,
+      "caution_flags": [],
+      "interpretation": "conservative_verifier is a primary fit for structured_output."
+    },
+    {
+      "profile": "deep_governance_reasoner",
+      "model": "mock-deep-governance",
+      "case_id": "schema_governance_report",
+      "dimension": "structured_output",
+      "score": 55,
+      "rating": "weak_fit",
+      "estimated_ttft_ms": 820,
+      "reliability": 0.97,
+      "cost_index": 3,
+      "expected_behavior_coverage": 0.33,
+      "caution_flags": [
+        "not_primary_strength_for_structured_output",
+        "higher_cost_or_latency_profile"
+      ],
+      "interpretation": "deep_governance_reasoner can be tested on structured_output, but should not be treated as the default without review."
+    },
+    {
+      "profile": "code_tool_specialist",
+      "model": "mock-code-tool-specialist",
+      "case_id": "schema_governance_report",
+      "dimension": "structured_output",
+      "score": 92,
+      "rating": "strong_fit",
+      "estimated_ttft_ms": 470,
+      "reliability": 0.94,
+      "cost_index": 2,
+      "expected_behavior_coverage": 1,
+      "caution_flags": [],
+      "interpretation": "code_tool_specialist is a primary fit for structured_output."
+    },
+    {
+      "profile": "fast_summarizer",
+      "model": "mock-fast-summary",
+      "case_id": "missing_evidence_guardrail",
+      "dimension": "hallucination_resistance",
+      "score": 34,
+      "rating": "weak_fit",
+      "estimated_ttft_ms": 210,
+      "reliability": 0.9,
+      "cost_index": 1,
+      "expected_behavior_coverage": 0.33,
+      "caution_flags": [
+        "weak_on_hallucination_resistance",
+        "not_primary_strength_for_hallucination_resistance"
+      ],
+      "interpretation": "fast_summarizer can be tested on hallucination_resistance, but should not be treated as the default without review."
+    },
+    {
+      "profile": "conservative_verifier",
+      "model": "mock-conservative-verifier",
+      "case_id": "missing_evidence_guardrail",
+      "dimension": "hallucination_resistance",
+      "score": 92,
+      "rating": "strong_fit",
+      "estimated_ttft_ms": 520,
+      "reliability": 0.96,
+      "cost_index": 2,
+      "expected_behavior_coverage": 1,
+      "caution_flags": [],
+      "interpretation": "conservative_verifier is a primary fit for hallucination_resistance."
+    },
+    {
+      "profile": "deep_governance_reasoner",
+      "model": "mock-deep-governance",
+      "case_id": "missing_evidence_guardrail",
+      "dimension": "hallucination_resistance",
+      "score": 90,
+      "rating": "strong_fit",
+      "estimated_ttft_ms": 820,
+      "reliability": 0.97,
+      "cost_index": 3,
+      "expected_behavior_coverage": 1,
+      "caution_flags": [
+        "higher_cost_or_latency_profile"
+      ],
+      "interpretation": "deep_governance_reasoner is a primary fit for hallucination_resistance."
+    },
+    {
+      "profile": "code_tool_specialist",
+      "model": "mock-code-tool-specialist",
+      "case_id": "missing_evidence_guardrail",
+      "dimension": "hallucination_resistance",
+      "score": 57,
+      "rating": "weak_fit",
+      "estimated_ttft_ms": 470,
+      "reliability": 0.94,
+      "cost_index": 2,
+      "expected_behavior_coverage": 0.33,
+      "caution_flags": [
+        "not_primary_strength_for_hallucination_resistance"
+      ],
+      "interpretation": "code_tool_specialist can be tested on hallucination_resistance, but should not be treated as the default without review."
+    },
+    {
+      "profile": "fast_summarizer",
+      "model": "mock-fast-summary",
+      "case_id": "treasury_reasoning_path",
+      "dimension": "reasoning",
+      "score": 34,
+      "rating": "weak_fit",
+      "estimated_ttft_ms": 210,
+      "reliability": 0.9,
+      "cost_index": 1,
+      "expected_behavior_coverage": 0.33,
+      "caution_flags": [
+        "weak_on_reasoning",
+        "not_primary_strength_for_reasoning"
+      ],
+      "interpretation": "fast_summarizer can be tested on reasoning, but should not be treated as the default without review."
+    },
+    {
+      "profile": "conservative_verifier",
+      "model": "mock-conservative-verifier",
+      "case_id": "treasury_reasoning_path",
+      "dimension": "reasoning",
+      "score": 57,
+      "rating": "weak_fit",
+      "estimated_ttft_ms": 520,
+      "reliability": 0.96,
+      "cost_index": 2,
+      "expected_behavior_coverage": 0.33,
+      "caution_flags": [
+        "not_primary_strength_for_reasoning"
+      ],
+      "interpretation": "conservative_verifier can be tested on reasoning, but should not be treated as the default without review."
+    },
+    {
+      "profile": "deep_governance_reasoner",
+      "model": "mock-deep-governance",
+      "case_id": "treasury_reasoning_path",
+      "dimension": "reasoning",
+      "score": 90,
+      "rating": "strong_fit",
+      "estimated_ttft_ms": 820,
+      "reliability": 0.97,
+      "cost_index": 3,
+      "expected_behavior_coverage": 1,
+      "caution_flags": [
+        "higher_cost_or_latency_profile"
+      ],
+      "interpretation": "deep_governance_reasoner is a primary fit for reasoning."
+    },
+    {
+      "profile": "code_tool_specialist",
+      "model": "mock-code-tool-specialist",
+      "case_id": "treasury_reasoning_path",
+      "dimension": "reasoning",
+      "score": 57,
+      "rating": "weak_fit",
+      "estimated_ttft_ms": 470,
+      "reliability": 0.94,
+      "cost_index": 2,
+      "expected_behavior_coverage": 0.33,
+      "caution_flags": [
+        "not_primary_strength_for_reasoning"
+      ],
+      "interpretation": "code_tool_specialist can be tested on reasoning, but should not be treated as the default without review."
+    },
+    {
+      "profile": "fast_summarizer",
+      "model": "mock-fast-summary",
+      "case_id": "source_grounding_check",
+      "dimension": "research_grounding",
+      "score": 58,
+      "rating": "weak_fit",
+      "estimated_ttft_ms": 210,
+      "reliability": 0.9,
+      "cost_index": 1,
+      "expected_behavior_coverage": 0.33,
+      "caution_flags": [
+        "not_primary_strength_for_research_grounding"
+      ],
+      "interpretation": "fast_summarizer can be tested on research_grounding, but should not be treated as the default without review."
+    },
+    {
+      "profile": "conservative_verifier",
+      "model": "mock-conservative-verifier",
+      "case_id": "source_grounding_check",
+      "dimension": "research_grounding",
+      "score": 92,
+      "rating": "strong_fit",
+      "estimated_ttft_ms": 520,
+      "reliability": 0.96,
+      "cost_index": 2,
+      "expected_behavior_coverage": 1,
+      "caution_flags": [],
+      "interpretation": "conservative_verifier is a primary fit for research_grounding."
+    },
+    {
+      "profile": "deep_governance_reasoner",
+      "model": "mock-deep-governance",
+      "case_id": "source_grounding_check",
+      "dimension": "research_grounding",
+      "score": 55,
+      "rating": "weak_fit",
+      "estimated_ttft_ms": 820,
+      "reliability": 0.97,
+      "cost_index": 3,
+      "expected_behavior_coverage": 0.33,
+      "caution_flags": [
+        "not_primary_strength_for_research_grounding",
+        "higher_cost_or_latency_profile"
+      ],
+      "interpretation": "deep_governance_reasoner can be tested on research_grounding, but should not be treated as the default without review."
+    },
+    {
+      "profile": "code_tool_specialist",
+      "model": "mock-code-tool-specialist",
+      "case_id": "source_grounding_check",
+      "dimension": "research_grounding",
+      "score": 33,
+      "rating": "weak_fit",
+      "estimated_ttft_ms": 470,
+      "reliability": 0.94,
+      "cost_index": 2,
+      "expected_behavior_coverage": 0.33,
+      "caution_flags": [
+        "weak_on_research_grounding",
+        "not_primary_strength_for_research_grounding"
+      ],
+      "interpretation": "code_tool_specialist can be tested on research_grounding, but should not be treated as the default without review."
+    },
+    {
+      "profile": "fast_summarizer",
+      "model": "mock-fast-summary",
+      "case_id": "fixture_regression_tooling",
+      "dimension": "coding_tooling",
+      "score": 58,
+      "rating": "weak_fit",
+      "estimated_ttft_ms": 210,
+      "reliability": 0.9,
+      "cost_index": 1,
+      "expected_behavior_coverage": 0.33,
+      "caution_flags": [
+        "not_primary_strength_for_coding_tooling"
+      ],
+      "interpretation": "fast_summarizer can be tested on coding_tooling, but should not be treated as the default without review."
+    },
+    {
+      "profile": "conservative_verifier",
+      "model": "mock-conservative-verifier",
+      "case_id": "fixture_regression_tooling",
+      "dimension": "coding_tooling",
+      "score": 33,
+      "rating": "weak_fit",
+      "estimated_ttft_ms": 520,
+      "reliability": 0.96,
+      "cost_index": 2,
+      "expected_behavior_coverage": 0.33,
+      "caution_flags": [
+        "weak_on_coding_tooling",
+        "not_primary_strength_for_coding_tooling"
+      ],
+      "interpretation": "conservative_verifier can be tested on coding_tooling, but should not be treated as the default without review."
+    },
+    {
+      "profile": "deep_governance_reasoner",
+      "model": "mock-deep-governance",
+      "case_id": "fixture_regression_tooling",
+      "dimension": "coding_tooling",
+      "score": 55,
+      "rating": "weak_fit",
+      "estimated_ttft_ms": 820,
+      "reliability": 0.97,
+      "cost_index": 3,
+      "expected_behavior_coverage": 0.33,
+      "caution_flags": [
+        "not_primary_strength_for_coding_tooling",
+        "higher_cost_or_latency_profile"
+      ],
+      "interpretation": "deep_governance_reasoner can be tested on coding_tooling, but should not be treated as the default without review."
+    },
+    {
+      "profile": "code_tool_specialist",
+      "model": "mock-code-tool-specialist",
+      "case_id": "fixture_regression_tooling",
+      "dimension": "coding_tooling",
+      "score": 92,
+      "rating": "strong_fit",
+      "estimated_ttft_ms": 470,
+      "reliability": 0.94,
+      "cost_index": 2,
+      "expected_behavior_coverage": 1,
+      "caution_flags": [],
+      "interpretation": "code_tool_specialist is a primary fit for coding_tooling."
+    }
+  ],
+  "recommendations": [
+    {
+      "case_id": "schema_governance_report",
+      "dimension": "structured_output",
+      "best_profile": "fast_summarizer",
+      "rating": "strong_fit",
+      "score": 93,
+      "caution_flags": []
+    },
+    {
+      "case_id": "missing_evidence_guardrail",
+      "dimension": "hallucination_resistance",
+      "best_profile": "conservative_verifier",
+      "rating": "strong_fit",
+      "score": 92,
+      "caution_flags": []
+    },
+    {
+      "case_id": "treasury_reasoning_path",
+      "dimension": "reasoning",
+      "best_profile": "deep_governance_reasoner",
+      "rating": "strong_fit",
+      "score": 90,
+      "caution_flags": [
+        "higher_cost_or_latency_profile"
+      ]
+    },
+    {
+      "case_id": "source_grounding_check",
+      "dimension": "research_grounding",
+      "best_profile": "conservative_verifier",
+      "rating": "strong_fit",
+      "score": 92,
+      "caution_flags": []
+    },
+    {
+      "case_id": "fixture_regression_tooling",
+      "dimension": "coding_tooling",
+      "best_profile": "code_tool_specialist",
+      "rating": "strong_fit",
+      "score": 92,
+      "caution_flags": []
+    }
+  ],
+  "metrics": {
+    "models_compared": 4,
+    "cases_evaluated": 5,
+    "evaluations_total": 20,
+    "strong_fit_count": 8,
+    "dimensions": [
+      "structured_output",
+      "hallucination_resistance",
+      "reasoning",
+      "research_grounding",
+      "coding_tooling"
+    ]
+  },
+  "limitations": [
+    "This is not a leaderboard-quality benchmark; it is a deterministic product benchmark over a small governance fixture.",
+    "Scores are policy-fit heuristics for gov-ai routing and prompt evaluation, not measured model intelligence.",
+    "Use live API results only as an additional low-volume smoke check, and keep outputs sanitized."
+  ],
+  "benchmark_sha256": "7556873fb67923805f6b1343f27e218f03f99425c854cf39137142d88f12c8d6"
+}

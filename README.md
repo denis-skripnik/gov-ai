@@ -4,6 +4,7 @@ AI assistant for DAO governance proposals.
 
 ## Table of Contents
 
+- [Week 22 - Model Evaluation Benchmark (Web2)](#week-22---model-evaluation-benchmark-web2)
 - [Week 21 - Routing Intelligence Benchmark (Web2)](#week-21---routing-intelligence-benchmark-web2)
 - [Week 20 - Agent Architecture Pipeline (Web2)](#week-20---agent-architecture-pipeline-web2)
 - [Week 18 - Open Inference Runtime Matrix (Web2)](#week-18---open-inference-runtime-matrix-web2)
@@ -35,6 +36,7 @@ AI assistant for DAO governance proposals.
 
 This project started as **Web3 Developer Loop - Experiment #3 (AI for governance or automation)**.
 It now also documents and ships:
+- Week 22 model evaluation (Web2): deterministic Beyond One Model benchmark cases for structured output, hallucination resistance, reasoning, research grounding, and coding/tooling; produces model-selection evidence without claiming broad leaderboard quality
 - Week 21 routing intelligence (Web2): deterministic prompt-category routing, capacity-aware fallback, TTFT estimates, consistency metrics, and edge-case handling for governance-analysis tasks
 - Core Ambient runtime hardening: `ambient/large` is the default router model for main analysis, stale explicit model IDs can fall back to configured valid models, and generated reports include Ambient model/runtime metadata beside the existing verification fields
 - Week 20 agent architecture (Web2): proposal-centered autonomous pipeline with intake, long-context evidence planning, tool reliability checks, multi-agent council reuse, and explicit human handoff artifacts
@@ -64,6 +66,44 @@ The design goal is **honesty and conservatism**:
 - if some data cannot be extracted, it is marked as `UNKNOWN`
 - the tool does not guess voting options or results
 - the output is meant to **assist** human decision-making, not replace it
+
+---
+
+## Week 22 - Model Evaluation Benchmark (Web2)
+
+Week 22 asks for **Beyond One Model** evidence: compare model/profile strengths for product tasks without pretending that one tiny fixture is a broad model leaderboard.
+
+For `gov-ai`, the product fit is a deterministic model-evaluation benchmark over the retained governance treasury fixture:
+
+1. Build reusable cases for structured JSON output, hallucination resistance, reasoning, research grounding, and coding/tooling.
+2. Compare four mock model profiles against those cases with transparent policy-fit heuristics.
+3. Recommend the best profile per product dimension instead of naming one universal winner.
+4. Write JSON and Markdown artifacts with explicit limitations.
+
+Run the Week 22 benchmark locally:
+
+```bash
+node gov-ai.js model-evaluation examples/week16-trust-verification/treasury-transfer-proposal.json examples/week22-model-evaluation
+```
+
+Expected local result:
+
+```json
+{
+  "status": "complete",
+  "models_compared": 4,
+  "cases_evaluated": 5
+}
+```
+
+Artifacts:
+
+- `week22-model-evaluation.js` - deterministic model/profile evaluation benchmark runner
+- `week22-model-evaluation.test.js` - tests for evaluation cases, scoring, recommendations, and cautious artifact writing
+- `examples/week22-model-evaluation/week22-model-evaluation-output.json` - machine-readable model-selection evidence
+- `examples/week22-model-evaluation/week22-model-evaluation-report.md` - human-readable Week 22 report
+
+This is not a live model-quality leaderboard. It is a repeatable application-level benchmark for choosing which model/profile to try for specific `gov-ai` governance-analysis tasks.
 
 ---
 

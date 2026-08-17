@@ -1,0 +1,401 @@
+{
+  "summary": {
+    "week": 23,
+    "kind": "ambient-verification-at-scale-low-volume-probe",
+    "safety": {
+      "live_requests": 8,
+      "concurrency_max": 2,
+      "sustained_delay_ms": 1000,
+      "max_tokens_per_request": 48,
+      "timeout_ms": 90000,
+      "secret_handling": "AMBIENT_API_KEY loaded from .env/process env; key is never printed or written",
+      "publication": "local artifacts only; not published externally"
+    },
+    "started_at": "2026-08-17T05:39:43.403Z",
+    "finished_at": "2026-08-17T05:39:53.971Z",
+    "model_requested": "ambient/large",
+    "base_url_host": "api.ambient.xyz",
+    "hardware": {
+      "platform": "linux",
+      "arch": "x64",
+      "cpus": 4,
+      "totalmem_bytes": 8303742976,
+      "node": "v22.22.0"
+    },
+    "metrics": {
+      "runs_total": 8,
+      "runs_ok": 6,
+      "runs_fail": 2,
+      "success_rate": 0.75,
+      "verification_true_rate_ok_runs": 0,
+      "verified_true": 0,
+      "verified_false": 0,
+      "verified_missing": 6,
+      "merkle_root_present_ok_runs": 0,
+      "request_id_present_runs": 8,
+      "latency_ms_ok": {
+        "min": 593,
+        "avg": 1406,
+        "median": 1228,
+        "p95": 2462,
+        "max": 2462
+      },
+      "first_byte_ms_ok": {
+        "min": 295,
+        "avg": 1012,
+        "median": 903,
+        "p95": 1971,
+        "max": 1971
+      },
+      "memory_rss_delta_bytes": {
+        "min": -1024000,
+        "avg": 2633216,
+        "median": 270336,
+        "p95": 21762048,
+        "max": 21762048
+      },
+      "failure_modes": {
+        "empty_output": 2
+      },
+      "model_returns": {
+        "z-ai/glm-5.2": 6
+      },
+      "by_lane": {
+        "sustained": {
+          "runs_total": 4,
+          "runs_ok": 2,
+          "runs_fail": 2,
+          "latency_ms_ok": {
+            "min": 599,
+            "avg": 914,
+            "median": 599,
+            "p95": 1228,
+            "max": 1228
+          }
+        },
+        "concurrent": {
+          "runs_total": 4,
+          "runs_ok": 4,
+          "runs_fail": 0,
+          "latency_ms_ok": {
+            "min": 593,
+            "avg": 1653,
+            "median": 1502,
+            "p95": 2462,
+            "max": 2462
+          }
+        }
+      }
+    }
+  },
+  "runs": [
+    {
+      "run_id": 1,
+      "lane": "sustained",
+      "ok": true,
+      "status": 200,
+      "latency_ms": 1228,
+      "first_byte_ms": 903,
+      "request_id_present": true,
+      "verified": null,
+      "merkle_root_present": false,
+      "output_sha256_present": false,
+      "model_requested": "ambient/large",
+      "model_returned": "z-ai/glm-5.2",
+      "output_chars": 191,
+      "output_sha256_local": "317e6ba889ed3bc1ebc8033e72adf16fcaca88dfd9a8ba0bb13b64f7a98cd0d8",
+      "usage": {
+        "prompt_tokens": 44,
+        "total_tokens": 92,
+        "completion_tokens": 48,
+        "prompt_tokens_details": {
+          "cached_tokens": 0,
+          "created_cache_tokens": 0
+        },
+        "completion_tokens_details": {
+          "reasoning_tokens": 31
+        }
+      },
+      "event_types": [
+        "chat.completion.chunk"
+      ],
+      "lifecycle_events": 0,
+      "lifecycle_types": [],
+      "max_bid_count": null,
+      "memory_rss_before_bytes": 54501376,
+      "memory_rss_after_bytes": 76263424,
+      "memory_rss_delta_bytes": 21762048,
+      "failure_type": null
+    },
+    {
+      "run_id": 2,
+      "lane": "sustained",
+      "ok": true,
+      "status": 200,
+      "latency_ms": 599,
+      "first_byte_ms": 453,
+      "request_id_present": true,
+      "verified": null,
+      "merkle_root_present": false,
+      "output_sha256_present": false,
+      "model_requested": "ambient/large",
+      "model_returned": "z-ai/glm-5.2",
+      "output_chars": 108,
+      "output_sha256_local": "fa59cf476825782ea08c31362b51ba8175401cf0f1c9c080b5306d0d49048dba",
+      "usage": {
+        "prompt_tokens": 44,
+        "total_tokens": 59,
+        "completion_tokens": 15,
+        "prompt_tokens_details": {
+          "cached_tokens": 0,
+          "created_cache_tokens": 0
+        },
+        "completion_tokens_details": {
+          "reasoning_tokens": 0
+        }
+      },
+      "event_types": [
+        "chat.completion.chunk"
+      ],
+      "lifecycle_events": 0,
+      "lifecycle_types": [],
+      "max_bid_count": null,
+      "memory_rss_before_bytes": 69296128,
+      "memory_rss_after_bytes": 69566464,
+      "memory_rss_delta_bytes": 270336,
+      "failure_type": null
+    },
+    {
+      "run_id": 3,
+      "lane": "sustained",
+      "ok": false,
+      "status": 200,
+      "latency_ms": 1337,
+      "first_byte_ms": 1058,
+      "request_id_present": true,
+      "verified": null,
+      "merkle_root_present": false,
+      "output_sha256_present": false,
+      "model_requested": "ambient/large",
+      "model_returned": "z-ai/glm-5.2",
+      "output_chars": 0,
+      "output_sha256_local": null,
+      "usage": {
+        "prompt_tokens": 44,
+        "total_tokens": 92,
+        "completion_tokens": 48,
+        "prompt_tokens_details": {
+          "cached_tokens": 0,
+          "created_cache_tokens": 0
+        },
+        "completion_tokens_details": {
+          "reasoning_tokens": 65
+        }
+      },
+      "event_types": [
+        "chat.completion.chunk"
+      ],
+      "lifecycle_events": 0,
+      "lifecycle_types": [],
+      "max_bid_count": null,
+      "memory_rss_before_bytes": 69566464,
+      "memory_rss_after_bytes": 69836800,
+      "memory_rss_delta_bytes": 270336,
+      "failure_type": "empty_output"
+    },
+    {
+      "run_id": 4,
+      "lane": "sustained",
+      "ok": false,
+      "status": 200,
+      "latency_ms": 843,
+      "first_byte_ms": 625,
+      "request_id_present": true,
+      "verified": null,
+      "merkle_root_present": false,
+      "output_sha256_present": false,
+      "model_requested": "ambient/large",
+      "model_returned": "z-ai/glm-5.2",
+      "output_chars": 0,
+      "output_sha256_local": null,
+      "usage": {
+        "prompt_tokens": 44,
+        "total_tokens": 92,
+        "completion_tokens": 48,
+        "prompt_tokens_details": {
+          "cached_tokens": 0,
+          "created_cache_tokens": 0
+        },
+        "completion_tokens_details": {
+          "reasoning_tokens": 70
+        }
+      },
+      "event_types": [
+        "chat.completion.chunk"
+      ],
+      "lifecycle_events": 0,
+      "lifecycle_types": [],
+      "max_bid_count": null,
+      "memory_rss_before_bytes": 69836800,
+      "memory_rss_after_bytes": 69836800,
+      "memory_rss_delta_bytes": 0,
+      "failure_type": "empty_output"
+    },
+    {
+      "run_id": 5,
+      "lane": "concurrent",
+      "ok": true,
+      "status": 200,
+      "latency_ms": 1502,
+      "first_byte_ms": 957,
+      "request_id_present": true,
+      "verified": null,
+      "merkle_root_present": false,
+      "output_sha256_present": false,
+      "model_requested": "ambient/large",
+      "model_returned": "z-ai/glm-5.2",
+      "output_chars": 96,
+      "output_sha256_local": "3b250095e3be554cef905c83fec14f75a6cf98fd7b3e79930d2be00e5f540a45",
+      "usage": {
+        "prompt_tokens": 44,
+        "total_tokens": 59,
+        "completion_tokens": 15,
+        "prompt_tokens_details": {
+          "cached_tokens": 0,
+          "created_cache_tokens": 0
+        },
+        "completion_tokens_details": {
+          "reasoning_tokens": 0
+        }
+      },
+      "event_types": [
+        "chat.completion.chunk"
+      ],
+      "lifecycle_events": 0,
+      "lifecycle_types": [],
+      "max_bid_count": null,
+      "memory_rss_before_bytes": 69836800,
+      "memory_rss_after_bytes": 68984832,
+      "memory_rss_delta_bytes": -851968,
+      "failure_type": null
+    },
+    {
+      "run_id": 6,
+      "lane": "concurrent",
+      "ok": true,
+      "status": 200,
+      "latency_ms": 2462,
+      "first_byte_ms": 1971,
+      "request_id_present": true,
+      "verified": null,
+      "merkle_root_present": false,
+      "output_sha256_present": false,
+      "model_requested": "ambient/large",
+      "model_returned": "z-ai/glm-5.2",
+      "output_chars": 177,
+      "output_sha256_local": "8c0d8c99bb1882abad5dcca6cc8032e78b33dfd993ad549ea7175b2c51f1b996",
+      "usage": {
+        "prompt_tokens": 44,
+        "total_tokens": 86,
+        "completion_tokens": 42,
+        "prompt_tokens_details": {
+          "cached_tokens": 0,
+          "created_cache_tokens": 0
+        },
+        "completion_tokens_details": {
+          "reasoning_tokens": 23
+        }
+      },
+      "event_types": [
+        "chat.completion.chunk"
+      ],
+      "lifecycle_events": 0,
+      "lifecycle_types": [],
+      "max_bid_count": null,
+      "memory_rss_before_bytes": 69836800,
+      "memory_rss_after_bytes": 68812800,
+      "memory_rss_delta_bytes": -1024000,
+      "failure_type": null
+    },
+    {
+      "run_id": 7,
+      "lane": "concurrent",
+      "ok": true,
+      "status": 200,
+      "latency_ms": 2053,
+      "first_byte_ms": 1492,
+      "request_id_present": true,
+      "verified": null,
+      "merkle_root_present": false,
+      "output_sha256_present": false,
+      "model_requested": "ambient/large",
+      "model_returned": "z-ai/glm-5.2",
+      "output_chars": 44,
+      "output_sha256_local": "f4f0b8dc66144b163bca5bf55e2abc0fc0d00e7e1059143759db98473b5f7b64",
+      "usage": {
+        "prompt_tokens": 44,
+        "total_tokens": 92,
+        "completion_tokens": 48,
+        "prompt_tokens_details": {
+          "cached_tokens": 0,
+          "created_cache_tokens": 0
+        },
+        "completion_tokens_details": {
+          "reasoning_tokens": 54
+        }
+      },
+      "event_types": [
+        "chat.completion.chunk"
+      ],
+      "lifecycle_events": 0,
+      "lifecycle_types": [],
+      "max_bid_count": null,
+      "memory_rss_before_bytes": 68984832,
+      "memory_rss_after_bytes": 69353472,
+      "memory_rss_delta_bytes": 368640,
+      "failure_type": null
+    },
+    {
+      "run_id": 8,
+      "lane": "concurrent",
+      "ok": true,
+      "status": 200,
+      "latency_ms": 593,
+      "first_byte_ms": 295,
+      "request_id_present": true,
+      "verified": null,
+      "merkle_root_present": false,
+      "output_sha256_present": false,
+      "model_requested": "ambient/large",
+      "model_returned": "z-ai/glm-5.2",
+      "output_chars": 195,
+      "output_sha256_local": "fda4045ad6c9cee19bb0ab4a3498fb89d90d48a3bc67a60081b76eceb27735a9",
+      "usage": {
+        "prompt_tokens": 44,
+        "total_tokens": 89,
+        "completion_tokens": 45,
+        "prompt_tokens_details": {
+          "cached_tokens": 0,
+          "created_cache_tokens": 0
+        },
+        "completion_tokens_details": {
+          "reasoning_tokens": 24
+        }
+      },
+      "event_types": [
+        "chat.completion.chunk"
+      ],
+      "lifecycle_events": 0,
+      "lifecycle_types": [],
+      "max_bid_count": null,
+      "memory_rss_before_bytes": 68812800,
+      "memory_rss_after_bytes": 69083136,
+      "memory_rss_delta_bytes": 270336,
+      "failure_type": null
+    }
+  ],
+  "paths": {
+    "json": "/home/assistent/ai-projects/gov-ai/examples/week23-infra-loop/week23-ambient-verification-probe-output.json",
+    "markdown": "/home/assistent/ai-projects/gov-ai/examples/week23-infra-loop/week23-ambient-verification-probe-report.md"
+  }
+}

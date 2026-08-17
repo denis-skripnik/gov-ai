@@ -1,0 +1,257 @@
+{
+  "week": 23,
+  "theme": "Verified Intelligence",
+  "kind": "gov-ai-week23-verification-repeatability-benchmark",
+  "status": "complete",
+  "started_at": "2026-08-17T05:43:46.185Z",
+  "finished_at": "2026-08-17T05:43:46.195Z",
+  "input_fingerprints": {
+    "report_sha256": "0d1ddea58ce9bfd90168a9ac5905e5eea43cff51d4343d0f716fb4c66caf3caf",
+    "extracted_sha256": "8abbe34740111fec069fbfc673377c196d6d9a8e3700f1a556604106fe2b17b8"
+  },
+  "preserved_ambient_proof_fields": {
+    "verified": true,
+    "merkle_root": "88d6e16e438a8fcff1c02419aa290b7ea47c81b146b5f56ef7d36bce3cc105e4",
+    "request_id": "4b04aec58e2a4e8ab5dda4a09b70af00"
+  },
+  "metrics": {
+    "total_runs": 10,
+    "repeat_count": 5,
+    "strict_modes": [
+      false,
+      true
+    ],
+    "deterministic": true,
+    "latency_ms": {
+      "min": 0.275,
+      "max": 2.727,
+      "avg": 0.602
+    },
+    "heap_used_delta_bytes": 1725800,
+    "rss_delta_bytes": 1482752
+  },
+  "groups": [
+    {
+      "strict_mode": false,
+      "run_count": 5,
+      "unique_verification_hashes": 1,
+      "verification_sha256": "fcb07b641fab21141854d7db95f7dfe081746075ab73280901f3c5c13e8fa907",
+      "routing_actions": [
+        "WARN"
+      ],
+      "deterministic": true
+    },
+    {
+      "strict_mode": true,
+      "run_count": 5,
+      "unique_verification_hashes": 1,
+      "verification_sha256": "9f302c6fcd566fbbd2c9afeeb7a961562aaa0aa0b26a482d62c96251fed95dd1",
+      "routing_actions": [
+        "HUMAN_REVIEW"
+      ],
+      "deterministic": true
+    }
+  ],
+  "runs": [
+    {
+      "run_index": 1,
+      "strict_mode": false,
+      "routing_action": "WARN",
+      "segment_counts": {
+        "deterministic": 2,
+        "probabilistic": 13,
+        "unverifiable": 8
+      },
+      "mixed_categories_detected": true,
+      "strict_rejection_triggered": false,
+      "latency_ms": 2.726817,
+      "verification_sha256": "fcb07b641fab21141854d7db95f7dfe081746075ab73280901f3c5c13e8fa907",
+      "ambient_proof_fields": {
+        "verified": true,
+        "merkle_root": "88d6e16e438a8fcff1c02419aa290b7ea47c81b146b5f56ef7d36bce3cc105e4",
+        "request_id": "4b04aec58e2a4e8ab5dda4a09b70af00"
+      }
+    },
+    {
+      "run_index": 2,
+      "strict_mode": false,
+      "routing_action": "WARN",
+      "segment_counts": {
+        "deterministic": 2,
+        "probabilistic": 13,
+        "unverifiable": 8
+      },
+      "mixed_categories_detected": true,
+      "strict_rejection_triggered": false,
+      "latency_ms": 0.532179,
+      "verification_sha256": "fcb07b641fab21141854d7db95f7dfe081746075ab73280901f3c5c13e8fa907",
+      "ambient_proof_fields": {
+        "verified": true,
+        "merkle_root": "88d6e16e438a8fcff1c02419aa290b7ea47c81b146b5f56ef7d36bce3cc105e4",
+        "request_id": "4b04aec58e2a4e8ab5dda4a09b70af00"
+      }
+    },
+    {
+      "run_index": 3,
+      "strict_mode": false,
+      "routing_action": "WARN",
+      "segment_counts": {
+        "deterministic": 2,
+        "probabilistic": 13,
+        "unverifiable": 8
+      },
+      "mixed_categories_detected": true,
+      "strict_rejection_triggered": false,
+      "latency_ms": 0.298778,
+      "verification_sha256": "fcb07b641fab21141854d7db95f7dfe081746075ab73280901f3c5c13e8fa907",
+      "ambient_proof_fields": {
+        "verified": true,
+        "merkle_root": "88d6e16e438a8fcff1c02419aa290b7ea47c81b146b5f56ef7d36bce3cc105e4",
+        "request_id": "4b04aec58e2a4e8ab5dda4a09b70af00"
+      }
+    },
+    {
+      "run_index": 4,
+      "strict_mode": false,
+      "routing_action": "WARN",
+      "segment_counts": {
+        "deterministic": 2,
+        "probabilistic": 13,
+        "unverifiable": 8
+      },
+      "mixed_categories_detected": true,
+      "strict_rejection_triggered": false,
+      "latency_ms": 0.428582,
+      "verification_sha256": "fcb07b641fab21141854d7db95f7dfe081746075ab73280901f3c5c13e8fa907",
+      "ambient_proof_fields": {
+        "verified": true,
+        "merkle_root": "88d6e16e438a8fcff1c02419aa290b7ea47c81b146b5f56ef7d36bce3cc105e4",
+        "request_id": "4b04aec58e2a4e8ab5dda4a09b70af00"
+      }
+    },
+    {
+      "run_index": 5,
+      "strict_mode": false,
+      "routing_action": "WARN",
+      "segment_counts": {
+        "deterministic": 2,
+        "probabilistic": 13,
+        "unverifiable": 8
+      },
+      "mixed_categories_detected": true,
+      "strict_rejection_triggered": false,
+      "latency_ms": 0.326622,
+      "verification_sha256": "fcb07b641fab21141854d7db95f7dfe081746075ab73280901f3c5c13e8fa907",
+      "ambient_proof_fields": {
+        "verified": true,
+        "merkle_root": "88d6e16e438a8fcff1c02419aa290b7ea47c81b146b5f56ef7d36bce3cc105e4",
+        "request_id": "4b04aec58e2a4e8ab5dda4a09b70af00"
+      }
+    },
+    {
+      "run_index": 6,
+      "strict_mode": true,
+      "routing_action": "HUMAN_REVIEW",
+      "segment_counts": {
+        "deterministic": 2,
+        "probabilistic": 13,
+        "unverifiable": 8
+      },
+      "mixed_categories_detected": true,
+      "strict_rejection_triggered": true,
+      "latency_ms": 0.274734,
+      "verification_sha256": "9f302c6fcd566fbbd2c9afeeb7a961562aaa0aa0b26a482d62c96251fed95dd1",
+      "ambient_proof_fields": {
+        "verified": true,
+        "merkle_root": "88d6e16e438a8fcff1c02419aa290b7ea47c81b146b5f56ef7d36bce3cc105e4",
+        "request_id": "4b04aec58e2a4e8ab5dda4a09b70af00"
+      }
+    },
+    {
+      "run_index": 7,
+      "strict_mode": true,
+      "routing_action": "HUMAN_REVIEW",
+      "segment_counts": {
+        "deterministic": 2,
+        "probabilistic": 13,
+        "unverifiable": 8
+      },
+      "mixed_categories_detected": true,
+      "strict_rejection_triggered": true,
+      "latency_ms": 0.370476,
+      "verification_sha256": "9f302c6fcd566fbbd2c9afeeb7a961562aaa0aa0b26a482d62c96251fed95dd1",
+      "ambient_proof_fields": {
+        "verified": true,
+        "merkle_root": "88d6e16e438a8fcff1c02419aa290b7ea47c81b146b5f56ef7d36bce3cc105e4",
+        "request_id": "4b04aec58e2a4e8ab5dda4a09b70af00"
+      }
+    },
+    {
+      "run_index": 8,
+      "strict_mode": true,
+      "routing_action": "HUMAN_REVIEW",
+      "segment_counts": {
+        "deterministic": 2,
+        "probabilistic": 13,
+        "unverifiable": 8
+      },
+      "mixed_categories_detected": true,
+      "strict_rejection_triggered": true,
+      "latency_ms": 0.350739,
+      "verification_sha256": "9f302c6fcd566fbbd2c9afeeb7a961562aaa0aa0b26a482d62c96251fed95dd1",
+      "ambient_proof_fields": {
+        "verified": true,
+        "merkle_root": "88d6e16e438a8fcff1c02419aa290b7ea47c81b146b5f56ef7d36bce3cc105e4",
+        "request_id": "4b04aec58e2a4e8ab5dda4a09b70af00"
+      }
+    },
+    {
+      "run_index": 9,
+      "strict_mode": true,
+      "routing_action": "HUMAN_REVIEW",
+      "segment_counts": {
+        "deterministic": 2,
+        "probabilistic": 13,
+        "unverifiable": 8
+      },
+      "mixed_categories_detected": true,
+      "strict_rejection_triggered": true,
+      "latency_ms": 0.348939,
+      "verification_sha256": "9f302c6fcd566fbbd2c9afeeb7a961562aaa0aa0b26a482d62c96251fed95dd1",
+      "ambient_proof_fields": {
+        "verified": true,
+        "merkle_root": "88d6e16e438a8fcff1c02419aa290b7ea47c81b146b5f56ef7d36bce3cc105e4",
+        "request_id": "4b04aec58e2a4e8ab5dda4a09b70af00"
+      }
+    },
+    {
+      "run_index": 10,
+      "strict_mode": true,
+      "routing_action": "HUMAN_REVIEW",
+      "segment_counts": {
+        "deterministic": 2,
+        "probabilistic": 13,
+        "unverifiable": 8
+      },
+      "mixed_categories_detected": true,
+      "strict_rejection_triggered": true,
+      "latency_ms": 0.359596,
+      "verification_sha256": "9f302c6fcd566fbbd2c9afeeb7a961562aaa0aa0b26a482d62c96251fed95dd1",
+      "ambient_proof_fields": {
+        "verified": true,
+        "merkle_root": "88d6e16e438a8fcff1c02419aa290b7ea47c81b146b5f56ef7d36bce3cc105e4",
+        "request_id": "4b04aec58e2a4e8ab5dda4a09b70af00"
+      }
+    }
+  ],
+  "benchmark_sha256": "58c0fcde1c9e8cab55c24aacebfb46d19cafb64116ebfd7041f738c1f7a2fc72",
+  "limitations": [
+    "This benchmark verifies deterministic local verification-hook behavior, not live model accuracy.",
+    "Latency and memory metrics are smoke-test signals and vary by hardware/runtime.",
+    "Ambient verified, merkle_root, and request_id fields are preserved as proof metadata and are not recomputed locally."
+  ],
+  "sources": {
+    "report_path": "examples/week16-trust-verification/gov-ai-main-report.json",
+    "proposal_path": "examples/week16-trust-verification/treasury-transfer-proposal.json"
+  }
+}

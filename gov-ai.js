@@ -7,6 +7,7 @@ import { runWeek18OpenInferenceLoop } from "./week18-open-inference-loop.js";
 import { loadJson as loadPipelineJson, runWeek20AgentPipeline, writePipelineArtifacts } from "./week20-agent-pipeline.js";
 import { runWeek21RoutingBenchmark } from "./week21-routing-intelligence.js";
 import { runWeek22ModelEvaluationBenchmark } from "./week22-model-evaluation.js";
+import { runWeek23VerificationBenchmark } from "./week23-reproducibility-benchmark.js";
 import "dotenv/config";
 
 const cmd = process.argv[2];
@@ -154,6 +155,25 @@ if (cmd === "model-evaluation") {
   process.exit(result.status === "complete" ? 0 : 2);
 }
 
+// ---------- WEEK 23 VERIFICATION REPEATABILITY BENCHMARK ----------
+if (cmd === "verification-repeatability") {
+  const reportPath = process.argv[3] || "examples/week16-trust-verification/gov-ai-main-report.json";
+  const proposalPath = process.argv[4] || "examples/week16-trust-verification/treasury-transfer-proposal.json";
+  const outputDir = process.argv[5] || "examples/week23-verification-repeatability";
+
+  const result = runWeek23VerificationBenchmark({ reportPath, proposalPath, outputDir });
+  console.log(JSON.stringify({
+    status: result.status,
+    total_runs: result.metrics.total_runs,
+    deterministic: result.metrics.deterministic,
+    latency_ms: result.metrics.latency_ms,
+    preserved_ambient_proof_fields: result.preserved_ambient_proof_fields,
+    benchmark_sha256: result.benchmark_sha256,
+    artifacts: result.artifacts,
+  }, null, 2));
+  process.exit(result.status === "complete" ? 0 : 2);
+}
+
 // ---------- RESOLVE URL ----------
 let url = null;
 
@@ -179,6 +199,7 @@ if (cmd === "analyze") {
   console.log("  node gov-ai.js agent-pipeline <report.json> <proposal.json> [output-dir]");
   console.log("  node gov-ai.js routing-intelligence [proposal.json] [output-dir]");
   console.log("  node gov-ai.js model-evaluation [proposal.json] [output-dir]");
+  console.log("  node gov-ai.js verification-repeatability [report.json] [proposal.json] [output-dir]");
   console.log("  node gov-ai.js");
   process.exit(0);
 }

@@ -6,7 +6,7 @@ Theme: Verified Intelligence
 - Status: complete
 - Total runs: 10
 - Deterministic: true
-- Latency ms min/avg/max: 0.275 / 0.602 / 2.727
+- Latency ms min/avg/max: 0.311 / 0.697 / 3.551
 - Benchmark hash: 58c0fcde1c9e8cab55c24aacebfb46d19cafb64116ebfd7041f738c1f7a2fc72
 
 ## Preserved proof fields

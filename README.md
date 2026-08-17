@@ -4,6 +4,7 @@ AI assistant for DAO governance proposals.
 
 ## Table of Contents
 
+- [Week 23 - Verification Repeatability Benchmark (Web2)](#week-23---verification-repeatability-benchmark-web2)
 - [Week 22 - Model Evaluation Benchmark (Web2)](#week-22---model-evaluation-benchmark-web2)
 - [Week 21 - Routing Intelligence Benchmark (Web2)](#week-21---routing-intelligence-benchmark-web2)
 - [Week 20 - Agent Architecture Pipeline (Web2)](#week-20---agent-architecture-pipeline-web2)
@@ -36,6 +37,7 @@ AI assistant for DAO governance proposals.
 
 This project started as **Web3 Developer Loop - Experiment #3 (AI for governance or automation)**.
 It now also documents and ships:
+- Week 23 verification repeatability (Web2): deterministic verification-hook benchmark for repeated runs over the same report/proposal fixture; preserves Ambient proof fields, records latency/memory smoke metrics, and exposes drift before users rely on repeated governance reports
 - Week 22 model evaluation (Web2): deterministic Beyond One Model benchmark cases for structured output, hallucination resistance, reasoning, research grounding, and coding/tooling; produces model-selection evidence without claiming broad leaderboard quality
 - Week 21 routing intelligence (Web2): deterministic prompt-category routing, capacity-aware fallback, TTFT estimates, consistency metrics, and edge-case handling for governance-analysis tasks
 - Core Ambient runtime hardening: `ambient/large` is the default router model for main analysis, stale explicit model IDs can fall back to configured valid models, and generated reports include Ambient model/runtime metadata beside the existing verification fields
@@ -66,6 +68,45 @@ The design goal is **honesty and conservatism**:
 - if some data cannot be extracted, it is marked as `UNKNOWN`
 - the tool does not guess voting options or results
 - the output is meant to **assist** human decision-making, not replace it
+
+---
+
+## Week 23 - Verification Repeatability Benchmark (Web2)
+
+Week 23 asks for **Verified Intelligence** evidence: can the same checkable workflow be repeated, compared, and verified instead of merely producing a plausible answer once?
+
+For `gov-ai`, the product fit is a deterministic verification-repeatability benchmark over the retained governance report and treasury proposal fixture:
+
+1. Run the same verification-hook classification repeatedly over identical inputs.
+2. Compare stable hashes for strict and non-strict verification modes.
+3. Preserve Ambient proof metadata fields (`verified`, `merkle_root`, `request_id`) without recomputing them locally.
+4. Record latency and memory smoke metrics for repeatability review.
+5. Write JSON and Markdown artifacts that can be inspected by reviewers.
+
+Run the Week 23 benchmark locally:
+
+```bash
+node gov-ai.js verification-repeatability examples/week16-trust-verification/gov-ai-main-report.json examples/week16-trust-verification/treasury-transfer-proposal.json examples/week23-verification-repeatability
+```
+
+Expected local result:
+
+```json
+{
+  "status": "complete",
+  "total_runs": 10,
+  "deterministic": true
+}
+```
+
+Artifacts:
+
+- `week23-reproducibility-benchmark.js` - deterministic verification-repeatability benchmark runner
+- `week23-reproducibility-benchmark.test.js` - tests for stable hashing, strict/non-strict repeatability, proof-field preservation, and artifact writing
+- `examples/week23-verification-repeatability/week23-verification-repeatability-output.json` - machine-readable repeatability evidence
+- `examples/week23-verification-repeatability/week23-verification-repeatability-report.md` - human-readable Week 23 report
+
+This is not a live model-truth proof. It is a reproducibility gate for the local `gov-ai` verification layer: if the same report/proposal fixture produces different verification classifications across repeated runs, the report should not be trusted without human review.
 
 ---
 

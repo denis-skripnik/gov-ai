@@ -3,8 +3,8 @@
   "theme": "Verified Intelligence",
   "kind": "gov-ai-week23-verification-repeatability-benchmark",
   "status": "complete",
-  "started_at": "2026-08-17T05:43:46.185Z",
-  "finished_at": "2026-08-17T05:43:46.195Z",
+  "started_at": "2026-08-17T06:41:36.442Z",
+  "finished_at": "2026-08-17T06:41:36.457Z",
   "input_fingerprints": {
     "report_sha256": "0d1ddea58ce9bfd90168a9ac5905e5eea43cff51d4343d0f716fb4c66caf3caf",
     "extracted_sha256": "8abbe34740111fec069fbfc673377c196d6d9a8e3700f1a556604106fe2b17b8"
@@ -23,12 +23,12 @@
     ],
     "deterministic": true,
     "latency_ms": {
-      "min": 0.275,
-      "max": 2.727,
-      "avg": 0.602
+      "min": 0.311,
+      "max": 3.551,
+      "avg": 0.697
     },
-    "heap_used_delta_bytes": 1725800,
-    "rss_delta_bytes": 1482752
+    "heap_used_delta_bytes": 1673320,
+    "rss_delta_bytes": 1900544
   },
   "groups": [
     {
@@ -64,7 +64,7 @@
       },
       "mixed_categories_detected": true,
       "strict_rejection_triggered": false,
-      "latency_ms": 2.726817,
+      "latency_ms": 3.550575,
       "verification_sha256": "fcb07b641fab21141854d7db95f7dfe081746075ab73280901f3c5c13e8fa907",
       "ambient_proof_fields": {
         "verified": true,
@@ -83,7 +83,7 @@
       },
       "mixed_categories_detected": true,
       "strict_rejection_triggered": false,
-      "latency_ms": 0.532179,
+      "latency_ms": 0.525405,
       "verification_sha256": "fcb07b641fab21141854d7db95f7dfe081746075ab73280901f3c5c13e8fa907",
       "ambient_proof_fields": {
         "verified": true,
@@ -102,7 +102,7 @@
       },
       "mixed_categories_detected": true,
       "strict_rejection_triggered": false,
-      "latency_ms": 0.298778,
+      "latency_ms": 0.359266,
       "verification_sha256": "fcb07b641fab21141854d7db95f7dfe081746075ab73280901f3c5c13e8fa907",
       "ambient_proof_fields": {
         "verified": true,
@@ -121,7 +121,7 @@
       },
       "mixed_categories_detected": true,
       "strict_rejection_triggered": false,
-      "latency_ms": 0.428582,
+      "latency_ms": 0.442244,
       "verification_sha256": "fcb07b641fab21141854d7db95f7dfe081746075ab73280901f3c5c13e8fa907",
       "ambient_proof_fields": {
         "verified": true,
@@ -140,7 +140,7 @@
       },
       "mixed_categories_detected": true,
       "strict_rejection_triggered": false,
-      "latency_ms": 0.326622,
+      "latency_ms": 0.449195,
       "verification_sha256": "fcb07b641fab21141854d7db95f7dfe081746075ab73280901f3c5c13e8fa907",
       "ambient_proof_fields": {
         "verified": true,
@@ -159,7 +159,7 @@
       },
       "mixed_categories_detected": true,
       "strict_rejection_triggered": true,
-      "latency_ms": 0.274734,
+      "latency_ms": 0.354593,
       "verification_sha256": "9f302c6fcd566fbbd2c9afeeb7a961562aaa0aa0b26a482d62c96251fed95dd1",
       "ambient_proof_fields": {
         "verified": true,
@@ -178,7 +178,7 @@
       },
       "mixed_categories_detected": true,
       "strict_rejection_triggered": true,
-      "latency_ms": 0.370476,
+      "latency_ms": 0.329834,
       "verification_sha256": "9f302c6fcd566fbbd2c9afeeb7a961562aaa0aa0b26a482d62c96251fed95dd1",
       "ambient_proof_fields": {
         "verified": true,
@@ -197,7 +197,7 @@
       },
       "mixed_categories_detected": true,
       "strict_rejection_triggered": true,
-      "latency_ms": 0.350739,
+      "latency_ms": 0.333911,
       "verification_sha256": "9f302c6fcd566fbbd2c9afeeb7a961562aaa0aa0b26a482d62c96251fed95dd1",
       "ambient_proof_fields": {
         "verified": true,
@@ -216,7 +216,7 @@
       },
       "mixed_categories_detected": true,
       "strict_rejection_triggered": true,
-      "latency_ms": 0.348939,
+      "latency_ms": 0.311146,
       "verification_sha256": "9f302c6fcd566fbbd2c9afeeb7a961562aaa0aa0b26a482d62c96251fed95dd1",
       "ambient_proof_fields": {
         "verified": true,
@@ -235,7 +235,7 @@
       },
       "mixed_categories_detected": true,
       "strict_rejection_triggered": true,
-      "latency_ms": 0.359596,
+      "latency_ms": 0.314102,
       "verification_sha256": "9f302c6fcd566fbbd2c9afeeb7a961562aaa0aa0b26a482d62c96251fed95dd1",
       "ambient_proof_fields": {
         "verified": true,

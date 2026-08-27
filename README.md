@@ -110,10 +110,13 @@ Artifacts:
 - `examples/week24-builder-workflow/week24-builder-workflow-output.json` - machine-readable live workflow evidence
 - `examples/week24-builder-workflow/week24-builder-workflow-report.md` - human-readable Week 24 report
 - `examples/week24-builder-workflow/ambient-profile-agent-note.md` - evidence from a separate temporary Hermes profile configured to use Ambient as the model while still using normal file/terminal tools
+- `examples/week24-builder-workflow/single-ambient-model-tool-use-note.md` - stricter single-model evidence from a temporary Hermes profile with provider `custom`, model `ambient/large`, no fallback providers, and normal file/terminal tool calls
 
 The first live run with a lower token budget produced HTTP 200, request ids, and streaming events but no visible text because the completion budget was consumed by reasoning tokens. The final run used a larger budget and completed 3/3 stages. This is useful builder feedback: coding-agent examples need explicit output-token guidance and retry/error labels, not just endpoint compatibility.
 
 This is not a broad model-quality benchmark. It is a developer-experience probe: can Ambient sit behind the tools developers already use, and what friction appears when the model is used inside a tool-calling agent shell?
+
+Single-model follow-up: a second temporary profile was configured with only `custom` / `ambient/large` and `fallback_providers: []`. A Hermes one-shot run used file and terminal tools to inspect `gov-ai`, write a note, and verify it. The usage artifact recorded `provider: custom`, `model: ambient/large`, `api_calls: 4`, `completed: true`, `failed: false`. Tools were executed by Hermes, but tool selection, arguments, and stopping decisions came from the single Ambient model loop.
 
 ---
 
@@ -931,7 +934,7 @@ Create `.env` (see `.env.example` for reference):
 ```env
 AMBIENT_API_KEY=<your-ambient-api-key>
 PROPOSAL_URL="https://..."
-TALLY_API_KEY=...   # optional, only for tally.xyz
+TALLY_API_KEY=<your-tally-api-key>   # optional, only for tally.xyz
 PORT=3000           # optional, default port for gov-ai-api.js
 PAGE_PORT=3100      # optional, default port for pageServer.js
 ```

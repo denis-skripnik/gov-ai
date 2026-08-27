@@ -8,6 +8,7 @@ import { loadJson as loadPipelineJson, runWeek20AgentPipeline, writePipelineArti
 import { runWeek21RoutingBenchmark } from "./week21-routing-intelligence.js";
 import { runWeek22ModelEvaluationBenchmark } from "./week22-model-evaluation.js";
 import { runWeek23VerificationBenchmark } from "./week23-reproducibility-benchmark.js";
+import { runWeek24BuilderWorkflow } from "./week24-builder-workflow.js";
 import "dotenv/config";
 
 const cmd = process.argv[2];
@@ -174,6 +175,29 @@ if (cmd === "verification-repeatability") {
   process.exit(result.status === "complete" ? 0 : 2);
 }
 
+// ---------- WEEK 24 BUILDERS FIRST DEVELOPER WORKFLOW ----------
+if (cmd === "builder-workflow") {
+  const outputDir = process.argv[3] || "examples/week24-builder-workflow";
+  const task = process.argv[4] || "Add a small developer-facing integration example for Ambient-backed coding workflows.";
+  const model = process.env.WEEK24_BUILDER_MODEL || "ambient/large";
+  const maxTokens = Number(process.env.WEEK24_BUILDER_MAX_TOKENS || 1400);
+  const attempts = Number(process.env.WEEK24_BUILDER_ATTEMPTS || 2);
+
+  const result = await runWeek24BuilderWorkflow({ outputDir, task, model, maxTokens, attempts });
+  console.log(JSON.stringify({
+    status: result.status,
+    workflow_type: result.workflow_type,
+    stages_ok: result.metrics.stages_ok,
+    stages_total: result.metrics.stages_total,
+    request_id_present: result.metrics.request_id_present,
+    streamed_stages: result.metrics.streamed_stages,
+    retry_attempts_total: result.metrics.retry_attempts_total,
+    workflow_sha256: result.workflow_sha256,
+    artifacts: result.artifacts,
+  }, null, 2));
+  process.exit(result.status === "complete" ? 0 : 2);
+}
+
 // ---------- RESOLVE URL ----------
 let url = null;
 
@@ -200,6 +224,7 @@ if (cmd === "analyze") {
   console.log("  node gov-ai.js routing-intelligence [proposal.json] [output-dir]");
   console.log("  node gov-ai.js model-evaluation [proposal.json] [output-dir]");
   console.log("  node gov-ai.js verification-repeatability [report.json] [proposal.json] [output-dir]");
+  console.log("  node gov-ai.js builder-workflow [output-dir] [task]");
   console.log("  node gov-ai.js");
   process.exit(0);
 }

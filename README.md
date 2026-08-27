@@ -4,6 +4,7 @@ AI assistant for DAO governance proposals.
 
 ## Table of Contents
 
+- [Week 24 - Builders First Developer Workflow (Web2)](#week-24---builders-first-developer-workflow-web2)
 - [Week 23 - Verification Repeatability Benchmark (Web2)](#week-23---verification-repeatability-benchmark-web2)
 - [Week 22 - Model Evaluation Benchmark (Web2)](#week-22---model-evaluation-benchmark-web2)
 - [Week 21 - Routing Intelligence Benchmark (Web2)](#week-21---routing-intelligence-benchmark-web2)
@@ -37,6 +38,7 @@ AI assistant for DAO governance proposals.
 
 This project started as **Web3 Developer Loop - Experiment #3 (AI for governance or automation)**.
 It now also documents and ships:
+- Week 24 builders-first workflow (Web2): Ambient-backed coding-agent-style workflow evidence with planning, implementation sketching, review, streaming, retry handling, a temporary Hermes profile tool-use probe, and reusable JSON/Markdown artifacts for developers
 - Week 23 verification repeatability (Web2): deterministic verification-hook benchmark for repeated runs over the same report/proposal fixture; preserves Ambient proof fields, records latency/memory smoke metrics, and exposes drift before users rely on repeated governance reports
 - Week 22 model evaluation (Web2): deterministic Beyond One Model benchmark cases for structured output, hallucination resistance, reasoning, research grounding, and coding/tooling; produces model-selection evidence without claiming broad leaderboard quality
 - Week 21 routing intelligence (Web2): deterministic prompt-category routing, capacity-aware fallback, TTFT estimates, consistency metrics, and edge-case handling for governance-analysis tasks
@@ -68,6 +70,50 @@ The design goal is **honesty and conservatism**:
 - if some data cannot be extracted, it is marked as `UNKNOWN`
 - the tool does not guess voting options or results
 - the output is meant to **assist** human decision-making, not replace it
+
+---
+
+## Week 24 - Builders First Developer Workflow (Web2)
+
+Week 24 asks whether Ambient can fit naturally into normal developer workflows instead of forcing builders into a separate website or one-off demo path.
+
+For `gov-ai`, the product fit is a small Ambient-backed coding-agent-style workflow:
+
+1. Run a developer task through three ordinary agent stages: plan, implementation sketch, and review.
+2. Use Ambient's OpenAI-compatible `/chat/completions` API as the model backend.
+3. Keep the main Hermes profile unchanged; use env/config overrides or an isolated profile for experiments.
+4. Record streaming, request-id, retry, latency, and failure-mode evidence.
+5. Write JSON and Markdown artifacts that other builders can inspect.
+
+Run the Week 24 workflow locally:
+
+```bash
+WEEK24_BUILDER_MAX_TOKENS=1400 node gov-ai.js builder-workflow examples/week24-builder-workflow "Build a reusable gov-ai developer workflow that shows how Ambient can sit behind a coding-agent style CLI without changing the main Hermes profile."
+```
+
+Expected successful shape:
+
+```json
+{
+  "status": "complete",
+  "stages_ok": 3,
+  "stages_total": 3,
+  "request_id_present": 3,
+  "streamed_stages": 3
+}
+```
+
+Artifacts:
+
+- `week24-builder-workflow.js` - reusable Ambient-backed coding-agent-style workflow runner
+- `week24-builder-workflow.test.js` - mock-call tests for stages, streaming parser, failure classification, and artifact writing
+- `examples/week24-builder-workflow/week24-builder-workflow-output.json` - machine-readable live workflow evidence
+- `examples/week24-builder-workflow/week24-builder-workflow-report.md` - human-readable Week 24 report
+- `examples/week24-builder-workflow/ambient-profile-agent-note.md` - evidence from a separate temporary Hermes profile configured to use Ambient as the model while still using normal file/terminal tools
+
+The first live run with a lower token budget produced HTTP 200, request ids, and streaming events but no visible text because the completion budget was consumed by reasoning tokens. The final run used a larger budget and completed 3/3 stages. This is useful builder feedback: coding-agent examples need explicit output-token guidance and retry/error labels, not just endpoint compatibility.
+
+This is not a broad model-quality benchmark. It is a developer-experience probe: can Ambient sit behind the tools developers already use, and what friction appears when the model is used inside a tool-calling agent shell?
 
 ---
 
@@ -883,7 +929,7 @@ npm install
 Create `.env` (see `.env.example` for reference):
 
 ```env
-AMBIENT_API_KEY=...
+AMBIENT_API_KEY=<your-ambient-api-key>
 PROPOSAL_URL="https://..."
 TALLY_API_KEY=...   # optional, only for tally.xyz
 PORT=3000           # optional, default port for gov-ai-api.js
@@ -1193,7 +1239,7 @@ or set `PROPOSAL_URL` in `.env`.
 ### Environment variables (in addition to the main ones)
 
 ```env
-OPENROUTER_API_KEY=...
+OPENROUTER_API_KEY=<your-openrouter-api-key>
 OPENROUTER_MODEL=openai/gpt-5.4
 OPENROUTER_API_URL=https://openrouter.ai/api/v1/chat/completions
 

@@ -1,0 +1,165 @@
+{
+  "status": "complete",
+  "week": 24,
+  "theme": "Builders First",
+  "started_at": "2026-08-27T05:48:32.263Z",
+  "completed_at": "2026-08-27T05:49:19.449Z",
+  "project": "gov-ai",
+  "model_requested": "ambient/large",
+  "workflow_type": "ambient_backed_coding_agent_style",
+  "metrics": {
+    "stages_total": 3,
+    "stages_ok": 3,
+    "request_id_present": 3,
+    "streamed_stages": 3,
+    "retry_attempts_total": 3,
+    "failures": []
+  },
+  "stages": [
+    {
+      "id": "plan",
+      "tool_role": "planner",
+      "final": {
+        "stage_id": "plan",
+        "tool_role": "planner",
+        "ok": true,
+        "status": 200,
+        "request_id_present": true,
+        "latency_ms": 11674,
+        "first_byte_ms": 713,
+        "failure_type": null,
+        "model_requested": "ambient/large",
+        "model_returned": "z-ai/glm-5.2",
+        "output_chars": 4881,
+        "output_sha256": "18d9fee432dbd3dd998f575224b4840a9395bbd223d25a9d364259b20221cf2f",
+        "output_preview": "# Implementation Plan: gov-ai Developer Workflow with Ambient Behind Coding-Agent CLI\n\n## Goal\nProvide a reusable workflow where a coding-agent-style CLI invokes Ambient as its execution backend, while the Hermes profile remains the default/unchanged main profile. Ambient is selected via config/env, not by editing Hermes.\n\n## Non-Goals\n- Modifying Hermes profile behavior or defaults.\n- Building a new agent runtime; reuse existing Ambient capabilities.\n- Shipping to production; this is a developer-facing workflow/template.\n\n## Architecture Overview\n```\ncoding-agent CLI (entrypoint)\n   └── workflow adapter (selects backend profile)\n         ├── default: Hermes profile (unchanged)\n         └── ",
+        "event_types": [
+          "chat.completion.chunk"
+        ],
+        "verified": null,
+        "merkle_root_present": false,
+        "usage": {
+          "prompt_tokens": 108,
+          "total_tokens": 1384,
+          "completion_tokens": 1276,
+          "prompt_tokens_details": {
+            "cached_tokens": 0,
+            "created_cache_tokens": 64
+          },
+          "completion_tokens_details": {
+            "reasoning_tokens": 160
+          }
+        },
+        "memory_rss_delta_bytes": 24346624
+      },
+      "attempts": [
+        {
+          "attempt": 1,
+          "ok": true,
+          "status": 200,
+          "latency_ms": 11674,
+          "first_byte_ms": 713,
+          "failure_type": null,
+          "request_id_present": true
+        }
+      ]
+    },
+    {
+      "id": "implementation_sketch",
+      "tool_role": "implementer",
+      "final": {
+        "stage_id": "implementation_sketch",
+        "tool_role": "implementer",
+        "ok": true,
+        "status": 200,
+        "request_id_present": true,
+        "latency_ms": 12714,
+        "first_byte_ms": 547,
+        "failure_type": null,
+        "model_requested": "ambient/large",
+        "model_returned": "z-ai/glm-5.2",
+        "output_chars": 3909,
+        "output_sha256": "a9b7a97c2020ad782a7e2d80fdc028d57a343b299fb1728c6eb313f0062cc0c0",
+        "output_preview": "# Patch Sketch: gov-ai Developer Workflow\n\n## Goal\nWrap the Ambient profile behind a coding-agent CLI surface so it can be invoked programmatically while the main Hermes profile remains untouched.\n\n---\n\n## Files\n\n### `src/profiles/ambient.ts`\n```ts\nexport interface AmbientConfig {\n  id: 'ambient';\n  parent?: 'hermes';\n  sandbox: boolean;\n  timeoutMs: number;\n  tools: string[]; // subset of Hermes tools\n}\n\nexport function createAmbientProfile(overrides?: Partial<AmbientConfig>): AmbientConfig\n```\n- Imports `HermesConfig` type from `./hermes` for compatibility check, never mutates it.\n- Default: `sandbox: true`, `timeoutMs: 30000`, `tools: ['read','write','grep','test']`.\n\n### `src/workflows/d",
+        "event_types": [
+          "chat.completion.chunk"
+        ],
+        "verified": null,
+        "merkle_root_present": false,
+        "usage": {
+          "prompt_tokens": 113,
+          "total_tokens": 1417,
+          "completion_tokens": 1304,
+          "prompt_tokens_details": {
+            "cached_tokens": 0,
+            "created_cache_tokens": 64
+          },
+          "completion_tokens_details": {
+            "reasoning_tokens": 339
+          }
+        },
+        "memory_rss_delta_bytes": 2756608
+      },
+      "attempts": [
+        {
+          "attempt": 1,
+          "ok": true,
+          "status": 200,
+          "latency_ms": 12714,
+          "first_byte_ms": 547,
+          "failure_type": null,
+          "request_id_present": true
+        }
+      ]
+    },
+    {
+      "id": "review",
+      "tool_role": "reviewer",
+      "final": {
+        "stage_id": "review",
+        "tool_role": "reviewer",
+        "ok": true,
+        "status": 200,
+        "request_id_present": true,
+        "latency_ms": 22795,
+        "first_byte_ms": 606,
+        "failure_type": null,
+        "model_requested": "ambient/large",
+        "model_returned": "z-ai/glm-5.2",
+        "output_chars": 3423,
+        "output_sha256": "8a2aba2636bdc761f2136d86d1f9b30795792f49cbc33d617d58ef9c88989bad",
+        "output_preview": "# Code Review: gov-ai Developer Workflow (Ambient behind coding-agent CLI)\n\n## Acceptance Checks\n\n**Transparency / non-invasiveness**\n- [ ] Hermes profile config file remains byte-identical before/after wiring Ambient\n- [ ] CLI launches with only env-var overrides (e.g. `ANTHROPIC_BASE_URL`, `OPENAI_BASE_URL`) — no CLI source patches\n- [ ] Model name sent by CLI is preserved end-to-end (Ambient does not silently rewrite `model` field unless explicitly configured)\n- [ ] A \"bypass\" mode exists: unset env var → CLI talks directly to upstream, no behavioral drift\n\n**Functional parity**\n- [ ] Non-streaming `/v1/messages` and `/v1/chat/completions` round-trip: system, user, assistant, tool_result ",
+        "event_types": [
+          "chat.completion.chunk"
+        ],
+        "verified": null,
+        "merkle_root_present": false,
+        "usage": {
+          "prompt_tokens": 99,
+          "total_tokens": 1499,
+          "completion_tokens": 1400,
+          "prompt_tokens_details": {
+            "cached_tokens": 0,
+            "created_cache_tokens": 64
+          },
+          "completion_tokens_details": {
+            "reasoning_tokens": 684
+          }
+        },
+        "memory_rss_delta_bytes": 94208
+      },
+      "attempts": [
+        {
+          "attempt": 1,
+          "ok": true,
+          "status": 200,
+          "latency_ms": 22795,
+          "first_byte_ms": 606,
+          "failure_type": null,
+          "request_id_present": true
+        }
+      ]
+    }
+  ],
+  "workflow_sha256": "2fbe268297900c9a43cc180eb5146a18153c07d5fbd370c2271df4a189d1915e"
+}

@@ -1,0 +1,490 @@
+{
+  "status": "complete",
+  "week": 25,
+  "theme": "Under Pressure",
+  "workflow_type": "bounded_demand_shift_workload",
+  "project": "gov-ai",
+  "model_requested": "ambient/large",
+  "started_at": "2026-09-04T12:48:08.149Z",
+  "completed_at": "2026-09-04T12:48:49.793Z",
+  "phases": [
+    {
+      "id": "quiet_baseline",
+      "concurrency": 1,
+      "requests": 1,
+      "prompt_size": "short",
+      "started_at": "2026-09-04T12:48:08.149Z",
+      "completed_at": "2026-09-04T12:48:16.563Z",
+      "results": [
+        {
+          "final": {
+            "stage_id": "quiet_baseline_1",
+            "tool_role": "burst_probe",
+            "ok": true,
+            "status": 200,
+            "request_id_present": true,
+            "latency_ms": 8412,
+            "first_byte_ms": 804,
+            "failure_type": null,
+            "model_requested": "ambient/large",
+            "model_returned": "z-ai/glm-5.2",
+            "output_chars": 662,
+            "output_sha256": "ab5e19b7e688125648fad27104d15417b070a2f5a82185285d02d25eac64a034",
+            "output_preview": "1. **Idempotency**: Restrict automatic retries to idempotent HTTP methods (e.g., `GET`, `PUT`, `DELETE`) to prevent unintended duplicate operations; if retrying `POST` requests, ensure the server supports idempotency keys.\n2. **Backoff Strategy**: Implement exponential backoff with jitter (randomized delay) between retry attempts to prevent synchronized retry storms and avoid overwhelming a recovering or rate-limited server.\n3. **Server Directives**: Always honor the `Retry-After` response header when handling `429 Too Many Requests` or `503 Service Unavailable` statuses, as it dictates the exact minimum delay the server requires before the next attempt.",
+            "event_types": [
+              "chat.completion.chunk"
+            ],
+            "verified": null,
+            "merkle_root_present": false,
+            "usage": {
+              "prompt_tokens": 65,
+              "total_tokens": 708,
+              "completion_tokens": 643,
+              "prompt_tokens_details": {
+                "cached_tokens": 0,
+                "created_cache_tokens": 64
+              },
+              "completion_tokens_details": {
+                "reasoning_tokens": 532
+              }
+            },
+            "memory_rss_delta_bytes": 14188544
+          },
+          "attempts": [
+            {
+              "attempt": 1,
+              "stage_id": "quiet_baseline_1",
+              "tool_role": "burst_probe",
+              "ok": true,
+              "status": 200,
+              "request_id_present": true,
+              "latency_ms": 8412,
+              "first_byte_ms": 804,
+              "failure_type": null,
+              "model_requested": "ambient/large",
+              "model_returned": "z-ai/glm-5.2",
+              "output_chars": 662,
+              "output_sha256": "ab5e19b7e688125648fad27104d15417b070a2f5a82185285d02d25eac64a034",
+              "output_preview": "1. **Idempotency**: Restrict automatic retries to idempotent HTTP methods (e.g., `GET`, `PUT`, `DELETE`) to prevent unintended duplicate operations; if retrying `POST` requests, ensure the server supports idempotency keys.\n2. **Backoff Strategy**: Implement exponential backoff with jitter (randomized delay) between retry attempts to prevent synchronized retry storms and avoid overwhelming a recovering or rate-limited server.\n3. **Server Directives**: Always honor the `Retry-After` response header when handling `429 Too Many Requests` or `503 Service Unavailable` statuses, as it dictates the exact minimum delay the server requires before the next attempt.",
+              "event_types": [
+                "chat.completion.chunk"
+              ],
+              "verified": null,
+              "merkle_root_present": false,
+              "usage": {
+                "prompt_tokens": 65,
+                "total_tokens": 708,
+                "completion_tokens": 643,
+                "prompt_tokens_details": {
+                  "cached_tokens": 0,
+                  "created_cache_tokens": 64
+                },
+                "completion_tokens_details": {
+                  "reasoning_tokens": 532
+                }
+              },
+              "memory_rss_delta_bytes": 14188544
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "parallel_burst",
+      "concurrency": 2,
+      "requests": 2,
+      "prompt_size": "mixed",
+      "started_at": "2026-09-04T12:48:16.563Z",
+      "completed_at": "2026-09-04T12:48:28.109Z",
+      "results": [
+        {
+          "final": {
+            "stage_id": "parallel_burst_1",
+            "tool_role": "burst_probe",
+            "ok": true,
+            "status": 200,
+            "request_id_present": true,
+            "latency_ms": 6407,
+            "first_byte_ms": 546,
+            "failure_type": null,
+            "model_requested": "ambient/large",
+            "model_returned": "z-ai/glm-5.2",
+            "output_chars": 2397,
+            "output_sha256": "e2df982a02ea4be39baf7909c947e75b7820b420d3ba4ef0e3b50d38d25aecc0",
+            "output_preview": "## Distinguishing Latency, Timeout, and Server Error\n\n### Latency\n- **Definition:** Request succeeded but took longer than expected.\n- **Signal:** HTTP 200 (or other 2xx) with high `response_time_ms`.\n- **How to report:** Flag if `response_time_ms` exceeds an SLO threshold (e.g. p95 > 500ms) even though status is success.\n- **Key fields:** `status_code`, `response_time_ms`, `threshold_ms`.\n\n### Timeout\n- **Definition:** Client or server gave up waiting before a response arrived.\n- **Signal:** No HTTP status received. Typically a client-side exception (e.g. `ReadTimeout`, `ConnectTimeout`) or a 408/504 if the server reports it.\n- **How to report:** Distinguish client-side timeout (no `status_",
+            "event_types": [
+              "chat.completion.chunk"
+            ],
+            "verified": null,
+            "merkle_root_present": false,
+            "usage": {
+              "prompt_tokens": 78,
+              "total_tokens": 713,
+              "completion_tokens": 635,
+              "prompt_tokens_details": {
+                "cached_tokens": 0,
+                "created_cache_tokens": 64
+              },
+              "completion_tokens_details": {
+                "reasoning_tokens": 48
+              }
+            },
+            "memory_rss_delta_bytes": 1789952
+          },
+          "attempts": [
+            {
+              "attempt": 1,
+              "stage_id": "parallel_burst_1",
+              "tool_role": "burst_probe",
+              "ok": true,
+              "status": 200,
+              "request_id_present": true,
+              "latency_ms": 6407,
+              "first_byte_ms": 546,
+              "failure_type": null,
+              "model_requested": "ambient/large",
+              "model_returned": "z-ai/glm-5.2",
+              "output_chars": 2397,
+              "output_sha256": "e2df982a02ea4be39baf7909c947e75b7820b420d3ba4ef0e3b50d38d25aecc0",
+              "output_preview": "## Distinguishing Latency, Timeout, and Server Error\n\n### Latency\n- **Definition:** Request succeeded but took longer than expected.\n- **Signal:** HTTP 200 (or other 2xx) with high `response_time_ms`.\n- **How to report:** Flag if `response_time_ms` exceeds an SLO threshold (e.g. p95 > 500ms) even though status is success.\n- **Key fields:** `status_code`, `response_time_ms`, `threshold_ms`.\n\n### Timeout\n- **Definition:** Client or server gave up waiting before a response arrived.\n- **Signal:** No HTTP status received. Typically a client-side exception (e.g. `ReadTimeout`, `ConnectTimeout`) or a 408/504 if the server reports it.\n- **How to report:** Distinguish client-side timeout (no `status_",
+              "event_types": [
+                "chat.completion.chunk"
+              ],
+              "verified": null,
+              "merkle_root_present": false,
+              "usage": {
+                "prompt_tokens": 78,
+                "total_tokens": 713,
+                "completion_tokens": 635,
+                "prompt_tokens_details": {
+                  "cached_tokens": 0,
+                  "created_cache_tokens": 64
+                },
+                "completion_tokens_details": {
+                  "reasoning_tokens": 48
+                }
+              },
+              "memory_rss_delta_bytes": 1789952
+            }
+          ]
+        },
+        {
+          "final": {
+            "stage_id": "parallel_burst_2",
+            "tool_role": "burst_probe",
+            "ok": true,
+            "status": 200,
+            "request_id_present": true,
+            "latency_ms": 11544,
+            "first_byte_ms": 651,
+            "failure_type": null,
+            "model_requested": "ambient/large",
+            "model_returned": "z-ai/glm-5.2",
+            "output_chars": 2948,
+            "output_sha256": "76b8a7fb77242d30b00f67ea660d628908ee65f510da745d2fcabdee125dc92e",
+            "output_preview": "## Distinguishing Latency, Timeout, and Server Error in Reports\n\n### Quick Decision Tree\n\n```\nRequest sent\n  │\n  ├─ Response received quickly, but slow (>expected threshold)?\n  │     → LATENCY issue\n  │\n  ├─ No response within configured deadline?\n  │     → TIMEOUT\n  │\n  └─ Response received with HTTP 5xx or error payload?\n        → SERVER ERROR\n```\n\n### Definitions\n\n| Concept | Signal | Typical Root Cause |\n|---|---|---|\n| **Latency** | Response *arrived* but took longer than the SLO/baseline (e.g., p95 > 500ms) | Queue depth, cold starts, downstream slowness, resource contention |\n| **Timeout** | Caller gave up before a response arrived (e.g., 30s elapsed with no bytes) | Network partition",
+            "event_types": [
+              "chat.completion.chunk"
+            ],
+            "verified": null,
+            "merkle_root_present": false,
+            "usage": {
+              "prompt_tokens": 78,
+              "total_tokens": 852,
+              "completion_tokens": 774,
+              "prompt_tokens_details": {
+                "cached_tokens": 0,
+                "created_cache_tokens": 64
+              },
+              "completion_tokens_details": {
+                "reasoning_tokens": 46
+              }
+            },
+            "memory_rss_delta_bytes": 1789952
+          },
+          "attempts": [
+            {
+              "attempt": 1,
+              "stage_id": "parallel_burst_2",
+              "tool_role": "burst_probe",
+              "ok": true,
+              "status": 200,
+              "request_id_present": true,
+              "latency_ms": 11544,
+              "first_byte_ms": 651,
+              "failure_type": null,
+              "model_requested": "ambient/large",
+              "model_returned": "z-ai/glm-5.2",
+              "output_chars": 2948,
+              "output_sha256": "76b8a7fb77242d30b00f67ea660d628908ee65f510da745d2fcabdee125dc92e",
+              "output_preview": "## Distinguishing Latency, Timeout, and Server Error in Reports\n\n### Quick Decision Tree\n\n```\nRequest sent\n  │\n  ├─ Response received quickly, but slow (>expected threshold)?\n  │     → LATENCY issue\n  │\n  ├─ No response within configured deadline?\n  │     → TIMEOUT\n  │\n  └─ Response received with HTTP 5xx or error payload?\n        → SERVER ERROR\n```\n\n### Definitions\n\n| Concept | Signal | Typical Root Cause |\n|---|---|---|\n| **Latency** | Response *arrived* but took longer than the SLO/baseline (e.g., p95 > 500ms) | Queue depth, cold starts, downstream slowness, resource contention |\n| **Timeout** | Caller gave up before a response arrived (e.g., 30s elapsed with no bytes) | Network partition",
+              "event_types": [
+                "chat.completion.chunk"
+              ],
+              "verified": null,
+              "merkle_root_present": false,
+              "usage": {
+                "prompt_tokens": 78,
+                "total_tokens": 852,
+                "completion_tokens": 774,
+                "prompt_tokens_details": {
+                  "cached_tokens": 0,
+                  "created_cache_tokens": 64
+                },
+                "completion_tokens_details": {
+                  "reasoning_tokens": 46
+                }
+              },
+              "memory_rss_delta_bytes": 1789952
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "sustained_low_volume",
+      "concurrency": 1,
+      "requests": 2,
+      "prompt_size": "long",
+      "started_at": "2026-09-04T12:48:28.109Z",
+      "completed_at": "2026-09-04T12:48:40.762Z",
+      "results": [
+        {
+          "final": {
+            "stage_id": "sustained_low_volume_1",
+            "tool_role": "burst_probe",
+            "ok": true,
+            "status": 200,
+            "request_id_present": true,
+            "latency_ms": 7321,
+            "first_byte_ms": 914,
+            "failure_type": null,
+            "model_requested": "ambient/large",
+            "model_returned": "z-ai/glm-5.2",
+            "output_chars": 1007,
+            "output_sha256": "4bf73cab0d3d15b6e0b5ccecf4fdf8c87ee49141e2ce97fde0f38fff054e2f54",
+            "output_preview": "## Bounded Retry Strategy (Streaming Coding-Agent Request)\n\n**Per-attempt timeout:** 30s for initial stream connection; 90s max idle between stream chunks.\n\n**Retry triggers:** connection failure, 5xx, stream idle timeout. Do **not** retry on 4xx (except 429).\n\n**Backoff schedule (max 3 retries):**\n\n| Attempt | Delay |\n|---------|-------|\n| 1 | immediate |\n| 2 | 2s + jitter (±0.5s) |\n| 3 | 5s + jitter (±1s) |\n\n**429 handling:** respect `Retry-After` header; cap wait at 15s, else skip retry.\n\n**Stop conditions:**\n- 3 retries exhausted\n- Total elapsed > 60s (wall clock from original request)\n- Non-retryable status (400/401/403/404)\n- Partial output already streamed to client (no retry — return",
+            "event_types": [
+              "chat.completion.chunk"
+            ],
+            "verified": null,
+            "merkle_root_present": false,
+            "usage": {
+              "prompt_tokens": 78,
+              "total_tokens": 369,
+              "completion_tokens": 291,
+              "prompt_tokens_details": {
+                "cached_tokens": 0,
+                "created_cache_tokens": 64
+              },
+              "completion_tokens_details": {
+                "reasoning_tokens": 40
+              }
+            },
+            "memory_rss_delta_bytes": 1073152
+          },
+          "attempts": [
+            {
+              "attempt": 1,
+              "stage_id": "sustained_low_volume_1",
+              "tool_role": "burst_probe",
+              "ok": true,
+              "status": 200,
+              "request_id_present": true,
+              "latency_ms": 7321,
+              "first_byte_ms": 914,
+              "failure_type": null,
+              "model_requested": "ambient/large",
+              "model_returned": "z-ai/glm-5.2",
+              "output_chars": 1007,
+              "output_sha256": "4bf73cab0d3d15b6e0b5ccecf4fdf8c87ee49141e2ce97fde0f38fff054e2f54",
+              "output_preview": "## Bounded Retry Strategy (Streaming Coding-Agent Request)\n\n**Per-attempt timeout:** 30s for initial stream connection; 90s max idle between stream chunks.\n\n**Retry triggers:** connection failure, 5xx, stream idle timeout. Do **not** retry on 4xx (except 429).\n\n**Backoff schedule (max 3 retries):**\n\n| Attempt | Delay |\n|---------|-------|\n| 1 | immediate |\n| 2 | 2s + jitter (±0.5s) |\n| 3 | 5s + jitter (±1s) |\n\n**429 handling:** respect `Retry-After` header; cap wait at 15s, else skip retry.\n\n**Stop conditions:**\n- 3 retries exhausted\n- Total elapsed > 60s (wall clock from original request)\n- Non-retryable status (400/401/403/404)\n- Partial output already streamed to client (no retry — return",
+              "event_types": [
+                "chat.completion.chunk"
+              ],
+              "verified": null,
+              "merkle_root_present": false,
+              "usage": {
+                "prompt_tokens": 78,
+                "total_tokens": 369,
+                "completion_tokens": 291,
+                "prompt_tokens_details": {
+                  "cached_tokens": 0,
+                  "created_cache_tokens": 64
+                },
+                "completion_tokens_details": {
+                  "reasoning_tokens": 40
+                }
+              },
+              "memory_rss_delta_bytes": 1073152
+            }
+          ]
+        },
+        {
+          "final": {
+            "stage_id": "sustained_low_volume_2",
+            "tool_role": "burst_probe",
+            "ok": true,
+            "status": 200,
+            "request_id_present": true,
+            "latency_ms": 5331,
+            "first_byte_ms": 864,
+            "failure_type": null,
+            "model_requested": "ambient/large",
+            "model_returned": "z-ai/glm-5.2",
+            "output_chars": 1501,
+            "output_sha256": "daa36c14955f25433faa9a235ed6741f771e305b82198508c49fb59b1aecd628",
+            "output_preview": "## Bounded Retry Strategy for Streaming Coding-Agent Request\n\n### Timeout Settings\n\n| Layer | Timeout |\n|-------|---------|\n| Initial connection | 10s |\n| First token (TTFB) | 30s |\n| Inter-token gap | 60s |\n| Overall stream | 5 min hard cap |\n\n### Retry Rules\n\n- **Max attempts:** 3 (1 initial + 2 retries)\n- **Backoff:** Exponential with jitter — `base * 2^attempt ± 25% jitter`, base = 1s\n  - Attempt 2: ~2s ± jitter\n  - Attempt 3: ~4s ± jitter\n- **Backoff cap:** 8s\n\n### Retry On\n\n- Connection refused / reset\n- TTFB timeout (no first token)\n- HTTP 429, 502, 503, 504\n- Stream interrupted before any output produced\n\n### Do NOT Retry On\n\n- Any tokens already streamed to client (no replay)\n- HTTP",
+            "event_types": [
+              "chat.completion.chunk"
+            ],
+            "verified": null,
+            "merkle_root_present": false,
+            "usage": {
+              "prompt_tokens": 78,
+              "total_tokens": 537,
+              "completion_tokens": 459,
+              "prompt_tokens_details": {
+                "cached_tokens": 0,
+                "created_cache_tokens": 64
+              },
+              "completion_tokens_details": {
+                "reasoning_tokens": 55
+              }
+            },
+            "memory_rss_delta_bytes": 540672
+          },
+          "attempts": [
+            {
+              "attempt": 1,
+              "stage_id": "sustained_low_volume_2",
+              "tool_role": "burst_probe",
+              "ok": true,
+              "status": 200,
+              "request_id_present": true,
+              "latency_ms": 5331,
+              "first_byte_ms": 864,
+              "failure_type": null,
+              "model_requested": "ambient/large",
+              "model_returned": "z-ai/glm-5.2",
+              "output_chars": 1501,
+              "output_sha256": "daa36c14955f25433faa9a235ed6741f771e305b82198508c49fb59b1aecd628",
+              "output_preview": "## Bounded Retry Strategy for Streaming Coding-Agent Request\n\n### Timeout Settings\n\n| Layer | Timeout |\n|-------|---------|\n| Initial connection | 10s |\n| First token (TTFB) | 30s |\n| Inter-token gap | 60s |\n| Overall stream | 5 min hard cap |\n\n### Retry Rules\n\n- **Max attempts:** 3 (1 initial + 2 retries)\n- **Backoff:** Exponential with jitter — `base * 2^attempt ± 25% jitter`, base = 1s\n  - Attempt 2: ~2s ± jitter\n  - Attempt 3: ~4s ± jitter\n- **Backoff cap:** 8s\n\n### Retry On\n\n- Connection refused / reset\n- TTFB timeout (no first token)\n- HTTP 429, 502, 503, 504\n- Stream interrupted before any output produced\n\n### Do NOT Retry On\n\n- Any tokens already streamed to client (no replay)\n- HTTP",
+              "event_types": [
+                "chat.completion.chunk"
+              ],
+              "verified": null,
+              "merkle_root_present": false,
+              "usage": {
+                "prompt_tokens": 78,
+                "total_tokens": 537,
+                "completion_tokens": 459,
+                "prompt_tokens_details": {
+                  "cached_tokens": 0,
+                  "created_cache_tokens": 64
+                },
+                "completion_tokens_details": {
+                  "reasoning_tokens": 55
+                }
+              },
+              "memory_rss_delta_bytes": 540672
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "recovery",
+      "concurrency": 1,
+      "requests": 1,
+      "prompt_size": "coding",
+      "started_at": "2026-09-04T12:48:40.762Z",
+      "completed_at": "2026-09-04T12:48:49.793Z",
+      "results": [
+        {
+          "final": {
+            "stage_id": "recovery_1",
+            "tool_role": "burst_probe",
+            "ok": true,
+            "status": 200,
+            "request_id_present": true,
+            "latency_ms": 9031,
+            "first_byte_ms": 631,
+            "failure_type": null,
+            "model_requested": "ambient/large",
+            "model_returned": "z-ai/glm-5.2",
+            "output_chars": 1378,
+            "output_sha256": "d1b172f46c46b21f85ac7107eaad32c7202c61894402716871b479d69f5263f2",
+            "output_preview": "Here is a small JavaScript test (Jest/Vitest compatible) for the workload runner's recovery phase. It uses a mocked recovery task to verify that the runner correctly captures the error class and measures latency when a failure occurs.\n\n```javascript\ndescribe('Workload Runner - Recovery Phase', () => {\n  it('should record latency and error class when a recovery task fails', async () => {\n    // Arrange\n    const mockError = new Error('Recovery sequence failed');\n    mockError.name = 'RecoveryTimeoutError';\n\n    const failingRecoveryTask = async () => {\n      await new Promise((resolve) => setTimeout(resolve, 50)); // Simulate work\n      throw mockError;\n    };\n\n    const runner = new Workload",
+            "event_types": [
+              "chat.completion.chunk"
+            ],
+            "verified": null,
+            "merkle_root_present": false,
+            "usage": {
+              "prompt_tokens": 73,
+              "total_tokens": 929,
+              "completion_tokens": 856,
+              "prompt_tokens_details": {
+                "cached_tokens": 0,
+                "created_cache_tokens": 64
+              },
+              "completion_tokens_details": {
+                "reasoning_tokens": 573
+              }
+            },
+            "memory_rss_delta_bytes": 0
+          },
+          "attempts": [
+            {
+              "attempt": 1,
+              "stage_id": "recovery_1",
+              "tool_role": "burst_probe",
+              "ok": true,
+              "status": 200,
+              "request_id_present": true,
+              "latency_ms": 9031,
+              "first_byte_ms": 631,
+              "failure_type": null,
+              "model_requested": "ambient/large",
+              "model_returned": "z-ai/glm-5.2",
+              "output_chars": 1378,
+              "output_sha256": "d1b172f46c46b21f85ac7107eaad32c7202c61894402716871b479d69f5263f2",
+              "output_preview": "Here is a small JavaScript test (Jest/Vitest compatible) for the workload runner's recovery phase. It uses a mocked recovery task to verify that the runner correctly captures the error class and measures latency when a failure occurs.\n\n```javascript\ndescribe('Workload Runner - Recovery Phase', () => {\n  it('should record latency and error class when a recovery task fails', async () => {\n    // Arrange\n    const mockError = new Error('Recovery sequence failed');\n    mockError.name = 'RecoveryTimeoutError';\n\n    const failingRecoveryTask = async () => {\n      await new Promise((resolve) => setTimeout(resolve, 50)); // Simulate work\n      throw mockError;\n    };\n\n    const runner = new Workload",
+              "event_types": [
+                "chat.completion.chunk"
+              ],
+              "verified": null,
+              "merkle_root_present": false,
+              "usage": {
+                "prompt_tokens": 73,
+                "total_tokens": 929,
+                "completion_tokens": 856,
+                "prompt_tokens_details": {
+                  "cached_tokens": 0,
+                  "created_cache_tokens": 64
+                },
+                "completion_tokens_details": {
+                  "reasoning_tokens": 573
+                }
+              },
+              "memory_rss_delta_bytes": 0
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "metrics": {
+    "requests_total": 6,
+    "successful_completions": 6,
+    "failed_requests": 0,
+    "request_id_present": 6,
+    "streamed_requests": 6,
+    "retry_attempts_total": 6,
+    "failure_types": [],
+    "returned_models": [
+      "z-ai/glm-5.2"
+    ]
+  }
+}

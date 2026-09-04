@@ -4,6 +4,7 @@ AI assistant for DAO governance proposals.
 
 ## Table of Contents
 
+- [Week 25 - Under Pressure Bounded Burst Workload (Web2)](#week-25---under-pressure-bounded-burst-workload-web2)
 - [Week 24 - Builders First Developer Workflow (Web2)](#week-24---builders-first-developer-workflow-web2)
 - [Week 23 - Verification Repeatability Benchmark (Web2)](#week-23---verification-repeatability-benchmark-web2)
 - [Week 22 - Model Evaluation Benchmark (Web2)](#week-22---model-evaluation-benchmark-web2)
@@ -70,6 +71,23 @@ The design goal is **honesty and conservatism**:
 - if some data cannot be extracted, it is marked as `UNKNOWN`
 - the tool does not guess voting options or results
 - the output is meant to **assist** human decision-making, not replace it
+
+---
+
+## Week 25 - Under Pressure Bounded Burst Workload (Web2)
+
+Week 25 adds a bounded, opt-in demand-shift workload around the existing Ambient-compatible request path. It is deliberately low-volume and is not a network-wide capacity or stress-test claim.
+
+Run it with:
+
+```bash
+WEEK25_BURST_ATTEMPTS=2 WEEK25_BURST_MAX_TOKENS=900 \
+node gov-ai.js burst-workload examples/week25-burst-workload
+```
+
+The runner records four phases: quiet baseline, concurrency-2 parallel burst, sustained low-volume requests, and recovery. The live run completed 6/6 requests with HTTP 200, request IDs and streaming on 6/6, no failed requests, and returned model `z-ai/glm-5.2` for requested `ambient/large`. It records per-request latency, time to first byte, returned model, output hash and retry outcome in JSON/Markdown artifacts.
+
+The User Loop is separate: UI quiet-vs-busy comparisons require the real Ambient Chat browser path and are not inferred from this API workload.
 
 ---
 

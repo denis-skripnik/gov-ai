@@ -9,6 +9,7 @@ import { runWeek21RoutingBenchmark } from "./week21-routing-intelligence.js";
 import { runWeek22ModelEvaluationBenchmark } from "./week22-model-evaluation.js";
 import { runWeek23VerificationBenchmark } from "./week23-reproducibility-benchmark.js";
 import { runWeek24BuilderWorkflow } from "./week24-builder-workflow.js";
+import { runWeek25BurstWorkload } from "./week25-burst-workload.js";
 import "dotenv/config";
 
 const cmd = process.argv[2];
@@ -198,6 +199,24 @@ if (cmd === "builder-workflow") {
   process.exit(result.status === "complete" ? 0 : 2);
 }
 
+// ---------- WEEK 25 UNDER PRESSURE BOUNDED BURST WORKLOAD ----------
+if (cmd === "burst-workload") {
+  const outputDir = process.argv[3] || "examples/week25-burst-workload";
+  const result = await runWeek25BurstWorkload({
+    outputDir,
+    model: process.env.WEEK25_BURST_MODEL || "ambient/large",
+    attempts: Number(process.env.WEEK25_BURST_ATTEMPTS || 2),
+    maxTokens: Number(process.env.WEEK25_BURST_MAX_TOKENS || 900),
+  });
+  console.log(JSON.stringify({
+    status: result.status,
+    workflow_type: result.workflow_type,
+    metrics: result.metrics,
+    artifacts: result.artifacts,
+  }, null, 2));
+  process.exit(result.status === "complete" ? 0 : 2);
+}
+
 // ---------- RESOLVE URL ----------
 let url = null;
 
@@ -225,6 +244,7 @@ if (cmd === "analyze") {
   console.log("  node gov-ai.js model-evaluation [proposal.json] [output-dir]");
   console.log("  node gov-ai.js verification-repeatability [report.json] [proposal.json] [output-dir]");
   console.log("  node gov-ai.js builder-workflow [output-dir] [task]");
+  console.log("  node gov-ai.js burst-workload [output-dir]");
   console.log("  node gov-ai.js");
   process.exit(0);
 }

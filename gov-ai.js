@@ -10,6 +10,7 @@ import { runWeek22ModelEvaluationBenchmark } from "./week22-model-evaluation.js"
 import { runWeek23VerificationBenchmark } from "./week23-reproducibility-benchmark.js";
 import { runWeek24BuilderWorkflow } from "./week24-builder-workflow.js";
 import { runWeek25BurstWorkload } from "./week25-burst-workload.js";
+import { runWeek26DeveloperBenchmark, validateWeek26Config, week26ExitCode } from "./week26-developer-benchmark.js";
 import "dotenv/config";
 
 const cmd = process.argv[2];
@@ -217,6 +218,33 @@ if (cmd === "burst-workload") {
   process.exit(result.status === "complete" ? 0 : 2);
 }
 
+// ---------- WEEK 26 MODEL SHOWDOWN BENCHMARK ----------
+if (cmd === "model-showdown") {
+  const outputDir = process.argv[3] || "examples/week26-model-showdown";
+  const attempts = Number(process.env.WEEK26_BENCHMARK_ATTEMPTS || 2);
+  const maxTokens = Number(process.env.WEEK26_BENCHMARK_MAX_TOKENS || 900);
+  const repetitions = 2;
+  const timeoutMs = 90000;
+  const retryDelayMs = 1200;
+  validateWeek26Config({ attempts, repetitions, maxTokens, timeoutMs, retryDelayMs });
+  const result = await runWeek26DeveloperBenchmark({
+    outputDir,
+    attempts,
+    maxTokens,
+    repetitions,
+    timeoutMs,
+    retryDelayMs,
+  });
+  console.log(JSON.stringify({
+    status: result.status,
+    logical_requests: result.runs.length,
+    direct_ranking: result.direct_ranking,
+    routed_baseline: result.routed_baseline,
+    artifacts: result.artifacts,
+  }, null, 2));
+  process.exit(week26ExitCode(result.status));
+}
+
 // ---------- RESOLVE URL ----------
 let url = null;
 
@@ -245,6 +273,7 @@ if (cmd === "analyze") {
   console.log("  node gov-ai.js verification-repeatability [report.json] [proposal.json] [output-dir]");
   console.log("  node gov-ai.js builder-workflow [output-dir] [task]");
   console.log("  node gov-ai.js burst-workload [output-dir]");
+  console.log("  node gov-ai.js model-showdown [output-dir]");
   console.log("  node gov-ai.js");
   process.exit(0);
 }

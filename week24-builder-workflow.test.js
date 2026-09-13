@@ -7,11 +7,50 @@ import path from 'node:path';
 import {
   applyOpenAiCompatibleEvent,
   buildWeek24BuilderStages,
+  callAmbientForBuilderStage,
   classifyDeveloperWorkflowFailure,
   parseSseFrames,
   renderWeek24BuilderWorkflowReport,
   runWeek24BuilderWorkflow,
 } from './week24-builder-workflow.js';
+
+test('callAmbientForBuilderStage preserves request id and true content TTFT', async () => {
+  const encoder = new TextEncoder();
+  const fetchImpl = async (_url, options) => {
+    const body = JSON.parse(options.body);
+    assert.equal(body.temperature, 0);
+    const stream = new ReadableStream({
+      start(controller) {
+        setTimeout(() => controller.enqueue(encoder.encode('data: {"object":"chat.completion.chunk","choices":[{"delta":{"content":""}}]}\n\n')), 5);
+        setTimeout(() => controller.enqueue(encoder.encode('data: {"object":"chat.completion.chunk","model":"z-ai/glm-5.2","choices":[{"delta":{"content":"ok"}}]}\n\ndata: [DONE]\n\n')), 20);
+        setTimeout(() => controller.close(), 25);
+      },
+    });
+    return new Response(stream, { status: 200, headers: { 'x-request-id': 'req-week26' } });
+  };
+  const result = await callAmbientForBuilderStage({
+    stage: { id: 'telemetry', prompt: 'Return ok.' },
+    apiKey: 'test-key',
+    model: 'z-ai/glm-5.2',
+    temperature: 0,
+    fetchImpl,
+  });
+  assert.equal(result.request_id, 'req-week26');
+  assert.equal(result.content_delta_count, 1);
+  assert.equal(result.stream_observed, true);
+  assert.ok(Number.isFinite(result.first_byte_ms));
+  assert.ok(Number.isFinite(result.ttft_ms));
+});
+
+test('applyOpenAiCompatibleEvent sets TTFT only on first non-empty content delta', () => {
+  const state = { output: '', event_types: new Set(), content_delta_count: 0, ttft_ms: null };
+  applyOpenAiCompatibleEvent({ choices: [{ delta: { content: '' } }] }, state, 5);
+  assert.equal(state.ttft_ms, null);
+  applyOpenAiCompatibleEvent({ choices: [{ delta: { content: 'ok' } }] }, state, 20);
+  applyOpenAiCompatibleEvent({ choices: [{ delta: { content: ' later' } }] }, state, 30);
+  assert.equal(state.ttft_ms, 20);
+  assert.equal(state.content_delta_count, 2);
+});
 
 test('buildWeek24BuilderStages creates a coding-agent-style sequence', () => {
   const stages = buildWeek24BuilderStages({ project: 'gov-ai', task: 'Add a reusable Ambient example.' });

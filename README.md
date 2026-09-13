@@ -4,6 +4,7 @@ AI assistant for DAO governance proposals.
 
 ## Table of Contents
 
+- [Week 26 - Model Showdown Benchmark (Web2)](#week-26---model-showdown-benchmark-web2)
 - [Week 25 - Under Pressure Bounded Burst Workload (Web2)](#week-25---under-pressure-bounded-burst-workload-web2)
 - [Week 24 - Builders First Developer Workflow (Web2)](#week-24---builders-first-developer-workflow-web2)
 - [Week 23 - Verification Repeatability Benchmark (Web2)](#week-23---verification-repeatability-benchmark-web2)
@@ -39,6 +40,7 @@ AI assistant for DAO governance proposals.
 
 This project started as **Web3 Developer Loop - Experiment #3 (AI for governance or automation)**.
 It now also documents and ships:
+- Week 26 model showdown (Web2): deterministic repeated JSON benchmark across the currently listed direct Ambient models, with `ambient/large` reported separately as a routed baseline
 - Week 24 builders-first workflow (Web2): Ambient-backed coding-agent-style workflow evidence with planning, implementation sketching, review, streaming, retry handling, a temporary Hermes profile tool-use probe, and reusable JSON/Markdown artifacts for developers
 - Week 23 verification repeatability (Web2): deterministic verification-hook benchmark for repeated runs over the same report/proposal fixture; preserves Ambient proof fields, records latency/memory smoke metrics, and exposes drift before users rely on repeated governance reports
 - Week 22 model evaluation (Web2): deterministic Beyond One Model benchmark cases for structured output, hallucination resistance, reasoning, research grounding, and coding/tooling; produces model-selection evidence without claiming broad leaderboard quality
@@ -71,6 +73,27 @@ The design goal is **honesty and conservatism**:
 - if some data cannot be extracted, it is marked as `UNKNOWN`
 - the tool does not guess voting options or results
 - the output is meant to **assist** human decision-making, not replace it
+
+---
+
+## Week 26 - Model Showdown Benchmark (Web2)
+
+Week 26 adds a bounded, repeatable comparison across the model IDs currently exposed by Ambient. Three deterministic developer cases are run twice against each direct model, while `ambient/large` is reported separately as a routed baseline rather than ranked as a fixed model.
+
+Run it with:
+
+```bash
+WEEK26_BENCHMARK_ATTEMPTS=2 WEEK26_BENCHMARK_MAX_TOKENS=900 \
+node gov-ai.js model-showdown examples/week26-model-showdown
+```
+
+The core matrix is serial: 24 logical requests, concurrency 1, temperature 0, identical prompts, expected outputs, token budget, retry policy, and scoring. It records requested and returned model IDs, exact request IDs, first-byte time, content TTFT, total latency, stream observation, retries, JSON validity, correctness, and repeatability.
+
+Only confirmed direct model IDs participate in the direct ranking. `ambient/large` remains a routed baseline because its returned backend may differ. DeepSeek and GLM 5.3 Flash are not tested unless they appear in the live model inventory. API evidence remains separate from the Ambient Chat UI User Loop.
+
+The recorded live matrix completed all 24 logical requests on the first attempt. Every run returned valid JSON, a request ID, and streamed content, with no transport failures. All outputs received full deterministic correctness scores. Qwen 3.6 and Qwen 3.8 were byte-consistent per case across repeats; GLM 5.2 was semantically correct on every run but varied wording in one patch-description case. `ambient/large` returned `z-ai/glm-5.2` in all six routed-baseline requests. These are small-window observations, not a general leaderboard.
+
+The real Chat UI exposed `Chat` and `Thinking` modes rather than model IDs. That separate UI lane compared the same structured prompt twice per mode and does not infer a backend model.
 
 ---
 

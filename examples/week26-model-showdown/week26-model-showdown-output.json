@@ -1,0 +1,1742 @@
+{
+  "kind": "gov-ai-week26-developer-benchmark",
+  "schema_version": 1,
+  "week": 26,
+  "theme": "Model Showdown",
+  "status": "complete",
+  "window_started_at": "2026-09-13T07:12:04.930Z",
+  "window_completed_at": "2026-09-13T07:12:45.519Z",
+  "window_duration_ms": 40589,
+  "configuration": {
+    "temperature": 0,
+    "max_tokens": 900,
+    "stream": true,
+    "fast_mode": false,
+    "attempts_max": 2,
+    "retry_delay_ms": 1200,
+    "timeout_ms": 90000,
+    "concurrency": 1,
+    "repetitions": 2,
+    "model_order": [
+      "z-ai/glm-5.2",
+      "qwen/qwen3.6-27b",
+      "qwen/qwen3.8-27b",
+      "ambient/large"
+    ],
+    "case_order": [
+      "js_retry_partition",
+      "patch_selection",
+      "failure_classification"
+    ],
+    "system_prompt": "You are completing a deterministic developer benchmark. Return exactly one JSON object and no markdown, prose, comments, or code fences. Preserve array order. Do not add keys.",
+    "system_prompt_sha256": "eeadff78cc5b0204e5b021f1061869dd6a14784158b6f0c03c0587c85adc65bf",
+    "cases_sha256": "afad33999c694380aabfff250d8e3e8d5c6d5d1cfcf70e7b169819ab1b510b2d"
+  },
+  "cases": [
+    {
+      "id": "js_retry_partition",
+      "prompt": "Analyze this JavaScript:\n\nfunction retryable(status) {\n  return status === 429 || status >= 500;\n}\n\nApply retryable to these statuses in this exact order:\n[200, 400, 429, 500, 503]\n\nReturn exactly these keys:\nretryable: the retryable statuses\nnon_retryable: the remaining statuses\ncount: the number of retryable statuses",
+      "expected": {
+        "retryable": [
+          429,
+          500,
+          503
+        ],
+        "non_retryable": [
+          200,
+          400
+        ],
+        "count": 3
+      },
+      "max_score": 100
+    },
+    {
+      "id": "patch_selection",
+      "prompt": "Current JavaScript:\n\nasync function fetchJson(url) {\n  const response = await fetch(url);\n  return response.json();\n}\n\nChoose the one patch that makes non-2xx responses throw while preserving parsed JSON on success.\n\nA:\nconst response = await fetch(url);\nreturn response.json();\n\nB:\nconst response = await fetch(url);\nif (!response.ok) throw new Error(`HTTP ${response.status}`);\nreturn response.json();\n\nC:\ntry {\n  const response = await fetch(url);\n  return await response.json();\n} catch {\n  return {};\n}\n\nReturn exactly these keys:\nchoice\nreason_code\nsuccess_behavior\nerror_behavior",
+      "expected": {
+        "choice": "B",
+        "reason_code": "checks_response_ok",
+        "success_behavior": "returns_parsed_json",
+        "error_behavior": "throws_on_non_2xx"
+      },
+      "max_score": 100
+    },
+    {
+      "id": "failure_classification",
+      "prompt": "Use this ordered classification policy:\n\n1. Status 401 or 403 => auth\n2. Status 429, or a message containing \"no workers\" => capacity_or_rate_limit\n3. A message containing \"timeout\" or \"aborted\" => timeout\n4. Status 500 or greater => server\n5. Status 400 or greater => client\n6. Otherwise => other\n\nClassify these inputs in their exact order:\n\n0. status=401, message=\"bad key\"\n1. status=429, message=\"busy\"\n2. status=null, message=\"operation aborted\"\n3. status=502, message=\"gateway\"\n4. status=404, message=\"missing\"\n5. status=200, message=\"ok\"\n\nRetries are allowed only for capacity_or_rate_limit, timeout, and server.\n\nReturn exactly these keys:\nlabels: one classification per input\nretryable_indices: zero-based indices of retryable inputs",
+      "expected": {
+        "labels": [
+          "auth",
+          "capacity_or_rate_limit",
+          "timeout",
+          "server",
+          "client",
+          "other"
+        ],
+        "retryable_indices": [
+          1,
+          2,
+          3
+        ]
+      },
+      "max_score": 100
+    }
+  ],
+  "runs": [
+    {
+      "logical_run_id": "1-js_retry_partition-z-ai/glm-5.2",
+      "repetition": 1,
+      "case_id": "js_retry_partition",
+      "comparison_group": "direct",
+      "model_returned": "z-ai/glm-5.2",
+      "returned_model_matches_request": true,
+      "final_ok": true,
+      "attempt_count": 1,
+      "request_id": "f38fb4c000e5427183e3130d598bba53",
+      "request_id_present": true,
+      "stream_observed": true,
+      "status": 200,
+      "latency_ms": 1583,
+      "first_byte_ms": 626,
+      "ttft_ms": 1452,
+      "failure_type": null,
+      "output_text": "{\"retryable\":[429,500,503],\"non_retryable\":[200,400],\"count\":3}",
+      "output_sha256": "4a93b523719abfaea38e26267bc4b10e52e2c008270590d59cf319ea2ab31e0d",
+      "usage": {
+        "prompt_tokens": 129,
+        "total_tokens": 243,
+        "completion_tokens": 114,
+        "prompt_tokens_details": {
+          "cached_tokens": 0,
+          "created_cache_tokens": 128
+        },
+        "completion_tokens_details": {
+          "reasoning_tokens": 78
+        }
+      },
+      "json_valid": true,
+      "schema_valid": true,
+      "score": 100,
+      "exact_match": true,
+      "parsed_output": {
+        "retryable": [
+          429,
+          500,
+          503
+        ],
+        "non_retryable": [
+          200,
+          400
+        ],
+        "count": 3
+      },
+      "evaluation_failures": [],
+      "attempts": [
+        {
+          "attempt": 1,
+          "ok": true,
+          "status": 200,
+          "request_id": "f38fb4c000e5427183e3130d598bba53",
+          "model_returned": "z-ai/glm-5.2",
+          "latency_ms": 1583,
+          "first_byte_ms": 626,
+          "ttft_ms": 1452,
+          "stream_observed": true,
+          "failure_type": null
+        }
+      ],
+      "model_requested": "z-ai/glm-5.2"
+    },
+    {
+      "logical_run_id": "1-js_retry_partition-qwen/qwen3.6-27b",
+      "repetition": 1,
+      "case_id": "js_retry_partition",
+      "comparison_group": "direct",
+      "model_returned": "qwen/qwen3.6-27b",
+      "returned_model_matches_request": true,
+      "final_ok": true,
+      "attempt_count": 1,
+      "request_id": "aed1e628229f4045bd90ad9620ea2e0d",
+      "request_id_present": true,
+      "stream_observed": true,
+      "status": 200,
+      "latency_ms": 1229,
+      "first_byte_ms": 559,
+      "ttft_ms": 729,
+      "failure_type": null,
+      "output_text": "{\n  \"retryable\": [429, 500, 503],\n  \"non_retryable\": [200, 400],\n  \"count\": 3\n}",
+      "output_sha256": "762bb5517cf54d5bf01f2c2b27b97a2dede61b521eb61e03a2171817ec3d716f",
+      "usage": {
+        "prompt_tokens": 151,
+        "total_tokens": 200,
+        "completion_tokens": 49,
+        "prompt_tokens_details": {
+          "cached_tokens": 0,
+          "created_cache_tokens": 0
+        },
+        "completion_tokens_details": {
+          "reasoning_tokens": 0
+        }
+      },
+      "json_valid": true,
+      "schema_valid": true,
+      "score": 100,
+      "exact_match": true,
+      "parsed_output": {
+        "retryable": [
+          429,
+          500,
+          503
+        ],
+        "non_retryable": [
+          200,
+          400
+        ],
+        "count": 3
+      },
+      "evaluation_failures": [],
+      "attempts": [
+        {
+          "attempt": 1,
+          "ok": true,
+          "status": 200,
+          "request_id": "aed1e628229f4045bd90ad9620ea2e0d",
+          "model_returned": "qwen/qwen3.6-27b",
+          "latency_ms": 1229,
+          "first_byte_ms": 559,
+          "ttft_ms": 729,
+          "stream_observed": true,
+          "failure_type": null
+        }
+      ],
+      "model_requested": "qwen/qwen3.6-27b"
+    },
+    {
+      "logical_run_id": "1-js_retry_partition-qwen/qwen3.8-27b",
+      "repetition": 1,
+      "case_id": "js_retry_partition",
+      "comparison_group": "direct",
+      "model_returned": "qwen/qwen3.8-27b",
+      "returned_model_matches_request": true,
+      "final_ok": true,
+      "attempt_count": 1,
+      "request_id": "40ea1f31adb14e5da2dd3f129e56da88",
+      "request_id_present": true,
+      "stream_observed": true,
+      "status": 200,
+      "latency_ms": 902,
+      "first_byte_ms": 233,
+      "ttft_ms": 402,
+      "failure_type": null,
+      "output_text": "{\n  \"retryable\": [429, 500, 503],\n  \"non_retryable\": [200, 400],\n  \"count\": 3\n}",
+      "output_sha256": "762bb5517cf54d5bf01f2c2b27b97a2dede61b521eb61e03a2171817ec3d716f",
+      "usage": {
+        "prompt_tokens": 151,
+        "total_tokens": 200,
+        "completion_tokens": 49,
+        "prompt_tokens_details": {
+          "cached_tokens": 0,
+          "created_cache_tokens": 0
+        },
+        "completion_tokens_details": {
+          "reasoning_tokens": 0
+        }
+      },
+      "json_valid": true,
+      "schema_valid": true,
+      "score": 100,
+      "exact_match": true,
+      "parsed_output": {
+        "retryable": [
+          429,
+          500,
+          503
+        ],
+        "non_retryable": [
+          200,
+          400
+        ],
+        "count": 3
+      },
+      "evaluation_failures": [],
+      "attempts": [
+        {
+          "attempt": 1,
+          "ok": true,
+          "status": 200,
+          "request_id": "40ea1f31adb14e5da2dd3f129e56da88",
+          "model_returned": "qwen/qwen3.8-27b",
+          "latency_ms": 902,
+          "first_byte_ms": 233,
+          "ttft_ms": 402,
+          "stream_observed": true,
+          "failure_type": null
+        }
+      ],
+      "model_requested": "qwen/qwen3.8-27b"
+    },
+    {
+      "logical_run_id": "1-js_retry_partition-ambient/large",
+      "repetition": 1,
+      "case_id": "js_retry_partition",
+      "comparison_group": "routed_baseline",
+      "model_returned": "z-ai/glm-5.2",
+      "returned_model_matches_request": false,
+      "final_ok": true,
+      "attempt_count": 1,
+      "request_id": "001b0128f2024a1a9a0678566fef8216",
+      "request_id_present": true,
+      "stream_observed": true,
+      "status": 200,
+      "latency_ms": 4472,
+      "first_byte_ms": 202,
+      "ttft_ms": 4340,
+      "failure_type": null,
+      "output_text": "{\"retryable\":[429,500,503],\"non_retryable\":[200,400],\"count\":3}",
+      "output_sha256": "4a93b523719abfaea38e26267bc4b10e52e2c008270590d59cf319ea2ab31e0d",
+      "usage": {
+        "prompt_tokens": 129,
+        "total_tokens": 386,
+        "completion_tokens": 257,
+        "prompt_tokens_details": {
+          "cached_tokens": 64,
+          "created_cache_tokens": 64
+        },
+        "completion_tokens_details": {
+          "reasoning_tokens": 150
+        }
+      },
+      "json_valid": true,
+      "schema_valid": true,
+      "score": 100,
+      "exact_match": true,
+      "parsed_output": {
+        "retryable": [
+          429,
+          500,
+          503
+        ],
+        "non_retryable": [
+          200,
+          400
+        ],
+        "count": 3
+      },
+      "evaluation_failures": [],
+      "attempts": [
+        {
+          "attempt": 1,
+          "ok": true,
+          "status": 200,
+          "request_id": "001b0128f2024a1a9a0678566fef8216",
+          "model_returned": "z-ai/glm-5.2",
+          "latency_ms": 4472,
+          "first_byte_ms": 202,
+          "ttft_ms": 4340,
+          "stream_observed": true,
+          "failure_type": null
+        }
+      ],
+      "model_requested": "ambient/large"
+    },
+    {
+      "logical_run_id": "1-patch_selection-z-ai/glm-5.2",
+      "repetition": 1,
+      "case_id": "patch_selection",
+      "comparison_group": "direct",
+      "model_returned": "z-ai/glm-5.2",
+      "returned_model_matches_request": true,
+      "final_ok": true,
+      "attempt_count": 1,
+      "request_id": "6655b1ac1d1f4ce593f753cdbadafc44",
+      "request_id_present": true,
+      "stream_observed": true,
+      "status": 200,
+      "latency_ms": 1642,
+      "first_byte_ms": 517,
+      "ttft_ms": 1338,
+      "failure_type": null,
+      "output_text": "{\"choice\":\"B\",\"reason_code\":\"checks response.ok and throws on non-2xx before parsing JSON\",\"success_behavior\":\"returns parsed JSON from response.json() for 2xx responses\",\"error_behavior\":\"throws an Error with HTTP status for non-2xx responses\"}",
+      "output_sha256": "d136bbb92d849525d1c4187770f9af63877bb3e00cafe2024d50a429c1b44138",
+      "usage": {
+        "prompt_tokens": 170,
+        "total_tokens": 288,
+        "completion_tokens": 118,
+        "prompt_tokens_details": {
+          "cached_tokens": 0,
+          "created_cache_tokens": 128
+        },
+        "completion_tokens_details": {
+          "reasoning_tokens": 70
+        }
+      },
+      "json_valid": true,
+      "schema_valid": true,
+      "score": 100,
+      "exact_match": true,
+      "parsed_output": {
+        "choice": "B",
+        "reason_code": "checks response.ok and throws on non-2xx before parsing JSON",
+        "success_behavior": "returns parsed JSON from response.json() for 2xx responses",
+        "error_behavior": "throws an Error with HTTP status for non-2xx responses"
+      },
+      "evaluation_failures": [],
+      "attempts": [
+        {
+          "attempt": 1,
+          "ok": true,
+          "status": 200,
+          "request_id": "6655b1ac1d1f4ce593f753cdbadafc44",
+          "model_returned": "z-ai/glm-5.2",
+          "latency_ms": 1642,
+          "first_byte_ms": 517,
+          "ttft_ms": 1338,
+          "stream_observed": true,
+          "failure_type": null
+        }
+      ],
+      "model_requested": "z-ai/glm-5.2"
+    },
+    {
+      "logical_run_id": "1-patch_selection-qwen/qwen3.6-27b",
+      "repetition": 1,
+      "case_id": "patch_selection",
+      "comparison_group": "direct",
+      "model_returned": "qwen/qwen3.6-27b",
+      "returned_model_matches_request": true,
+      "final_ok": true,
+      "attempt_count": 1,
+      "request_id": "37d04e8cc7ee43b7a6754fd221096071",
+      "request_id_present": true,
+      "stream_observed": true,
+      "status": 200,
+      "latency_ms": 878,
+      "first_byte_ms": 273,
+      "ttft_ms": 431,
+      "failure_type": null,
+      "output_text": "{\n  \"choice\": \"B\",\n  \"reason_code\": \"explicit_status_check\",\n  \"success_behavior\": \"returns_parsed_json\",\n  \"error_behavior\": \"throws_error\"\n}",
+      "output_sha256": "622936c860428174b2eb5a26ed9e54df2c99b220860e2e670e4eb95e081efd6d",
+      "usage": {
+        "prompt_tokens": 196,
+        "total_tokens": 240,
+        "completion_tokens": 44,
+        "prompt_tokens_details": {
+          "cached_tokens": 0,
+          "created_cache_tokens": 0
+        },
+        "completion_tokens_details": {
+          "reasoning_tokens": 0
+        }
+      },
+      "json_valid": true,
+      "schema_valid": true,
+      "score": 100,
+      "exact_match": true,
+      "parsed_output": {
+        "choice": "B",
+        "reason_code": "explicit_status_check",
+        "success_behavior": "returns_parsed_json",
+        "error_behavior": "throws_error"
+      },
+      "evaluation_failures": [],
+      "attempts": [
+        {
+          "attempt": 1,
+          "ok": true,
+          "status": 200,
+          "request_id": "37d04e8cc7ee43b7a6754fd221096071",
+          "model_returned": "qwen/qwen3.6-27b",
+          "latency_ms": 878,
+          "first_byte_ms": 273,
+          "ttft_ms": 431,
+          "stream_observed": true,
+          "failure_type": null
+        }
+      ],
+      "model_requested": "qwen/qwen3.6-27b"
+    },
+    {
+      "logical_run_id": "1-patch_selection-qwen/qwen3.8-27b",
+      "repetition": 1,
+      "case_id": "patch_selection",
+      "comparison_group": "direct",
+      "model_returned": "qwen/qwen3.8-27b",
+      "returned_model_matches_request": true,
+      "final_ok": true,
+      "attempt_count": 1,
+      "request_id": "7725c6e932b44e48b2420c1d32acd1db",
+      "request_id_present": true,
+      "stream_observed": true,
+      "status": 200,
+      "latency_ms": 842,
+      "first_byte_ms": 218,
+      "ttft_ms": 372,
+      "failure_type": null,
+      "output_text": "{\n  \"choice\": \"B\",\n  \"reason_code\": \"explicit_status_check\",\n  \"success_behavior\": \"returns parsed JSON\",\n  \"error_behavior\": \"throws Error with status\"\n}",
+      "output_sha256": "990d0fc7a8b67d65946decbfcc5e7901ea87d5c1f2d862ecb89dfae8a481dd8f",
+      "usage": {
+        "prompt_tokens": 196,
+        "total_tokens": 242,
+        "completion_tokens": 46,
+        "prompt_tokens_details": {
+          "cached_tokens": 0,
+          "created_cache_tokens": 0
+        },
+        "completion_tokens_details": {
+          "reasoning_tokens": 0
+        }
+      },
+      "json_valid": true,
+      "schema_valid": true,
+      "score": 100,
+      "exact_match": true,
+      "parsed_output": {
+        "choice": "B",
+        "reason_code": "explicit_status_check",
+        "success_behavior": "returns parsed JSON",
+        "error_behavior": "throws Error with status"
+      },
+      "evaluation_failures": [],
+      "attempts": [
+        {
+          "attempt": 1,
+          "ok": true,
+          "status": 200,
+          "request_id": "7725c6e932b44e48b2420c1d32acd1db",
+          "model_returned": "qwen/qwen3.8-27b",
+          "latency_ms": 842,
+          "first_byte_ms": 218,
+          "ttft_ms": 372,
+          "stream_observed": true,
+          "failure_type": null
+        }
+      ],
+      "model_requested": "qwen/qwen3.8-27b"
+    },
+    {
+      "logical_run_id": "1-patch_selection-ambient/large",
+      "repetition": 1,
+      "case_id": "patch_selection",
+      "comparison_group": "routed_baseline",
+      "model_returned": "z-ai/glm-5.2",
+      "returned_model_matches_request": false,
+      "final_ok": true,
+      "attempt_count": 1,
+      "request_id": "5ae254e052604933a9d6c63dbe7a81fa",
+      "request_id_present": true,
+      "stream_observed": true,
+      "status": 200,
+      "latency_ms": 1603,
+      "first_byte_ms": 218,
+      "ttft_ms": 1274,
+      "failure_type": null,
+      "output_text": "{\"choice\":\"B\",\"reason_code\":\"checks response.ok and throws on non-2xx before returning JSON\",\"success_behavior\":\"returns parsed JSON for 2xx responses\",\"error_behavior\":\"throws Error with HTTP status for non-2xx responses\"}",
+      "output_sha256": "8b5a43a2ca905e795ea59986d006ea1471319cb3a7f49950f3615b1570689cae",
+      "usage": {
+        "prompt_tokens": 170,
+        "total_tokens": 308,
+        "completion_tokens": 138,
+        "prompt_tokens_details": {
+          "cached_tokens": 64,
+          "created_cache_tokens": 64
+        },
+        "completion_tokens_details": {
+          "reasoning_tokens": 92
+        }
+      },
+      "json_valid": true,
+      "schema_valid": true,
+      "score": 100,
+      "exact_match": true,
+      "parsed_output": {
+        "choice": "B",
+        "reason_code": "checks response.ok and throws on non-2xx before returning JSON",
+        "success_behavior": "returns parsed JSON for 2xx responses",
+        "error_behavior": "throws Error with HTTP status for non-2xx responses"
+      },
+      "evaluation_failures": [],
+      "attempts": [
+        {
+          "attempt": 1,
+          "ok": true,
+          "status": 200,
+          "request_id": "5ae254e052604933a9d6c63dbe7a81fa",
+          "model_returned": "z-ai/glm-5.2",
+          "latency_ms": 1603,
+          "first_byte_ms": 218,
+          "ttft_ms": 1274,
+          "stream_observed": true,
+          "failure_type": null
+        }
+      ],
+      "model_requested": "ambient/large"
+    },
+    {
+      "logical_run_id": "1-failure_classification-z-ai/glm-5.2",
+      "repetition": 1,
+      "case_id": "failure_classification",
+      "comparison_group": "direct",
+      "model_returned": "z-ai/glm-5.2",
+      "returned_model_matches_request": true,
+      "final_ok": true,
+      "attempt_count": 1,
+      "request_id": "e8bbc3335fba49c5affa977d420632ed",
+      "request_id_present": true,
+      "stream_observed": true,
+      "status": 200,
+      "latency_ms": 2850,
+      "first_byte_ms": 199,
+      "ttft_ms": 2696,
+      "failure_type": null,
+      "output_text": "{\"labels\":[\"auth\",\"capacity_or_rate_limit\",\"timeout\",\"server\",\"client\",\"other\"],\"retryable_indices\":[1,2,3]}",
+      "output_sha256": "2eee1183b681576300de8941db108369af02cdcca85e79b4a6414cd45eee4f12",
+      "usage": {
+        "prompt_tokens": 242,
+        "total_tokens": 698,
+        "completion_tokens": 456,
+        "prompt_tokens_details": {
+          "cached_tokens": 0,
+          "created_cache_tokens": 192
+        },
+        "completion_tokens_details": {
+          "reasoning_tokens": 313
+        }
+      },
+      "json_valid": true,
+      "schema_valid": true,
+      "score": 100,
+      "exact_match": true,
+      "parsed_output": {
+        "labels": [
+          "auth",
+          "capacity_or_rate_limit",
+          "timeout",
+          "server",
+          "client",
+          "other"
+        ],
+        "retryable_indices": [
+          1,
+          2,
+          3
+        ]
+      },
+      "evaluation_failures": [],
+      "attempts": [
+        {
+          "attempt": 1,
+          "ok": true,
+          "status": 200,
+          "request_id": "e8bbc3335fba49c5affa977d420632ed",
+          "model_returned": "z-ai/glm-5.2",
+          "latency_ms": 2850,
+          "first_byte_ms": 199,
+          "ttft_ms": 2696,
+          "stream_observed": true,
+          "failure_type": null
+        }
+      ],
+      "model_requested": "z-ai/glm-5.2"
+    },
+    {
+      "logical_run_id": "1-failure_classification-qwen/qwen3.6-27b",
+      "repetition": 1,
+      "case_id": "failure_classification",
+      "comparison_group": "direct",
+      "model_returned": "qwen/qwen3.6-27b",
+      "returned_model_matches_request": true,
+      "final_ok": true,
+      "attempt_count": 1,
+      "request_id": "cd9b00ca896148a88ccdcd7c4e8fbab4",
+      "request_id_present": true,
+      "stream_observed": true,
+      "status": 200,
+      "latency_ms": 689,
+      "first_byte_ms": 234,
+      "ttft_ms": 393,
+      "failure_type": null,
+      "output_text": "{\"labels\":[\"auth\",\"capacity_or_rate_limit\",\"timeout\",\"server\",\"client\",\"other\"],\"retryable_indices\":[1,2,3]}",
+      "output_sha256": "2eee1183b681576300de8941db108369af02cdcca85e79b4a6414cd45eee4f12",
+      "usage": {
+        "prompt_tokens": 269,
+        "total_tokens": 298,
+        "completion_tokens": 29,
+        "prompt_tokens_details": {
+          "cached_tokens": 0,
+          "created_cache_tokens": 0
+        },
+        "completion_tokens_details": {
+          "reasoning_tokens": 0
+        }
+      },
+      "json_valid": true,
+      "schema_valid": true,
+      "score": 100,
+      "exact_match": true,
+      "parsed_output": {
+        "labels": [
+          "auth",
+          "capacity_or_rate_limit",
+          "timeout",
+          "server",
+          "client",
+          "other"
+        ],
+        "retryable_indices": [
+          1,
+          2,
+          3
+        ]
+      },
+      "evaluation_failures": [],
+      "attempts": [
+        {
+          "attempt": 1,
+          "ok": true,
+          "status": 200,
+          "request_id": "cd9b00ca896148a88ccdcd7c4e8fbab4",
+          "model_returned": "qwen/qwen3.6-27b",
+          "latency_ms": 689,
+          "first_byte_ms": 234,
+          "ttft_ms": 393,
+          "stream_observed": true,
+          "failure_type": null
+        }
+      ],
+      "model_requested": "qwen/qwen3.6-27b"
+    },
+    {
+      "logical_run_id": "1-failure_classification-qwen/qwen3.8-27b",
+      "repetition": 1,
+      "case_id": "failure_classification",
+      "comparison_group": "direct",
+      "model_returned": "qwen/qwen3.8-27b",
+      "returned_model_matches_request": true,
+      "final_ok": true,
+      "attempt_count": 1,
+      "request_id": "6b963042ff4e4593bff762ce8f41b30d",
+      "request_id_present": true,
+      "stream_observed": true,
+      "status": 200,
+      "latency_ms": 1132,
+      "first_byte_ms": 246,
+      "ttft_ms": 403,
+      "failure_type": null,
+      "output_text": "{\n  \"labels\": [\n    \"auth\",\n    \"capacity_or_rate_limit\",\n    \"timeout\",\n    \"server\",\n    \"client\",\n    \"other\"\n  ],\n  \"retryable_indices\": [\n    1,\n    2,\n    3\n  ]\n}",
+      "output_sha256": "7a9c807dccc430b77449d894192adba4a60e2f3833b5d743249d02882c96d13e",
+      "usage": {
+        "prompt_tokens": 269,
+        "total_tokens": 340,
+        "completion_tokens": 71,
+        "prompt_tokens_details": {
+          "cached_tokens": 0,
+          "created_cache_tokens": 0
+        },
+        "completion_tokens_details": {
+          "reasoning_tokens": 0
+        }
+      },
+      "json_valid": true,
+      "schema_valid": true,
+      "score": 100,
+      "exact_match": true,
+      "parsed_output": {
+        "labels": [
+          "auth",
+          "capacity_or_rate_limit",
+          "timeout",
+          "server",
+          "client",
+          "other"
+        ],
+        "retryable_indices": [
+          1,
+          2,
+          3
+        ]
+      },
+      "evaluation_failures": [],
+      "attempts": [
+        {
+          "attempt": 1,
+          "ok": true,
+          "status": 200,
+          "request_id": "6b963042ff4e4593bff762ce8f41b30d",
+          "model_returned": "qwen/qwen3.8-27b",
+          "latency_ms": 1132,
+          "first_byte_ms": 246,
+          "ttft_ms": 403,
+          "stream_observed": true,
+          "failure_type": null
+        }
+      ],
+      "model_requested": "qwen/qwen3.8-27b"
+    },
+    {
+      "logical_run_id": "1-failure_classification-ambient/large",
+      "repetition": 1,
+      "case_id": "failure_classification",
+      "comparison_group": "routed_baseline",
+      "model_returned": "z-ai/glm-5.2",
+      "returned_model_matches_request": false,
+      "final_ok": true,
+      "attempt_count": 1,
+      "request_id": "e61e7d5437b845c3b2ad1fc5e0ec0101",
+      "request_id_present": true,
+      "stream_observed": true,
+      "status": 200,
+      "latency_ms": 2787,
+      "first_byte_ms": 199,
+      "ttft_ms": 2653,
+      "failure_type": null,
+      "output_text": "{\"labels\":[\"auth\",\"capacity_or_rate_limit\",\"timeout\",\"server\",\"client\",\"other\"],\"retryable_indices\":[1,2,3]}",
+      "output_sha256": "2eee1183b681576300de8941db108369af02cdcca85e79b4a6414cd45eee4f12",
+      "usage": {
+        "prompt_tokens": 242,
+        "total_tokens": 727,
+        "completion_tokens": 485,
+        "prompt_tokens_details": {
+          "cached_tokens": 128,
+          "created_cache_tokens": 64
+        },
+        "completion_tokens_details": {
+          "reasoning_tokens": 335
+        }
+      },
+      "json_valid": true,
+      "schema_valid": true,
+      "score": 100,
+      "exact_match": true,
+      "parsed_output": {
+        "labels": [
+          "auth",
+          "capacity_or_rate_limit",
+          "timeout",
+          "server",
+          "client",
+          "other"
+        ],
+        "retryable_indices": [
+          1,
+          2,
+          3
+        ]
+      },
+      "evaluation_failures": [],
+      "attempts": [
+        {
+          "attempt": 1,
+          "ok": true,
+          "status": 200,
+          "request_id": "e61e7d5437b845c3b2ad1fc5e0ec0101",
+          "model_returned": "z-ai/glm-5.2",
+          "latency_ms": 2787,
+          "first_byte_ms": 199,
+          "ttft_ms": 2653,
+          "stream_observed": true,
+          "failure_type": null
+        }
+      ],
+      "model_requested": "ambient/large"
+    },
+    {
+      "logical_run_id": "2-js_retry_partition-z-ai/glm-5.2",
+      "repetition": 2,
+      "case_id": "js_retry_partition",
+      "comparison_group": "direct",
+      "model_returned": "z-ai/glm-5.2",
+      "returned_model_matches_request": true,
+      "final_ok": true,
+      "attempt_count": 1,
+      "request_id": "c4258ca1e9d6450bbd494f93861bd92b",
+      "request_id_present": true,
+      "stream_observed": true,
+      "status": 200,
+      "latency_ms": 1783,
+      "first_byte_ms": 197,
+      "ttft_ms": 1652,
+      "failure_type": null,
+      "output_text": "{\"retryable\":[429,500,503],\"non_retryable\":[200,400],\"count\":3}",
+      "output_sha256": "4a93b523719abfaea38e26267bc4b10e52e2c008270590d59cf319ea2ab31e0d",
+      "usage": {
+        "prompt_tokens": 129,
+        "total_tokens": 282,
+        "completion_tokens": 153,
+        "prompt_tokens_details": {
+          "cached_tokens": 64,
+          "created_cache_tokens": 64
+        },
+        "completion_tokens_details": {
+          "reasoning_tokens": 115
+        }
+      },
+      "json_valid": true,
+      "schema_valid": true,
+      "score": 100,
+      "exact_match": true,
+      "parsed_output": {
+        "retryable": [
+          429,
+          500,
+          503
+        ],
+        "non_retryable": [
+          200,
+          400
+        ],
+        "count": 3
+      },
+      "evaluation_failures": [],
+      "attempts": [
+        {
+          "attempt": 1,
+          "ok": true,
+          "status": 200,
+          "request_id": "c4258ca1e9d6450bbd494f93861bd92b",
+          "model_returned": "z-ai/glm-5.2",
+          "latency_ms": 1783,
+          "first_byte_ms": 197,
+          "ttft_ms": 1652,
+          "stream_observed": true,
+          "failure_type": null
+        }
+      ],
+      "model_requested": "z-ai/glm-5.2"
+    },
+    {
+      "logical_run_id": "2-js_retry_partition-qwen/qwen3.6-27b",
+      "repetition": 2,
+      "case_id": "js_retry_partition",
+      "comparison_group": "direct",
+      "model_returned": "qwen/qwen3.6-27b",
+      "returned_model_matches_request": true,
+      "final_ok": true,
+      "attempt_count": 1,
+      "request_id": "ea718949a93f4fb1a9c56fddcd76f567",
+      "request_id_present": true,
+      "stream_observed": true,
+      "status": 200,
+      "latency_ms": 892,
+      "first_byte_ms": 232,
+      "ttft_ms": 387,
+      "failure_type": null,
+      "output_text": "{\n  \"retryable\": [429, 500, 503],\n  \"non_retryable\": [200, 400],\n  \"count\": 3\n}",
+      "output_sha256": "762bb5517cf54d5bf01f2c2b27b97a2dede61b521eb61e03a2171817ec3d716f",
+      "usage": {
+        "prompt_tokens": 151,
+        "total_tokens": 200,
+        "completion_tokens": 49,
+        "prompt_tokens_details": {
+          "cached_tokens": 0,
+          "created_cache_tokens": 0
+        },
+        "completion_tokens_details": {
+          "reasoning_tokens": 0
+        }
+      },
+      "json_valid": true,
+      "schema_valid": true,
+      "score": 100,
+      "exact_match": true,
+      "parsed_output": {
+        "retryable": [
+          429,
+          500,
+          503
+        ],
+        "non_retryable": [
+          200,
+          400
+        ],
+        "count": 3
+      },
+      "evaluation_failures": [],
+      "attempts": [
+        {
+          "attempt": 1,
+          "ok": true,
+          "status": 200,
+          "request_id": "ea718949a93f4fb1a9c56fddcd76f567",
+          "model_returned": "qwen/qwen3.6-27b",
+          "latency_ms": 892,
+          "first_byte_ms": 232,
+          "ttft_ms": 387,
+          "stream_observed": true,
+          "failure_type": null
+        }
+      ],
+      "model_requested": "qwen/qwen3.6-27b"
+    },
+    {
+      "logical_run_id": "2-js_retry_partition-qwen/qwen3.8-27b",
+      "repetition": 2,
+      "case_id": "js_retry_partition",
+      "comparison_group": "direct",
+      "model_returned": "qwen/qwen3.8-27b",
+      "returned_model_matches_request": true,
+      "final_ok": true,
+      "attempt_count": 1,
+      "request_id": "567791c260cc4beebae91ec6572bc8a0",
+      "request_id_present": true,
+      "stream_observed": true,
+      "status": 200,
+      "latency_ms": 888,
+      "first_byte_ms": 226,
+      "ttft_ms": 384,
+      "failure_type": null,
+      "output_text": "{\n  \"retryable\": [429, 500, 503],\n  \"non_retryable\": [200, 400],\n  \"count\": 3\n}",
+      "output_sha256": "762bb5517cf54d5bf01f2c2b27b97a2dede61b521eb61e03a2171817ec3d716f",
+      "usage": {
+        "prompt_tokens": 151,
+        "total_tokens": 200,
+        "completion_tokens": 49,
+        "prompt_tokens_details": {
+          "cached_tokens": 0,
+          "created_cache_tokens": 0
+        },
+        "completion_tokens_details": {
+          "reasoning_tokens": 0
+        }
+      },
+      "json_valid": true,
+      "schema_valid": true,
+      "score": 100,
+      "exact_match": true,
+      "parsed_output": {
+        "retryable": [
+          429,
+          500,
+          503
+        ],
+        "non_retryable": [
+          200,
+          400
+        ],
+        "count": 3
+      },
+      "evaluation_failures": [],
+      "attempts": [
+        {
+          "attempt": 1,
+          "ok": true,
+          "status": 200,
+          "request_id": "567791c260cc4beebae91ec6572bc8a0",
+          "model_returned": "qwen/qwen3.8-27b",
+          "latency_ms": 888,
+          "first_byte_ms": 226,
+          "ttft_ms": 384,
+          "stream_observed": true,
+          "failure_type": null
+        }
+      ],
+      "model_requested": "qwen/qwen3.8-27b"
+    },
+    {
+      "logical_run_id": "2-js_retry_partition-ambient/large",
+      "repetition": 2,
+      "case_id": "js_retry_partition",
+      "comparison_group": "routed_baseline",
+      "model_returned": "z-ai/glm-5.2",
+      "returned_model_matches_request": false,
+      "final_ok": true,
+      "attempt_count": 1,
+      "request_id": "8460ced09f1c4efdb1fd1caa9b274de4",
+      "request_id_present": true,
+      "stream_observed": true,
+      "status": 200,
+      "latency_ms": 1256,
+      "first_byte_ms": 197,
+      "ttft_ms": 1119,
+      "failure_type": null,
+      "output_text": "{\"retryable\":[429,500,503],\"non_retryable\":[200,400],\"count\":3}",
+      "output_sha256": "4a93b523719abfaea38e26267bc4b10e52e2c008270590d59cf319ea2ab31e0d",
+      "usage": {
+        "prompt_tokens": 129,
+        "total_tokens": 238,
+        "completion_tokens": 109,
+        "prompt_tokens_details": {
+          "cached_tokens": 64,
+          "created_cache_tokens": 64
+        },
+        "completion_tokens_details": {
+          "reasoning_tokens": 69
+        }
+      },
+      "json_valid": true,
+      "schema_valid": true,
+      "score": 100,
+      "exact_match": true,
+      "parsed_output": {
+        "retryable": [
+          429,
+          500,
+          503
+        ],
+        "non_retryable": [
+          200,
+          400
+        ],
+        "count": 3
+      },
+      "evaluation_failures": [],
+      "attempts": [
+        {
+          "attempt": 1,
+          "ok": true,
+          "status": 200,
+          "request_id": "8460ced09f1c4efdb1fd1caa9b274de4",
+          "model_returned": "z-ai/glm-5.2",
+          "latency_ms": 1256,
+          "first_byte_ms": 197,
+          "ttft_ms": 1119,
+          "stream_observed": true,
+          "failure_type": null
+        }
+      ],
+      "model_requested": "ambient/large"
+    },
+    {
+      "logical_run_id": "2-patch_selection-z-ai/glm-5.2",
+      "repetition": 2,
+      "case_id": "patch_selection",
+      "comparison_group": "direct",
+      "model_returned": "z-ai/glm-5.2",
+      "returned_model_matches_request": true,
+      "final_ok": true,
+      "attempt_count": 1,
+      "request_id": "3e62d47de09243a382f5839e152939e1",
+      "request_id_present": true,
+      "stream_observed": true,
+      "status": 200,
+      "latency_ms": 2038,
+      "first_byte_ms": 194,
+      "ttft_ms": 1597,
+      "failure_type": null,
+      "output_text": "{\"choice\":\"B\",\"reason_code\":\"B checks response.ok and throws on non-2xx before parsing, while still returning parsed JSON for successful responses.\",\"success_behavior\":\"For 2xx responses, returns the parsed JSON from response.json().\",\"error_behavior\":\"For non-2xx responses, throws an Error with the HTTP status code.\"}",
+      "output_sha256": "62a66f1885c119c954c2b89f60f92cb98b45dc7ded98112b1da0eb27f0d12665",
+      "usage": {
+        "prompt_tokens": 170,
+        "total_tokens": 336,
+        "completion_tokens": 166,
+        "prompt_tokens_details": {
+          "cached_tokens": 64,
+          "created_cache_tokens": 64
+        },
+        "completion_tokens_details": {
+          "reasoning_tokens": 112
+        }
+      },
+      "json_valid": true,
+      "schema_valid": true,
+      "score": 100,
+      "exact_match": true,
+      "parsed_output": {
+        "choice": "B",
+        "reason_code": "B checks response.ok and throws on non-2xx before parsing, while still returning parsed JSON for successful responses.",
+        "success_behavior": "For 2xx responses, returns the parsed JSON from response.json().",
+        "error_behavior": "For non-2xx responses, throws an Error with the HTTP status code."
+      },
+      "evaluation_failures": [],
+      "attempts": [
+        {
+          "attempt": 1,
+          "ok": true,
+          "status": 200,
+          "request_id": "3e62d47de09243a382f5839e152939e1",
+          "model_returned": "z-ai/glm-5.2",
+          "latency_ms": 2038,
+          "first_byte_ms": 194,
+          "ttft_ms": 1597,
+          "stream_observed": true,
+          "failure_type": null
+        }
+      ],
+      "model_requested": "z-ai/glm-5.2"
+    },
+    {
+      "logical_run_id": "2-patch_selection-qwen/qwen3.6-27b",
+      "repetition": 2,
+      "case_id": "patch_selection",
+      "comparison_group": "direct",
+      "model_returned": "qwen/qwen3.6-27b",
+      "returned_model_matches_request": true,
+      "final_ok": true,
+      "attempt_count": 1,
+      "request_id": "263a838deb9b4dcbb0911e6fbd7943f4",
+      "request_id_present": true,
+      "stream_observed": true,
+      "status": 200,
+      "latency_ms": 826,
+      "first_byte_ms": 221,
+      "ttft_ms": 375,
+      "failure_type": null,
+      "output_text": "{\n  \"choice\": \"B\",\n  \"reason_code\": \"explicit_status_check\",\n  \"success_behavior\": \"returns_parsed_json\",\n  \"error_behavior\": \"throws_error\"\n}",
+      "output_sha256": "622936c860428174b2eb5a26ed9e54df2c99b220860e2e670e4eb95e081efd6d",
+      "usage": {
+        "prompt_tokens": 196,
+        "total_tokens": 240,
+        "completion_tokens": 44,
+        "prompt_tokens_details": {
+          "cached_tokens": 0,
+          "created_cache_tokens": 0
+        },
+        "completion_tokens_details": {
+          "reasoning_tokens": 0
+        }
+      },
+      "json_valid": true,
+      "schema_valid": true,
+      "score": 100,
+      "exact_match": true,
+      "parsed_output": {
+        "choice": "B",
+        "reason_code": "explicit_status_check",
+        "success_behavior": "returns_parsed_json",
+        "error_behavior": "throws_error"
+      },
+      "evaluation_failures": [],
+      "attempts": [
+        {
+          "attempt": 1,
+          "ok": true,
+          "status": 200,
+          "request_id": "263a838deb9b4dcbb0911e6fbd7943f4",
+          "model_returned": "qwen/qwen3.6-27b",
+          "latency_ms": 826,
+          "first_byte_ms": 221,
+          "ttft_ms": 375,
+          "stream_observed": true,
+          "failure_type": null
+        }
+      ],
+      "model_requested": "qwen/qwen3.6-27b"
+    },
+    {
+      "logical_run_id": "2-patch_selection-qwen/qwen3.8-27b",
+      "repetition": 2,
+      "case_id": "patch_selection",
+      "comparison_group": "direct",
+      "model_returned": "qwen/qwen3.8-27b",
+      "returned_model_matches_request": true,
+      "final_ok": true,
+      "attempt_count": 1,
+      "request_id": "a28bb12277d443caa822e6230e399b6e",
+      "request_id_present": true,
+      "stream_observed": true,
+      "status": 200,
+      "latency_ms": 844,
+      "first_byte_ms": 222,
+      "ttft_ms": 374,
+      "failure_type": null,
+      "output_text": "{\n  \"choice\": \"B\",\n  \"reason_code\": \"explicit_status_check\",\n  \"success_behavior\": \"returns parsed JSON\",\n  \"error_behavior\": \"throws Error with status\"\n}",
+      "output_sha256": "990d0fc7a8b67d65946decbfcc5e7901ea87d5c1f2d862ecb89dfae8a481dd8f",
+      "usage": {
+        "prompt_tokens": 196,
+        "total_tokens": 242,
+        "completion_tokens": 46,
+        "prompt_tokens_details": {
+          "cached_tokens": 0,
+          "created_cache_tokens": 0
+        },
+        "completion_tokens_details": {
+          "reasoning_tokens": 0
+        }
+      },
+      "json_valid": true,
+      "schema_valid": true,
+      "score": 100,
+      "exact_match": true,
+      "parsed_output": {
+        "choice": "B",
+        "reason_code": "explicit_status_check",
+        "success_behavior": "returns parsed JSON",
+        "error_behavior": "throws Error with status"
+      },
+      "evaluation_failures": [],
+      "attempts": [
+        {
+          "attempt": 1,
+          "ok": true,
+          "status": 200,
+          "request_id": "a28bb12277d443caa822e6230e399b6e",
+          "model_returned": "qwen/qwen3.8-27b",
+          "latency_ms": 844,
+          "first_byte_ms": 222,
+          "ttft_ms": 374,
+          "stream_observed": true,
+          "failure_type": null
+        }
+      ],
+      "model_requested": "qwen/qwen3.8-27b"
+    },
+    {
+      "logical_run_id": "2-patch_selection-ambient/large",
+      "repetition": 2,
+      "case_id": "patch_selection",
+      "comparison_group": "routed_baseline",
+      "model_returned": "z-ai/glm-5.2",
+      "returned_model_matches_request": false,
+      "final_ok": true,
+      "attempt_count": 1,
+      "request_id": "a0ea94f19695445399a67226380e642a",
+      "request_id_present": true,
+      "stream_observed": true,
+      "status": 200,
+      "latency_ms": 1629,
+      "first_byte_ms": 190,
+      "ttft_ms": 1289,
+      "failure_type": null,
+      "output_text": "{\"choice\":\"B\",\"reason_code\":\"checks response.ok and throws on non-2xx before returning JSON\",\"success_behavior\":\"returns parsed JSON for 2xx responses\",\"error_behavior\":\"throws Error with HTTP status for non-2xx responses\"}",
+      "output_sha256": "8b5a43a2ca905e795ea59986d006ea1471319cb3a7f49950f3615b1570689cae",
+      "usage": {
+        "prompt_tokens": 170,
+        "total_tokens": 308,
+        "completion_tokens": 138,
+        "prompt_tokens_details": {
+          "cached_tokens": 64,
+          "created_cache_tokens": 64
+        },
+        "completion_tokens_details": {
+          "reasoning_tokens": 92
+        }
+      },
+      "json_valid": true,
+      "schema_valid": true,
+      "score": 100,
+      "exact_match": true,
+      "parsed_output": {
+        "choice": "B",
+        "reason_code": "checks response.ok and throws on non-2xx before returning JSON",
+        "success_behavior": "returns parsed JSON for 2xx responses",
+        "error_behavior": "throws Error with HTTP status for non-2xx responses"
+      },
+      "evaluation_failures": [],
+      "attempts": [
+        {
+          "attempt": 1,
+          "ok": true,
+          "status": 200,
+          "request_id": "a0ea94f19695445399a67226380e642a",
+          "model_returned": "z-ai/glm-5.2",
+          "latency_ms": 1629,
+          "first_byte_ms": 190,
+          "ttft_ms": 1289,
+          "stream_observed": true,
+          "failure_type": null
+        }
+      ],
+      "model_requested": "ambient/large"
+    },
+    {
+      "logical_run_id": "2-failure_classification-z-ai/glm-5.2",
+      "repetition": 2,
+      "case_id": "failure_classification",
+      "comparison_group": "direct",
+      "model_returned": "z-ai/glm-5.2",
+      "returned_model_matches_request": true,
+      "final_ok": true,
+      "attempt_count": 1,
+      "request_id": "951b987a3f464c3b8db0500944aff1df",
+      "request_id_present": true,
+      "stream_observed": true,
+      "status": 200,
+      "latency_ms": 4193,
+      "first_byte_ms": 197,
+      "ttft_ms": 4022,
+      "failure_type": null,
+      "output_text": "{\"labels\":[\"auth\",\"capacity_or_rate_limit\",\"timeout\",\"server\",\"client\",\"other\"],\"retryable_indices\":[1,2,3]}",
+      "output_sha256": "2eee1183b681576300de8941db108369af02cdcca85e79b4a6414cd45eee4f12",
+      "usage": {
+        "prompt_tokens": 242,
+        "total_tokens": 840,
+        "completion_tokens": 598,
+        "prompt_tokens_details": {
+          "cached_tokens": 128,
+          "created_cache_tokens": 64
+        },
+        "completion_tokens_details": {
+          "reasoning_tokens": 438
+        }
+      },
+      "json_valid": true,
+      "schema_valid": true,
+      "score": 100,
+      "exact_match": true,
+      "parsed_output": {
+        "labels": [
+          "auth",
+          "capacity_or_rate_limit",
+          "timeout",
+          "server",
+          "client",
+          "other"
+        ],
+        "retryable_indices": [
+          1,
+          2,
+          3
+        ]
+      },
+      "evaluation_failures": [],
+      "attempts": [
+        {
+          "attempt": 1,
+          "ok": true,
+          "status": 200,
+          "request_id": "951b987a3f464c3b8db0500944aff1df",
+          "model_returned": "z-ai/glm-5.2",
+          "latency_ms": 4193,
+          "first_byte_ms": 197,
+          "ttft_ms": 4022,
+          "stream_observed": true,
+          "failure_type": null
+        }
+      ],
+      "model_requested": "z-ai/glm-5.2"
+    },
+    {
+      "logical_run_id": "2-failure_classification-qwen/qwen3.6-27b",
+      "repetition": 2,
+      "case_id": "failure_classification",
+      "comparison_group": "direct",
+      "model_returned": "qwen/qwen3.6-27b",
+      "returned_model_matches_request": true,
+      "final_ok": true,
+      "attempt_count": 1,
+      "request_id": "ebbbfd298e684bb9afeee2ddf8c90975",
+      "request_id_present": true,
+      "stream_observed": true,
+      "status": 200,
+      "latency_ms": 998,
+      "first_byte_ms": 544,
+      "ttft_ms": 702,
+      "failure_type": null,
+      "output_text": "{\"labels\":[\"auth\",\"capacity_or_rate_limit\",\"timeout\",\"server\",\"client\",\"other\"],\"retryable_indices\":[1,2,3]}",
+      "output_sha256": "2eee1183b681576300de8941db108369af02cdcca85e79b4a6414cd45eee4f12",
+      "usage": {
+        "prompt_tokens": 269,
+        "total_tokens": 298,
+        "completion_tokens": 29,
+        "prompt_tokens_details": {
+          "cached_tokens": 0,
+          "created_cache_tokens": 0
+        },
+        "completion_tokens_details": {
+          "reasoning_tokens": 0
+        }
+      },
+      "json_valid": true,
+      "schema_valid": true,
+      "score": 100,
+      "exact_match": true,
+      "parsed_output": {
+        "labels": [
+          "auth",
+          "capacity_or_rate_limit",
+          "timeout",
+          "server",
+          "client",
+          "other"
+        ],
+        "retryable_indices": [
+          1,
+          2,
+          3
+        ]
+      },
+      "evaluation_failures": [],
+      "attempts": [
+        {
+          "attempt": 1,
+          "ok": true,
+          "status": 200,
+          "request_id": "ebbbfd298e684bb9afeee2ddf8c90975",
+          "model_returned": "qwen/qwen3.6-27b",
+          "latency_ms": 998,
+          "first_byte_ms": 544,
+          "ttft_ms": 702,
+          "stream_observed": true,
+          "failure_type": null
+        }
+      ],
+      "model_requested": "qwen/qwen3.6-27b"
+    },
+    {
+      "logical_run_id": "2-failure_classification-qwen/qwen3.8-27b",
+      "repetition": 2,
+      "case_id": "failure_classification",
+      "comparison_group": "direct",
+      "model_returned": "qwen/qwen3.8-27b",
+      "returned_model_matches_request": true,
+      "final_ok": true,
+      "attempt_count": 1,
+      "request_id": "a7acd2641a7a408c83ef49597552e877",
+      "request_id_present": true,
+      "stream_observed": true,
+      "status": 200,
+      "latency_ms": 1136,
+      "first_byte_ms": 243,
+      "ttft_ms": 405,
+      "failure_type": null,
+      "output_text": "{\n  \"labels\": [\n    \"auth\",\n    \"capacity_or_rate_limit\",\n    \"timeout\",\n    \"server\",\n    \"client\",\n    \"other\"\n  ],\n  \"retryable_indices\": [\n    1,\n    2,\n    3\n  ]\n}",
+      "output_sha256": "7a9c807dccc430b77449d894192adba4a60e2f3833b5d743249d02882c96d13e",
+      "usage": {
+        "prompt_tokens": 269,
+        "total_tokens": 340,
+        "completion_tokens": 71,
+        "prompt_tokens_details": {
+          "cached_tokens": 0,
+          "created_cache_tokens": 0
+        },
+        "completion_tokens_details": {
+          "reasoning_tokens": 0
+        }
+      },
+      "json_valid": true,
+      "schema_valid": true,
+      "score": 100,
+      "exact_match": true,
+      "parsed_output": {
+        "labels": [
+          "auth",
+          "capacity_or_rate_limit",
+          "timeout",
+          "server",
+          "client",
+          "other"
+        ],
+        "retryable_indices": [
+          1,
+          2,
+          3
+        ]
+      },
+      "evaluation_failures": [],
+      "attempts": [
+        {
+          "attempt": 1,
+          "ok": true,
+          "status": 200,
+          "request_id": "a7acd2641a7a408c83ef49597552e877",
+          "model_returned": "qwen/qwen3.8-27b",
+          "latency_ms": 1136,
+          "first_byte_ms": 243,
+          "ttft_ms": 405,
+          "stream_observed": true,
+          "failure_type": null
+        }
+      ],
+      "model_requested": "qwen/qwen3.8-27b"
+    },
+    {
+      "logical_run_id": "2-failure_classification-ambient/large",
+      "repetition": 2,
+      "case_id": "failure_classification",
+      "comparison_group": "routed_baseline",
+      "model_returned": "z-ai/glm-5.2",
+      "returned_model_matches_request": false,
+      "final_ok": true,
+      "attempt_count": 1,
+      "request_id": "c3201b83de1a46d1adff36075705577f",
+      "request_id_present": true,
+      "stream_observed": true,
+      "status": 200,
+      "latency_ms": 3477,
+      "first_byte_ms": 200,
+      "ttft_ms": 3332,
+      "failure_type": null,
+      "output_text": "{\"labels\":[\"auth\",\"capacity_or_rate_limit\",\"timeout\",\"server\",\"client\",\"other\"],\"retryable_indices\":[1,2,3]}",
+      "output_sha256": "2eee1183b681576300de8941db108369af02cdcca85e79b4a6414cd45eee4f12",
+      "usage": {
+        "prompt_tokens": 242,
+        "total_tokens": 840,
+        "completion_tokens": 598,
+        "prompt_tokens_details": {
+          "cached_tokens": 128,
+          "created_cache_tokens": 64
+        },
+        "completion_tokens_details": {
+          "reasoning_tokens": 438
+        }
+      },
+      "json_valid": true,
+      "schema_valid": true,
+      "score": 100,
+      "exact_match": true,
+      "parsed_output": {
+        "labels": [
+          "auth",
+          "capacity_or_rate_limit",
+          "timeout",
+          "server",
+          "client",
+          "other"
+        ],
+        "retryable_indices": [
+          1,
+          2,
+          3
+        ]
+      },
+      "evaluation_failures": [],
+      "attempts": [
+        {
+          "attempt": 1,
+          "ok": true,
+          "status": 200,
+          "request_id": "c3201b83de1a46d1adff36075705577f",
+          "model_returned": "z-ai/glm-5.2",
+          "latency_ms": 3477,
+          "first_byte_ms": 200,
+          "ttft_ms": 3332,
+          "stream_observed": true,
+          "failure_type": null
+        }
+      ],
+      "model_requested": "ambient/large"
+    }
+  ],
+  "model_summaries": [
+    {
+      "model_requested": "z-ai/glm-5.2",
+      "comparison_group": "direct",
+      "logical_requests": 6,
+      "attempts_total": 6,
+      "correctness_percent": 100,
+      "exact_match_rate": 1,
+      "completion_rate": 1,
+      "json_valid_rate": 1,
+      "request_id_rate": 1,
+      "stream_observed_rate": 1,
+      "consistency_percent": 66.66666666666667,
+      "retry_rate": 0,
+      "returned_model_counts": {
+        "z-ai/glm-5.2": 6
+      },
+      "latency_ms": {
+        "min": 1583,
+        "median": 1910.5,
+        "max": 4193
+      },
+      "ttft_ms": {
+        "min": 1338,
+        "median": 1624.5,
+        "max": 4022
+      },
+      "failure_type_counts": {}
+    },
+    {
+      "model_requested": "qwen/qwen3.6-27b",
+      "comparison_group": "direct",
+      "logical_requests": 6,
+      "attempts_total": 6,
+      "correctness_percent": 100,
+      "exact_match_rate": 1,
+      "completion_rate": 1,
+      "json_valid_rate": 1,
+      "request_id_rate": 1,
+      "stream_observed_rate": 1,
+      "consistency_percent": 100,
+      "retry_rate": 0,
+      "returned_model_counts": {
+        "qwen/qwen3.6-27b": 6
+      },
+      "latency_ms": {
+        "min": 689,
+        "median": 885,
+        "max": 1229
+      },
+      "ttft_ms": {
+        "min": 375,
+        "median": 412,
+        "max": 729
+      },
+      "failure_type_counts": {}
+    },
+    {
+      "model_requested": "qwen/qwen3.8-27b",
+      "comparison_group": "direct",
+      "logical_requests": 6,
+      "attempts_total": 6,
+      "correctness_percent": 100,
+      "exact_match_rate": 1,
+      "completion_rate": 1,
+      "json_valid_rate": 1,
+      "request_id_rate": 1,
+      "stream_observed_rate": 1,
+      "consistency_percent": 100,
+      "retry_rate": 0,
+      "returned_model_counts": {
+        "qwen/qwen3.8-27b": 6
+      },
+      "latency_ms": {
+        "min": 842,
+        "median": 895,
+        "max": 1136
+      },
+      "ttft_ms": {
+        "min": 372,
+        "median": 393,
+        "max": 405
+      },
+      "failure_type_counts": {}
+    },
+    {
+      "model_requested": "ambient/large",
+      "comparison_group": "routed_baseline",
+      "logical_requests": 6,
+      "attempts_total": 6,
+      "correctness_percent": 100,
+      "exact_match_rate": 1,
+      "completion_rate": 1,
+      "json_valid_rate": 1,
+      "request_id_rate": 1,
+      "stream_observed_rate": 1,
+      "consistency_percent": 100,
+      "retry_rate": 0,
+      "returned_model_counts": {
+        "z-ai/glm-5.2": 6
+      },
+      "latency_ms": {
+        "min": 1256,
+        "median": 2208,
+        "max": 4472
+      },
+      "ttft_ms": {
+        "min": 1119,
+        "median": 1971,
+        "max": 4340
+      },
+      "failure_type_counts": {}
+    }
+  ],
+  "direct_ranking": [
+    {
+      "rank": 1,
+      "model_requested": "qwen/qwen3.8-27b"
+    },
+    {
+      "rank": 2,
+      "model_requested": "qwen/qwen3.6-27b"
+    },
+    {
+      "rank": 3,
+      "model_requested": "z-ai/glm-5.2"
+    }
+  ],
+  "routed_baseline": {
+    "model_requested": "ambient/large",
+    "summary_ref": "ambient/large"
+  },
+  "human_review": {
+    "included_in_score": false,
+    "reviewer": null,
+    "notes": null
+  },
+  "limitations": [
+    "Small deterministic developer probe, not a general model leaderboard.",
+    "API evidence only; no web-UI behavior was tested.",
+    "Latency observations apply only to the recorded time window."
+  ],
+  "benchmark_sha256": "ef6446002b768975ae3825041983b440b744147a1572cbb8037c179bc57bd200"
+}

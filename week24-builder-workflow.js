@@ -58,7 +58,7 @@ export function parseSseFrames(buffer) {
   return { data, remainder };
 }
 
-export function applyOpenAiCompatibleEvent(payload, state) {
+export function applyOpenAiCompatibleEvent(payload, state, elapsedMs = null) {
   if (!payload || typeof payload !== 'object') return;
   const eventType = payload.type || payload.object || payload.event;
   if (eventType) state.event_types.add(eventType);
@@ -69,7 +69,13 @@ export function applyOpenAiCompatibleEvent(payload, state) {
 
   const delta = payload.choices?.[0]?.delta?.content;
   const message = payload.choices?.[0]?.message?.content;
-  if (typeof delta === 'string') state.output += delta;
+  if (typeof delta === 'string') {
+    state.output += delta;
+    if (delta.length > 0) {
+      state.content_delta_count = (state.content_delta_count || 0) + 1;
+      if (state.ttft_ms == null && elapsedMs != null) state.ttft_ms = elapsedMs;
+    }
+  }
   if (typeof message === 'string') state.output += message;
 }
 
@@ -118,7 +124,7 @@ async function readStreamResponse(response, state, started) {
     for (const item of parsed.data) {
       if (!item || item === '[DONE]') continue;
       try {
-        applyOpenAiCompatibleEvent(JSON.parse(item), state);
+        applyOpenAiCompatibleEvent(JSON.parse(item), state, Date.now() - started);
       } catch {
         state.event_types.add('unparseable_sse_json');
       }
@@ -129,7 +135,7 @@ async function readStreamResponse(response, state, started) {
   for (const item of tail.data) {
     if (!item || item === '[DONE]') continue;
     try {
-      applyOpenAiCompatibleEvent(JSON.parse(item), state);
+      applyOpenAiCompatibleEvent(JSON.parse(item), state, Date.now() - started);
     } catch {
       state.event_types.add('unparseable_sse_json');
     }
@@ -145,6 +151,8 @@ export async function callAmbientForBuilderStage({
   timeoutMs = 90000,
   fetchImpl = globalThis.fetch,
   stream = true,
+  temperature,
+  systemPrompt = 'You are the model inside a coding-agent workflow. Be concise, implementation-oriented, and do not invent executed test results.',
 } = {}) {
   if (!stage?.id || !stage?.prompt) throw new Error('stage.id and stage.prompt are required');
   if (!apiKey) throw new Error('AMBIENT_API_KEY is required');
@@ -162,6 +170,8 @@ export async function callAmbientForBuilderStage({
     verified: null,
     merkle_root_present: false,
     first_byte_ms: null,
+    ttft_ms: null,
+    content_delta_count: 0,
   };
 
   try {
@@ -178,17 +188,19 @@ export async function callAmbientForBuilderStage({
         messages: [
           {
             role: 'system',
-            content: 'You are the model inside a coding-agent workflow. Be concise, implementation-oriented, and do not invent executed test results.',
+            content: systemPrompt,
           },
           { role: 'user', content: stage.prompt },
         ],
         max_tokens: maxTokens,
+        ...(temperature === undefined ? {} : { temperature }),
         emit_usage: true,
         emit_ambient_events: true,
       }),
     });
 
-    const requestIdPresent = Boolean(response.headers?.get?.('x-request-id'));
+    const requestId = response.headers?.get?.('x-request-id') || null;
+    const requestIdPresent = Boolean(requestId);
     if (!response.ok) {
       const text = await response.text().catch(() => '');
       return {
@@ -197,6 +209,7 @@ export async function callAmbientForBuilderStage({
         ok: false,
         status: response.status,
         request_id_present: requestIdPresent,
+        request_id: requestId,
         latency_ms: Date.now() - started,
         first_byte_ms: state.first_byte_ms,
         failure_type: classifyDeveloperWorkflowFailure(response.status, text),
@@ -219,12 +232,17 @@ export async function callAmbientForBuilderStage({
       ok: output.length > 0,
       status: response.status,
       request_id_present: requestIdPresent,
+      request_id: requestId,
       latency_ms: Date.now() - started,
       first_byte_ms: state.first_byte_ms,
+      ttft_ms: state.ttft_ms,
+      content_delta_count: state.content_delta_count,
+      stream_observed: state.content_delta_count > 0,
       failure_type: failureType,
       model_requested: model,
       model_returned: state.model_returned,
       output_chars: output.length,
+      output_text: output,
       output_sha256: output ? crypto.createHash('sha256').update(output, 'utf8').digest('hex') : null,
       output_preview: output.slice(0, 700),
       event_types: [...state.event_types].sort(),
@@ -240,8 +258,12 @@ export async function callAmbientForBuilderStage({
       ok: false,
       status: null,
       request_id_present: false,
+      request_id: null,
       latency_ms: Date.now() - started,
       first_byte_ms: state.first_byte_ms,
+      ttft_ms: state.ttft_ms,
+      content_delta_count: state.content_delta_count,
+      stream_observed: state.content_delta_count > 0,
       failure_type: classifyDeveloperWorkflowFailure(null, error?.message || error),
       error_preview: redactPreview(error?.message || error),
       memory_rss_delta_bytes: process.memoryUsage().rss - memBefore,

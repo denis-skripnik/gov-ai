@@ -4,6 +4,7 @@ AI assistant for DAO governance proposals.
 
 ## Table of Contents
 
+- [Week 27 - Proof of Useful Work (Local Simulation)](#week-27---proof-of-useful-work-local-simulation)
 - [Week 26 - Model Showdown Benchmark (Web2)](#week-26---model-showdown-benchmark-web2)
 - [Week 25 - Under Pressure Bounded Burst Workload (Web2)](#week-25---under-pressure-bounded-burst-workload-web2)
 - [Week 24 - Builders First Developer Workflow (Web2)](#week-24---builders-first-developer-workflow-web2)
@@ -40,6 +41,7 @@ AI assistant for DAO governance proposals.
 
 This project started as **Web3 Developer Loop - Experiment #3 (AI for governance or automation)**.
 It now also documents and ships:
+- Week 27 proof of useful work: a local, deterministic valid/invalid work gate for eight fixed fixture scenarios; it is not an Ambient miner, protocol verifier, or reward system
 - Week 26 model showdown (Web2): deterministic repeated JSON benchmark across the currently listed direct Ambient models, with `ambient/large` reported separately as a routed baseline
 - Week 24 builders-first workflow (Web2): Ambient-backed coding-agent-style workflow evidence with planning, implementation sketching, review, streaming, retry handling, a temporary Hermes profile tool-use probe, and reusable JSON/Markdown artifacts for developers
 - Week 23 verification repeatability (Web2): deterministic verification-hook benchmark for repeated runs over the same report/proposal fixture; preserves Ambient proof fields, records latency/memory smoke metrics, and exposes drift before users rely on repeated governance reports
@@ -73,6 +75,20 @@ The design goal is **honesty and conservatism**:
 - if some data cannot be extracted, it is marked as `UNKNOWN`
 - the tool does not guess voting options or results
 - the output is meant to **assist** human decision-making, not replace it
+
+---
+
+## Week 27 - Proof of Useful Work (Local Simulation)
+
+Run the bounded local fixture gate (no API calls, no GPU, no wallet):
+
+```bash
+node gov-ai.js valid-work-simulation
+```
+
+Eight fixed cases cover correct execution, incorrect output, interruption, incomplete result, duplicate work, conflicting outputs, missing evidence, and evidence from another job. Each produces `valid`, `invalid`, or `needs_review`, a reason code, and `local_reward_eligible`. Only the complete, correct, unique, evidence-bound local fixture is eligible; all other cases fail closed. Additional tests cover altered input/output hashes and attempt IDs. The local fixture gate requires the caller to supply and retain an in-memory accepted-work registry; the CLI runs fixed isolated cases only and does **not** persist that registry or settle any real job.
+
+This is **not** Ambient Proof of Logits, miner execution, independent validation, settlement, or a real reward. The hashes only tie fields inside self-declared fixtures; they cannot establish that a GPU actually performed useful work. No payout amount, token rule, slash amount, or hardware compatibility is inferred. During Week 27 the [detailed miner documentation](https://ambient.xyz/docs/mine/) describes curated datacenter-class onboarding; [Mini Miner](https://ambient.xyz/docs/mine/mini-miner/) remains a roadmap feature. The [tokenomics page](https://ambient.xyz/docs/learn/tokenomics/) describes work credit and deposit mechanics qualitatively, without committed numeric economics. Do not run the marketing page's installer as a substitute for authorized onboarding.
 
 ---
 

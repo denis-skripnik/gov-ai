@@ -11,6 +11,7 @@ import { runWeek23VerificationBenchmark } from "./week23-reproducibility-benchma
 import { runWeek24BuilderWorkflow } from "./week24-builder-workflow.js";
 import { runWeek25BurstWorkload } from "./week25-burst-workload.js";
 import { runWeek26DeveloperBenchmark, validateWeek26Config, week26ExitCode } from "./week26-developer-benchmark.js";
+import { runWeek27Simulation } from "./week27-valid-work.js";
 import "dotenv/config";
 
 const cmd = process.argv[2];
@@ -245,6 +246,13 @@ if (cmd === "model-showdown") {
   process.exit(week26ExitCode(result.status));
 }
 
+// ---------- WEEK 27 LOCAL VALID/INVALID WORK SIMULATION ----------
+if (cmd === "valid-work-simulation") {
+  const result = runWeek27Simulation();
+  console.log(JSON.stringify(result, null, 2));
+  process.exit(result.status === "complete" ? 0 : 2);
+}
+
 // ---------- RESOLVE URL ----------
 let url = null;
 
@@ -274,6 +282,7 @@ if (cmd === "analyze") {
   console.log("  node gov-ai.js builder-workflow [output-dir] [task]");
   console.log("  node gov-ai.js burst-workload [output-dir]");
   console.log("  node gov-ai.js model-showdown [output-dir]");
+  console.log("  node gov-ai.js valid-work-simulation");
   console.log("  node gov-ai.js");
   process.exit(0);
 }

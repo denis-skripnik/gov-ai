@@ -1,0 +1,58 @@
+{
+  "kind": "week27-local-simulation-not-ambient-protocol",
+  "status": "complete",
+  "fast_mode": false,
+  "actual_miner_jobs": 0,
+  "real_rewards_issued": 0,
+  "caveat": "Self-declared fixture hashes are not Proof of Logits, independent validation, or evidence of Ambient rewards.",
+  "cases": [
+    {
+      "name": "correct_execution",
+      "status": "valid",
+      "reason": "local_checks_passed",
+      "local_reward_eligible": true
+    },
+    {
+      "name": "incorrect_execution",
+      "status": "invalid",
+      "reason": "incorrect_result",
+      "local_reward_eligible": false
+    },
+    {
+      "name": "interrupted_job",
+      "status": "needs_review",
+      "reason": "interrupted",
+      "local_reward_eligible": false
+    },
+    {
+      "name": "incomplete_result",
+      "status": "needs_review",
+      "reason": "incomplete_result",
+      "local_reward_eligible": false
+    },
+    {
+      "name": "duplicate_work",
+      "status": "invalid",
+      "reason": "duplicate_work",
+      "local_reward_eligible": false
+    },
+    {
+      "name": "inconsistent_outputs",
+      "status": "needs_review",
+      "reason": "inconsistent_outputs",
+      "local_reward_eligible": false
+    },
+    {
+      "name": "missing_evidence",
+      "status": "needs_review",
+      "reason": "missing_evidence",
+      "local_reward_eligible": false
+    },
+    {
+      "name": "foreign_evidence",
+      "status": "needs_review",
+      "reason": "evidence_identity_mismatch",
+      "local_reward_eligible": false
+    }
+  ]
+}

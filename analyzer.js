@@ -365,36 +365,22 @@ export function buildAmbientRuntimeInfo({
   };
 }
 
-function isRetryableNetworkError(e) {
-  const code = e?.code || e?.cause?.code;
-  if (code === "UND_ERR_SOCKET" || code === "ECONNRESET" || code === "ETIMEDOUT" || code === "EAI_AGAIN") {
-    return true;
-  }
-  const msg = String(e?.message || e?.cause?.message || "").toLowerCase();
-  return msg.includes("other side closed") || msg.includes("fetch failed");
+function logAmbientVerification(info, apiKey) {
+  // Provider events are untrusted. Never print raw receipts, lifecycle payloads or
+  // malformed metadata; a miner-supplied field can otherwise echo a credential.
+  const safeId = typeof info.request_id === 'string' && info.request_id !== apiKey
+    && !info.request_id.includes(apiKey) && /^[A-Za-z0-9._:-]{1,160}$/.test(info.request_id)
+    ? info.request_id : null;
+  console.log('verification:', {
+    verified: typeof info.verified === 'boolean' ? info.verified : null,
+    merkle_root_present: typeof info.merkle_root === 'string' && /^[a-fA-F0-9]{64}$/.test(info.merkle_root),
+    request_id: safeId,
+    model_fallback_activated: Boolean(info.model_fallback?.activated),
+  });
 }
 
 function sleep(ms) {
-  return new Promise((resolve) => setTimeout(resolve, ms));
-}
-
-async function withRetry(fn, { tries = 3, baseDelayMs = 600 } = {}) {
-  let retries = 0;
-  while (true) {
-    const startTime = Date.now();
-    try {
-      return await fn();
-    } catch (e) {
-      // Track latency even on failure (for timeout calculation)
-      const latency = Date.now() - startTime;
-      latencyTracker.add(latency);
-      
-      if (!isRetryableNetworkError(e) || retries >= tries - 1) throw e;
-      const delay = baseDelayMs * 2 ** retries;
-      retries += 1;
-      await sleep(delay);
-    }
-  }
+  return new Promise(resolve => setTimeout(resolve, ms));
 }
 
 // Export for external use
@@ -435,27 +421,42 @@ async function* sseDataLines(response) {
   const reader = response.body.getReader();
   const decoder = new TextDecoder("utf-8");
   let buffer = "";
-
-  while (true) {
-    const { value, done } = await reader.read();
-    if (done) break;
-
-    buffer += decoder.decode(value, { stream: true });
-
+  let completed = false;
+  let finishReason = null;
+  const decodeEvent = raw => raw.split(/\r?\n/).filter(line => line.startsWith("data:"))
+    .map(line => line.slice(5).trim()).join("\n");
+  const track = data => {
+    if (data === "[DONE]") { completed = true; return; }
+    let event;
+    try { event = JSON.parse(data); } catch { throw new Error("Ambient returned malformed streaming event"); }
+    if (event?.error) throw new Error("Ambient returned a streaming error");
+    const reason = event?.choices?.[0]?.finish_reason;
+    if (reason != null) finishReason = reason;
+  };
+  try {
     while (true) {
-      const idx = buffer.indexOf("\n\n");
-      if (idx === -1) break;
-
-      const rawEvent = buffer.slice(0, idx);
-      buffer = buffer.slice(idx + 2);
-
-      const lines = rawEvent.split("\n");
-      for (const l of lines) {
-        if (l.startsWith("data:")) {
-          yield l.slice("data:".length).trim();
-        }
+      const { value, done } = await reader.read();
+      if (done) break;
+      buffer += decoder.decode(value, { stream: true });
+      while (true) {
+        const match = /\r?\n\r?\n/.exec(buffer);
+        if (!match) break;
+        const rawEvent = buffer.slice(0, match.index);
+        buffer = buffer.slice(match.index + match[0].length);
+        const data = decodeEvent(rawEvent);
+        if (!data) continue;
+        track(data);
+        yield data;
       }
     }
+    buffer += decoder.decode();
+    if (buffer.trim()) {
+      const data = decodeEvent(buffer);
+      if (data) { track(data); yield data; }
+    }
+    if (!completed || finishReason !== "stop") throw new Error("Ambient stream ended before successful completion");
+  } finally {
+    reader.releaseLock();
   }
 }
 
@@ -684,7 +685,7 @@ function normalizeText(value) {
 }
 
 export async function analyzeWithLLM(url, extracted, principles, opts = {}) {
-  if (!API_KEY) throw new Error("Set AMBIENT_API_KEY env variable");
+  if (!(opts.apiKey || API_KEY)) throw new Error("Set AMBIENT_API_KEY env variable");
   // Week 8: Progress logging
   console.log(`[${new Date().toISOString()}] Starting analysis for: ${url}`);
   
@@ -698,7 +699,13 @@ export async function analyzeWithLLM(url, extracted, principles, opts = {}) {
     // Set AMBIENT_STREAM=false for providers/models that verify but do not emit streamed content reliably.
     stream = String(process.env.AMBIENT_STREAM || "true").toLowerCase() !== "false",
     maxTokens = getAmbientMaxTokens(),
+    apiKey = API_KEY,
+    fetchImpl = globalThis.fetch,
   } = opts;
+  // A completion POST may be accepted before a network error reaches this client.
+  // Without a provider idempotency/reconciliation contract, never replay it blindly.
+  // The gated workflow still handles explicitly proven pre-send failures itself.
+  const executeRequest = (fn) => fn();
 
   // Week 8: Check if financial proposal
   const isFinancial = isFinancialProposal(extracted?.title || '', extracted?.body || '');
@@ -721,17 +728,17 @@ export async function analyzeWithLLM(url, extracted, principles, opts = {}) {
   const modelAttempts = buildAmbientModelAttempts(requestedModel);
 
   if (!stream) {
-    return withRetry(async () => {
+    return executeRequest(async () => {
       let lastUnknownModelError = null;
       for (let attemptIndex = 0; attemptIndex < modelAttempts.length; attemptIndex++) {
         const selectedModel = modelAttempts[attemptIndex];
         const attemptedModels = modelAttempts.slice(0, attemptIndex + 1);
         const fallbackReason = selectedModel !== requestedModel ? "unknown_model" : null;
         // Non-streaming mode: you only get verified + merkle_root (no lifecycle events).
-        const response = await fetch(API_URL, {
+        const response = await fetchImpl(API_URL, {
           method: "POST",
           headers: {
-            Authorization: `Bearer ${API_KEY}`,
+            Authorization: `Bearer ${apiKey}`,
             "Content-Type": "application/json",
           },
           body: JSON.stringify({
@@ -777,7 +784,7 @@ export async function analyzeWithLLM(url, extracted, principles, opts = {}) {
           fallbackReason,
         });
 
-        console.log("verification:", verificationUI);
+        logAmbientVerification(verificationUI, apiKey);
 
         const assistantMsg = data?.choices?.[0]?.message;
         const text = assistantMsg?.content;
@@ -809,17 +816,17 @@ schema: "./report.schema.json",
     });
   }
 
-  return withRetry(async () => {
+  return executeRequest(async () => {
     let lastUnknownModelError = null;
     for (let attemptIndex = 0; attemptIndex < modelAttempts.length; attemptIndex++) {
       const selectedModel = modelAttempts[attemptIndex];
       const attemptedModels = modelAttempts.slice(0, attemptIndex + 1);
       const fallbackReason = selectedModel !== requestedModel ? "unknown_model" : null;
       // Streaming mode: captures ambient.lifecycle events + text chunks + merkle_root + verified
-      const response = await fetch(API_URL, {
+      const response = await fetchImpl(API_URL, {
         method: "POST",
         headers: {
-          Authorization: `Bearer ${API_KEY}`,
+          Authorization: `Bearer ${apiKey}`,
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
@@ -929,15 +936,13 @@ schema: "./report.schema.json",
     });
 
     // Print only verification block (as you requested)
-    console.log("verification:", verificationUI);
+    logAmbientVerification(verificationUI, apiKey);
 
     // Parse JSON report (model output is expected to be JSON)
     if (!text) throw new Error(`No streamed content from Ambient (x-request-id: ${requestId || "UNKNOWN"})`);
 
     const report = safeJsonParse(text);
     if (!report) {
-      console.error("Model returned non-JSON (first 2000 chars):");
-      console.error(text.slice(0, 2000));
       throw new Error("Invalid JSON from model");
     }
 

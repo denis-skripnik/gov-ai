@@ -253,6 +253,18 @@ if (cmd === "valid-work-simulation") {
   process.exit(result.status === "complete" ? 0 : 2);
 }
 
+// ---------- WEEK 28 GATED CORE ANALYSIS FIXTURE (NO BOT / PROD DATA) ----------
+if (cmd === "week28-production-check") {
+  const outputDir = process.argv[3];
+  if (!outputDir) { console.error("Usage: node gov-ai.js week28-production-check <isolated-output-dir> [--inject-pre-send]"); process.exit(1); }
+  const { runProductionFixture } = await import("./week28-production-workflow.js");
+  try {
+    const result = await runProductionFixture({ dir: outputDir, inject: process.argv.includes("--inject-pre-send") });
+    console.log(JSON.stringify({ status: result.status, attempts: result.attempts, live_posts: result.live_posts, transport: result.transport, oracle_checks: result.oracle_checks, provenance: result.provenance }, null, 2));
+    process.exit(result.status === "complete" ? 0 : 2);
+  } catch { console.error("Week28 fixture failed; check configuration and sanitized artifact."); process.exit(2); }
+}
+
 // ---------- RESOLVE URL ----------
 let url = null;
 

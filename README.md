@@ -2,6 +2,63 @@
 
 AI assistant for DAO governance proposals.
 
+## Week 30 - Gated governance agent recovery
+
+`week30-agent-recovery.js` is an isolated, opt-in three-stage governance reviewer:
+initial analysis → critical risk review → human-review handoff. It analyzes a public
+synthetic decision-register pilot, not an arithmetic workload. Every stage calls the
+existing `analyzeWithLLM` path with `ambient/large`, streaming enabled and financial
+fan-out disabled. The next stage receives the prior accepted, redacted report and its SHA-256.
+No bot data, production queue, voting transaction, or publication is involved.
+
+Offline verification (injected HTTP only; real analyzer prompt/parser/oracles):
+
+```bash
+node --test week30-agent-recovery.test.js
+node --test
+```
+
+Example live invocation (run from repo root; load `AMBIENT_API_KEY` securely beforehand,
+never place it on the command line):
+
+```bash
+node week30-agent-recovery.js --live "$TMPDIR/week30-governance-agent" --interrupt-after=1
+# Expected exit 75 only after stage 1 has been durably accepted.
+node week30-agent-recovery.js --live "$TMPDIR/week30-governance-agent"
+# Fresh-process resume: skips completed stage 1; exit 0 complete, 2 held for review.
+```
+
+Use a dedicated state directory, never a bot production directory. Atomic rename,
+file/directory fsync, exclusive single-host PID locking, input fingerprinting and
+output hashes protect checkpoints. `agent-state.json` contains bounded structured
+reports and named oracle checks; `agent-events.jsonl` contains only fixed stage/status
+names and timestamps. Credentials and bearer strings are redacted from retained
+model text; arbitrary model extras, error bodies and provider request IDs are not retained.
+
+Bounds: three serial stages, at most three POSTs, no automatic retries, no model
+fallback, at most 4,000 output tokens/stage, 1 MB response/stage. Default deadline is
+180 seconds/stage (540 seconds across three sequential attempts); API overrides are
+capped at 300 seconds/stage. Timeouts cover connection and stream consumption.
+
+A durable `dispatching` marker precedes POST. A disconnect, timeout, HTTP failure,
+or crash after that marker becomes `ambiguous` and blocks downstream work on resume:
+the server might have accepted the request. Never reset it to pending or start a
+new state directory to force replay without external reconciliation. Even proven
+pre-send failures are held, not retried in this narrow implementation. Oracle rejection
+is terminal `failed`. SIGKILL recovery reclaims a dead owner's PID lock; PID reuse
+and a stale recovery lock fail closed and require operator review. This is not a
+distributed queue or an exactly-once server contract. State hashes detect accidental
+corruption, not adversarial edits by someone with write access.
+
+Oracle success means schema/source preservation, valid source quotes, empty extracted
+voting options/results and an UNKNOWN suggested option. It cannot prove that free-text
+analysis contains no invented voting claims or that subjective advice is correct.
+Ambient
+`provider_reported_verified` requires runtime verification metadata plus a well-formed
+root; it is not independent cryptographic verification. Model/local-council `verified`
+is never Ambient proof. No live reliability or inference-quality claim follows from
+the offline tests. Existing Week28 behavior is unchanged.
+
 ## Table of Contents
 
 - [Week 27 - Proof of Useful Work (Local Simulation)](#week-27---proof-of-useful-work-local-simulation)

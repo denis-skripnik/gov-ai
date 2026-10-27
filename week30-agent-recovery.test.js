@@ -32,11 +32,36 @@ test('gated three-stage governance analysis persists continuity and replays no c
   assert.equal(state.status, 'complete'); assert.equal(calls, 3);
   assert.equal(state.steps.length, 3);
   assert.ok(state.steps.every(s => s.status === 'complete' && s.oracle_checks.every(c => c.pass)));
+  for (const step of state.steps) {
+    assert.equal(step.diagnostics.phase, 'complete');
+    assert.equal(step.diagnostics.done_frames, 1);
+    assert.equal(step.diagnostics.finish_reason, 'stop');
+    assert.ok(step.diagnostics.ttft_ms >= 0);
+  }
   assert.equal(state.steps[1].input.metadata.previous.output_sha256, state.steps[0].output_sha256);
   assert.equal(state.steps[2].input.metadata.previous.output_sha256, state.steps[1].output_sha256);
   assert.equal(state.steps[2].ambient_proof.status, 'unavailable');
   await runAgentRecovery({ enabled: true, dir, apiKey: 'fixture-key', fetchImpl });
   assert.equal(calls, 3);
+});
+
+test('distinct incident scenario has a separate input and refuses reuse of an older state', async t => {
+  const { runAgentRecovery } = await import(moduleUrl);
+  const dir = temp(t); let calls = 0;
+  const fetchImpl = async (_, init) => {
+    calls++;
+    return responseFor(init, r => {
+      r.analysis.evidence_quotes = [r.extracted.body.split('.')[0] + '.'];
+      return r;
+    });
+  };
+  const config = { enabled: true, dir, apiKey: 'public-test-key', fetchImpl, interruptAfterStep: 1 };
+  const incident = await runAgentRecovery({ ...config, scenario: 'incident' });
+  assert.equal(incident.status, 'interrupted');
+  assert.match(incident.steps[0].input.body, /incident register/i);
+  assert.equal(calls, 1);
+  await assert.rejects(runAgentRecovery(config), /state\/configuration/);
+  assert.equal(calls, 1);
 });
 
 test('corrupted completed state is rejected before dispatch', async t => {
@@ -72,7 +97,7 @@ for (const mode of ['disconnect', 'http_unknown_model', 'http_429', 'timeout', '
       } };
     const state = await runAgentRecovery(config); assert.equal(state.status, 'needs_review');
     assert.equal(state.steps[0].status, 'ambiguous'); assert.equal(state.steps[1].status, 'pending');
-    assert.equal(state.steps[0].failure_category, mode === 'http_429' ? 'http_429' : mode === 'http_unknown_model' ? 'http_400' : mode === 'timeout' ? 'deadline' : 'transport_or_parse');
+    assert.equal(state.steps[0].failure_category, mode === 'http_429' ? 'http_429' : mode === 'http_unknown_model' ? 'http_400' : mode === 'timeout' ? 'deadline' : mode === 'truncated' ? 'missing_done' : mode === 'oversized' ? 'response_bound' : 'transport');
     await runAgentRecovery(config); assert.equal(calls, 1);
     for (const file of ['agent-state.json', 'agent-events.jsonl']) assert.ok(!fs.readFileSync(path.join(dir, file), 'utf8').includes('fixture-key'));
   });
@@ -91,6 +116,8 @@ for (const mode of ['invented_vote', 'invented_quote', 'invented_source', 'bad_s
       });
     } });
     assert.equal(calls, 1); assert.equal(state.steps[0].status, 'failed'); assert.equal(state.steps[0].reason, 'oracle_rejected');
+    assert.equal(state.steps[0].failure_category, 'oracle');
+    assert.equal(state.steps[0].diagnostics.phase, 'oracle');
     assert.equal(state.steps[1].status, 'pending');
   });
 }

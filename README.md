@@ -28,6 +28,13 @@ node week30-agent-recovery.js --live "$TMPDIR/week30-governance-agent"
 # Fresh-process resume: skips completed stage 1; exit 0 complete, 2 held for review.
 ```
 
+For a **separate** incident-register fixture after changing diagnostic code, use a
+new directory and pass `--scenario=incident` on both calls. Never change the
+scenario of an existing state directory or create another directory to pretend
+an ambiguous request was safely retried. The diagnostic state retains allowlisted
+HTTP status/content type/request ID, stream counters, elapsed time and a finite
+failure category; it never retains raw provider bodies or exception text.
+
 Use a dedicated state directory, never a bot production directory. Atomic rename,
 file/directory fsync, exclusive single-host PID locking, input fingerprinting and
 output hashes protect checkpoints. `agent-state.json` contains bounded structured

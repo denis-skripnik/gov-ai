@@ -1,4 +1,5 @@
 import http from 'http';
+import { escapeHtml, formatMarkdown, renderLink, classToken, clampPercent } from './rendering-helpers.js';
 import "dotenv/config";
 import fs from 'fs';
 import path from 'path';
@@ -196,43 +197,6 @@ const I18N = {
 // Markdown Formatter
 // ============================================================================
 
-function formatMarkdown(text) {
-  if (!text) return '';
-  
-  let html = text;
-  
-  // Headers
-  html = html.replace(/^### (.*$)/gim, '<h3>$1</h3>');
-  html = html.replace(/^## (.*$)/gim, '<h2>$1</h2>');
-  html = html.replace(/^# (.*$)/gim, '<h1>$1</h1>');
-  
-  // Bold
-  html = html.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
-  
-  // Italic
-  html = html.replace(/\*(.+?)\*/g, '<em>$1</em>');
-  
-  // Links
-  html = html.replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" target="_blank">$1</a>');
-  
-  // Code blocks
-  html = html.replace(/```([^`]+)```/g, '<pre><code>$1</code></pre>');
-  
-  // Inline code
-  html = html.replace(/`([^`]+)`/g, '<code>$1</code>');
-  
-  // Line breaks
-  html = html.replace(/\n\n/g, '</p><p>');
-  html = html.replace(/\n/g, '<br>');
-  
-  // Wrap in paragraph if not already wrapped
-  if (!html.startsWith('<h') && !html.startsWith('<p>')) {
-    html = '<p>' + html + '</p>';
-  }
-  
-  return html;
-}
-
 // ============================================================================
 // Utility Functions
 // ============================================================================
@@ -268,7 +232,7 @@ function formatVoteResults(results, t) {
   if (results.votes) {
     html += `<h3>${t.voteResults}</h3>`;
     if (results.status) {
-      html += `<div class="badge badge-${results.status}">${results.status}</div>`;
+      html += `<div class="badge badge-${classToken(results.status, ['open', 'closed', 'executed'])}">${escapeHtml(results.status)}</div>`;
     }
     
     // Calculate total votes and percentages
@@ -283,12 +247,12 @@ function formatVoteResults(results, t) {
     html += '<tbody>';
     for (const [option, count] of voteEntries) {
       const num = typeof count === 'string' ? parseFloat(count) : count;
-      const percent = totalVotes > 0 ? ((num / totalVotes) * 100).toFixed(2) : 0;
+      const percent = clampPercent(totalVotes > 0 ? (num / totalVotes) * 100 : 0).toFixed(2);
       const formattedCount = formatNumber(count);
       
       html += `<tr>
-        <td><span class="vote-type vote-type-${option}">${option}</span></td>
-        <td>${formattedCount}</td>
+        <td><span class="vote-type vote-type-${classToken(option, ['for', 'against', 'abstain', 'yes', 'no', 'veto'])}">${escapeHtml(option)}</span></td>
+        <td>${escapeHtml(formattedCount)}</td>
         <td>
           <div class="progress-bar">
             <div class="progress-fill" style="width: ${percent}%">${percent}%</div>
@@ -306,17 +270,17 @@ function formatVoteResults(results, t) {
     html += `<thead><tr><th>${t.type}</th><th>${t.votes}</th><th>${t.voters}</th><th>${t.percent}</th></tr></thead>`;
     html += '<tbody>';
     for (const stat of results.voteStats) {
-      const percent = stat.percent ? stat.percent.toFixed(2) + '%' : 'N/A';
+      const percent = clampPercent(stat.percent).toFixed(2) + '%';
       const formattedVotes = formatNumber(stat.votesCount);
       const formattedVoters = stat.votersCount ? stat.votersCount.toLocaleString('ru-RU') : 'N/A';
       
       html += `<tr>
-        <td><span class="vote-type vote-type-${stat.type}">${stat.type}</span></td>
-        <td>${formattedVotes}</td>
-        <td>${formattedVoters}</td>
+        <td><span class="vote-type vote-type-${classToken(stat.type, ['for', 'against', 'abstain', 'yes', 'no', 'veto'])}">${escapeHtml(stat.type)}</span></td>
+        <td>${escapeHtml(formattedVotes)}</td>
+        <td>${escapeHtml(formattedVoters)}</td>
         <td>
           <div class="progress-bar">
-            <div class="progress-fill" style="width: ${stat.percent || 0}%">${percent}</div>
+            <div class="progress-fill" style="width: ${clampPercent(stat.percent)}%">${percent}</div>
           </div>
         </td>
       </tr>`;
@@ -329,7 +293,7 @@ function formatVoteResults(results, t) {
 }
 
 function openSection(className, anchorId, title) {
-  return `<div id="${anchorId}" class="section ${className}"><h2>${title}</h2>`;
+  return `<div id="${escapeHtml(anchorId)}" class="section ${escapeHtml(className)}"><h2>${escapeHtml(title)}</h2>`;
 }
 
 function formatInput(input, t) {
@@ -338,7 +302,7 @@ function formatInput(input, t) {
   let html = openSection('input-section', 'source-info', t.sourceInfo);
   
   if (input.url) {
-    html += `<p><strong>${t.url}:</strong> <a href="${input.url}" target="_blank">${input.url}</a></p>`;
+    html += `<p><strong>${t.url}:</strong> ${renderLink(input.url)}</p>`;
   }
   
   if (input.fetched_at) {
@@ -347,7 +311,7 @@ function formatInput(input, t) {
   }
   
   if (input.source_type) {
-    html += `<p><strong>${t.sourceType}:</strong> <span class="badge">${input.source_type}</span></p>`;
+    html += `<p><strong>${t.sourceType}:</strong> <span class="badge">${escapeHtml(input.source_type)}</span></p>`;
   }
   
   html += '</div>';
@@ -360,7 +324,7 @@ function formatExtracted(extracted, t) {
   let html = openSection('extracted-section', 'extracted-data', t.extractedData);
   
   if (extracted.title) {
-    html += `<h3>${extracted.title}</h3>`;
+    html += `<h3>${escapeHtml(extracted.title)}</h3>`;
   }
   
   if (extracted.body) {
@@ -373,7 +337,7 @@ function formatExtracted(extracted, t) {
     html += `<h3>${t.votingOptions}</h3>`;
     html += '<ul class="options-list">';
     for (const option of extracted.options) {
-      html += `<li>${option}</li>`;
+      html += `<li>${escapeHtml(option)}</li>`;
     }
     html += '</ul>';
   }
@@ -385,7 +349,7 @@ function formatExtracted(extracted, t) {
   if (extracted.metadata) {
     html += '<details class="metadata">';
     html += `<summary>${t.metadata}</summary>`;
-    html += '<pre>' + JSON.stringify(extracted.metadata, null, 2) + '</pre>';
+    html += '<pre>' + escapeHtml(JSON.stringify(extracted.metadata, null, 2)) + '</pre>';
     html += '</details>';
   }
   
@@ -469,14 +433,14 @@ function formatRecommendation(recommendation, t) {
   
   if (recommendation.suggested_option) {
     html += `<div class="suggested-option">`;
-    html += `<strong>${t.suggestedOption}:</strong> <span class="highlight">${recommendation.suggested_option}</span>`;
+    html += `<strong>${t.suggestedOption}:</strong> <span class="highlight">${escapeHtml(recommendation.suggested_option)}</span>`;
     html += `</div>`;
   }
   
   if (recommendation.confidence) {
-    const confidenceClass = `confidence-${recommendation.confidence}`;
+    const confidenceClass = `confidence-${classToken(recommendation.confidence, ['high', 'medium', 'low'])}`;
     html += `<div class="confidence ${confidenceClass}">`;
-    html += `<strong>${t.confidence}:</strong> <span class="badge">${recommendation.confidence}</span>`;
+    html += `<strong>${t.confidence}:</strong> <span class="badge">${escapeHtml(recommendation.confidence)}</span>`;
     html += `</div>`;
   }
   
@@ -508,17 +472,17 @@ function formatMultiAgentCouncil(council, t) {
   let html = openSection('multi-agent-council-section', 'multi-agent-council', t.multiAgentCouncil);
 
   if (Array.isArray(council.workflow) && council.workflow.length > 0) {
-    html += `<p><strong>${t.workflow}:</strong> ${council.workflow.join(' → ')}</p>`;
+    html += `<p><strong>${t.workflow}:</strong> ${escapeHtml(council.workflow.join(' → '))}</p>`;
   }
 
   if (typeof council.agent_count !== 'undefined') {
-    html += `<p><strong>${t.agentCount}:</strong> ${council.agent_count}</p>`;
+    html += `<p><strong>${t.agentCount}:</strong> ${escapeHtml(council.agent_count)}</p>`;
   }
 
   if (Array.isArray(council.facts) && council.facts.length > 0) {
     html += `<h3>${t.councilFacts}</h3><ul>`;
     for (const fact of council.facts) {
-      html += `<li>${formatMarkdown(fact.statement || JSON.stringify(fact))}</li>`;
+      html += `<li>${fact.statement ? formatMarkdown(fact.statement) : escapeHtml(JSON.stringify(fact))}</li>`;
     }
     html += '</ul>';
   }
@@ -539,8 +503,8 @@ function formatMultiAgentCouncil(council, t) {
 
   if (council.decision) {
     html += `<h3>${t.councilDecision}</h3>`;
-    if (council.decision.suggested_option) html += `<p><strong>${t.suggestedOption}:</strong> <span class="highlight">${council.decision.suggested_option}</span></p>`;
-    if (council.decision.confidence) html += `<p><strong>${t.confidence}:</strong> <span class="badge">${council.decision.confidence}</span></p>`;
+    if (council.decision.suggested_option) html += `<p><strong>${t.suggestedOption}:</strong> <span class="highlight">${escapeHtml(council.decision.suggested_option)}</span></p>`;
+    if (council.decision.confidence) html += `<p><strong>${t.confidence}:</strong> <span class="badge">${escapeHtml(council.decision.confidence)}</span></p>`;
     if (council.decision.rationale) html += formatMarkdown(council.decision.rationale);
     if (Array.isArray(council.decision.blockers) && council.decision.blockers.length > 0) {
       html += '<h4>Blockers</h4><ul>';
@@ -551,8 +515,8 @@ function formatMultiAgentCouncil(council, t) {
 
   if (council.verification) {
     html += `<h3>${t.councilVerification}</h3>`;
-    if (council.verification.status) html += `<p><strong>${t.status}:</strong> <span class="badge">${council.verification.status}</span></p>`;
-    if (council.verification.output_hash) html += `<p><strong>Output hash:</strong> <code>${council.verification.output_hash}</code></p>`;
+    if (council.verification.status) html += `<p><strong>${t.status}:</strong> <span class="badge">${escapeHtml(council.verification.status)}</span></p>`;
+    if (council.verification.output_hash) html += `<p><strong>Output hash:</strong> <code>${escapeHtml(council.verification.output_hash)}</code></p>`;
     if (Array.isArray(council.verification.checks) && council.verification.checks.length > 0) {
       html += '<ul>';
       for (const check of council.verification.checks) html += `<li>${formatMarkdown(check)}</li>`;
@@ -593,44 +557,44 @@ function formatVerification(ambient, t) {
   }
   
   if (ambient.verified_by_validators) {
-    html += `<p><strong>${t.validators}:</strong> ${ambient.verified_by_validators}</p>`;
+    html += `<p><strong>${t.validators}:</strong> ${escapeHtml(ambient.verified_by_validators)}</p>`;
   }
   
   if (ambient.model) {
-    html += `<p><strong>${t.model}:</strong> ${ambient.model}</p>`;
+    html += `<p><strong>${t.model}:</strong> ${escapeHtml(ambient.model)}</p>`;
   }
   
   if (ambient.merkle_root) {
-    html += `<p><strong>${t.merkleRoot}:</strong> <code>${ambient.merkle_root}</code></p>`;
+    html += `<p><strong>${t.merkleRoot}:</strong> <code>${escapeHtml(ambient.merkle_root)}</code></p>`;
   }
   
   if (ambient.request_id) {
-    html += `<p><strong>${t.requestId}:</strong> <code>${ambient.request_id}</code></p>`;
+    html += `<p><strong>${t.requestId}:</strong> <code>${escapeHtml(ambient.request_id)}</code></p>`;
   }
   
   if (ambient.auction) {
     html += `<h3>${t.auction}</h3>`;
     
     if (ambient.auction.status) {
-      html += `<p><strong>${t.status}:</strong> ${ambient.auction.status}</p>`;
+      html += `<p><strong>${t.status}:</strong> ${escapeHtml(ambient.auction.status)}</p>`;
     }
     
     if (ambient.auction.bids) {
       if (typeof ambient.auction.bids.placed !== 'undefined') {
-        html += `<p><strong>${t.bidsPlaced}:</strong> ${ambient.auction.bids.placed}</p>`;
+        html += `<p><strong>${t.bidsPlaced}:</strong> ${escapeHtml(ambient.auction.bids.placed)}</p>`;
       }
       if (typeof ambient.auction.bids.revealed !== 'undefined') {
-        html += `<p><strong>${t.bidsRevealed}:</strong> ${ambient.auction.bids.revealed}</p>`;
+        html += `<p><strong>${t.bidsRevealed}:</strong> ${escapeHtml(ambient.auction.bids.revealed)}</p>`;
       }
     }
     
     if (ambient.auction.address) {
-      html += `<p><strong>${t.auctionAddress}:</strong> <a href="${ambient.auction.address}" rel="noreferrer" target="_blank">${ambient.auction.address}</a></p>`;
+      html += `<p><strong>${t.auctionAddress}:</strong> ${renderLink(ambient.auction.address)}</p>`;
     }
   }
   
   if (ambient.bidder) {
-    html += `<p><strong>${t.bidder}:</strong> <a href="${ambient.bidder}" rel="noreferrer" target="_blank">${ambient.bidder}</a></p>`;
+    html += `<p><strong>${t.bidder}:</strong> ${renderLink(ambient.bidder)}</p>`;
   }
   
   html += '</div>';
@@ -650,7 +614,7 @@ function formatVerificationBoundary(boundary, t) {
     html += `<h3>${t.deterministic}</h3>`;
     html += '<ul class="boundary-list deterministic">';
     for (const item of boundary.deterministic) {
-      html += `<li><code>${item.path || item}</code></li>`;
+      html += `<li><code>${escapeHtml(item.path || item)}</code></li>`;
     }
     html += '</ul>';
   }
@@ -661,9 +625,9 @@ function formatVerificationBoundary(boundary, t) {
     html += '<ul class="boundary-list interpretive">';
     for (const item of boundary.interpretive) {
       const path = item.path || item;
-      const text = item.text ? `"${item.text.substring(0, 100)}..."` : '';
+      const text = item.text ? `"${String(item.text ?? '').substring(0, 100)}..."` : '';
       const reason = item.reason ? `(${item.reason})` : '';
-      html += `<li><code>${path}</code> ${reason} ${text}</li>`;
+      html += `<li><code>${escapeHtml(path)}</code> ${escapeHtml(reason)} ${escapeHtml(text)}</li>`;
     }
     html += '</ul>';
   }
@@ -673,7 +637,7 @@ function formatVerificationBoundary(boundary, t) {
     html += `<h3>${t.uncertaintyFlags}</h3>`;
     html += '<ul class="uncertainty-flags">';
     for (const flag of boundary.uncertainty_flags) {
-      html += `<li><code>${flag}</code></li>`;
+      html += `<li><code>${escapeHtml(flag)}</code></li>`;
     }
     html += '</ul>';
   }
@@ -682,15 +646,15 @@ function formatVerificationBoundary(boundary, t) {
   if (boundary.method) {
     html += `<h3>${t.method}</h3>`;
     if (boundary.method.kind) {
-      html += `<p><strong>Kind:</strong> ${boundary.method.kind}</p>`;
+      html += `<p><strong>Kind:</strong> ${escapeHtml(boundary.method.kind)}</p>`;
     }
     if (boundary.method.version) {
-      html += `<p><strong>Version:</strong> ${boundary.method.version}</p>`;
+      html += `<p><strong>Version:</strong> ${escapeHtml(boundary.method.version)}</p>`;
     }
     if (boundary.method.notes && boundary.method.notes.length > 0) {
       html += '<ul class="method-notes">';
       for (const note of boundary.method.notes) {
-        html += `<li>${note}</li>`;
+        html += `<li>${escapeHtml(note)}</li>`;
       }
       html += '</ul>';
     }
@@ -714,16 +678,16 @@ function formatVerificationHooks(hooks, t) {
   html += `<p><strong>${t.requiresSeparation}:</strong> <code>${String(Boolean(hooks.requires_separation))}</code></p>`;
   html += `<p><strong>${t.strictMode}:</strong> <code>${String(Boolean(hooks.strict_mode))}</code></p>`;
   html += `<p><strong>${t.strictRejectionTriggered}:</strong> <code>${String(Boolean(hooks.strict_rejection_triggered))}</code></p>`;
-  if (hooks.routing_action) html += `<p><strong>${t.routingAction}:</strong> <code>${hooks.routing_action}</code></p>`;
+  if (hooks.routing_action) html += `<p><strong>${t.routingAction}:</strong> <code>${escapeHtml(hooks.routing_action)}</code></p>`;
 
   if (Array.isArray(hooks.segments) && hooks.segments.length) {
     html += `<h3>${t.segments}</h3>`;
     html += '<ul class="verification-hooks-list">';
     for (const segment of hooks.segments) {
-      html += `<li><code>${segment.path}</code> <span class="hook-category ${segment.category}">${segment.category}</span>`;
+      html += `<li><code>${escapeHtml(segment.path)}</code> <span class="hook-category ${classToken(segment.category, ['deterministic', 'probabilistic', 'unverifiable'])}">${escapeHtml(segment.category)}</span>`;
       if (segment.text) html += ` <span class="hook-text">${formatMarkdown(segment.text)}</span>`;
       if (Array.isArray(segment.reasons) && segment.reasons.length) {
-        html += `<div class="hook-reasons"><strong>${t.reasons}:</strong> ${segment.reasons.map((reason) => `<code>${reason}</code>`).join(' ')}</div>`;
+        html += `<div class="hook-reasons"><strong>${t.reasons}:</strong> ${segment.reasons.map((reason) => `<code>${escapeHtml(reason)}</code>`).join(' ')}</div>`;
       }
       html += '</li>';
     }
@@ -734,18 +698,18 @@ function formatVerificationHooks(hooks, t) {
     html += `<h3>${t.mixedSegments}</h3>`;
     html += '<ul class="verification-hooks-mixed">';
     for (const segment of hooks.mixed_segments) {
-      html += `<li><code>${segment.path}</code>: ${segment.categories.map((category) => `<span class="hook-category ${category}">${category}</span>`).join(' ')}</li>`;
+      html += `<li><code>${escapeHtml(segment.path)}</code>: ${segment.categories.map((category) => `<span class="hook-category ${classToken(category, ['deterministic', 'probabilistic', 'unverifiable'])}">${escapeHtml(category)}</span>`).join(' ')}</li>`;
     }
     html += '</ul>';
   }
 
   if (hooks.method) {
     html += `<h3>${t.method}</h3>`;
-    if (hooks.method.kind) html += `<p><strong>Kind:</strong> ${hooks.method.kind}</p>`;
-    if (hooks.method.version) html += `<p><strong>Version:</strong> ${hooks.method.version}</p>`;
+    if (hooks.method.kind) html += `<p><strong>Kind:</strong> ${escapeHtml(hooks.method.kind)}</p>`;
+    if (hooks.method.version) html += `<p><strong>Version:</strong> ${escapeHtml(hooks.method.version)}</p>`;
     if (Array.isArray(hooks.method.notes) && hooks.method.notes.length) {
       html += '<ul class="method-notes">';
-      for (const note of hooks.method.notes) html += `<li>${note}</li>`;
+      for (const note of hooks.method.notes) html += `<li>${escapeHtml(note)}</li>`;
       html += '</ul>';
     }
   }
@@ -774,19 +738,19 @@ function formatRefusalHandling(refusal, t) {
     html += `<h3>${t.signals}</h3>`;
     html += '<ul class="signals-list">';
     for (const signal of refusal.signals) {
-      html += `<li><code>${signal}</code></li>`;
+      html += `<li><code>${escapeHtml(signal)}</code></li>`;
     }
     html += '</ul>';
   }
   
   // Routed to
   if (refusal.routed_to) {
-    html += `<p><strong>${t.routedTo}:</strong> ${refusal.routed_to}</p>`;
+    html += `<p><strong>${t.routedTo}:</strong> ${escapeHtml(refusal.routed_to)}</p>`;
   }
   
   // Note
   if (refusal.note) {
-    html += `<p class="refusal-note">${refusal.note}</p>`;
+    html += `<p class="refusal-note">${escapeHtml(refusal.note)}</p>`;
   }
   
   html += '</div>';
@@ -804,12 +768,12 @@ function formatWeek7Evaluation(week7, t) {
   
   if (week7.what_surprised) {
     html += `<h3>${t.whatSurprised}</h3>`;
-    html += `<p>${week7.what_surprised}</p>`;
+    html += `<p>${escapeHtml(week7.what_surprised)}</p>`;
   }
   
   if (week7.external_explanation_needed) {
     html += `<h3>${t.externalExplanation}</h3>`;
-    html += `<p>${week7.external_explanation_needed}</p>`;
+    html += `<p>${escapeHtml(week7.external_explanation_needed)}</p>`;
   }
   
   html += '</div>';
@@ -826,15 +790,15 @@ function formatPromptUsed(promptUsed, t) {
   html += '<div class="collapsible-content">';
   
   if (promptUsed.prompt_used_summary) {
-    html += `<p>${promptUsed.prompt_used_summary}</p>`;
+    html += `<p>${escapeHtml(promptUsed.prompt_used_summary)}</p>`;
   }
   
   if (promptUsed.prompt_used_excerpt) {
-    html += `<pre class="prompt-excerpt"><code>${promptUsed.prompt_used_excerpt.substring(0, 500)}...</code></pre>`;
+    html += `<pre class="prompt-excerpt"><code>${escapeHtml(String(promptUsed.prompt_used_excerpt ?? '').substring(0, 500))}...</code></pre>`;
   }
   
   if (promptUsed.model) {
-    html += `<p><strong>${t.model}:</strong> ${promptUsed.model}</p>`;
+    html += `<p><strong>${t.model}:</strong> ${escapeHtml(promptUsed.model)}</p>`;
   }
   
   html += '</div>';
@@ -1379,8 +1343,8 @@ function buildLangSwitcher(currentUrl, currentLang) {
   
   return `
     <div class="lang-switcher">
-      <a href="${enHref}" class="${enClass}">EN</a>
-      <a href="${ruHref}" class="${ruClass}">RU</a>
+      <a href="${escapeHtml(enHref)}" class="${enClass}">EN</a>
+      <a href="${escapeHtml(ruHref)}" class="${ruClass}">RU</a>
     </div>
   `;
 }
@@ -1395,7 +1359,7 @@ function generateMainPage(files, lang, currentUrl) {
     
     return `
       <li>
-        <a href="/report/${encodeURIComponent(fileName)}?lang=${lang}">${fileName}</a>
+        <a href="/report/${escapeHtml(encodeURIComponent(fileName))}?lang=${lang}">${escapeHtml(fileName)}</a>
         <div class="report-meta">
           ${date ? `${t.modified}: ${date}` : ''} 
           ${size ? `| ${t.size}: ${size}` : ''}
@@ -1439,7 +1403,7 @@ function generateReportPage(report, filename, lang, currentUrl) {
     <head>
       <meta charset="UTF-8">
       <meta name="viewport" content="width=device-width, initial-scale=1.0">
-      <title>${title} - ${t.reportTitle}</title>
+      <title>${escapeHtml(title)} - ${t.reportTitle}</title>
       <style>${getStyles()}</style>
     </head>
     <body>
@@ -1447,8 +1411,8 @@ function generateReportPage(report, filename, lang, currentUrl) {
         <a href="/?lang=${lang}" class="back-link">← ${t.backToList}</a>
         <header>
           ${buildLangSwitcher(currentUrl, lang)}
-          <h1>${title}</h1>
-          <p class="report-meta">${t.file}: ${filename}</p>
+          <h1>${escapeHtml(title)}</h1>
+          <p class="report-meta">${t.file}: ${escapeHtml(filename)}</p>
         </header>
         <article>
           ${formatInput(report.input, t)}
